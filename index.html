@@ -21,7 +21,7 @@
             margin: 0; padding: 0;
             color: var(--text-dark);
             -webkit-tap-highlight-color: transparent;
-            padding-bottom: 80px; /* 避開底部導航 */
+            padding-bottom: 80px;
         }
 
         #app {
@@ -48,36 +48,21 @@
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: 0; } }
 
-        /* --- 滾動式天數選單 (Day Nav) --- */
+        /* --- 滾動式天數選單 --- */
         .day-nav {
-            display: flex;
-            overflow-x: auto;
-            white-space: nowrap;
-            background: white;
-            padding: 10px;
-            position: sticky;
-            top: 55px; /* Header 高度 */
-            z-index: 98;
+            display: flex; overflow-x: auto; white-space: nowrap;
+            background: white; padding: 10px;
+            position: sticky; top: 55px; z-index: 98;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            margin: 0 -20px 20px -20px; /* 抵銷 padding */
+            margin: 0 -20px 20px -20px;
         }
-        .day-nav::-webkit-scrollbar { display: none; } /* 隱藏捲軸 */
+        .day-nav::-webkit-scrollbar { display: none; }
         .day-btn {
-            background: #f0f0f0;
-            border: none;
-            padding: 8px 16px;
-            margin: 0 5px;
-            border-radius: 20px;
-            color: #666;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: 0.2s;
+            background: #f0f0f0; border: none; padding: 8px 16px;
+            margin: 0 5px; border-radius: 20px; color: #666;
+            font-size: 0.95rem; cursor: pointer; transition: 0.2s;
         }
-        .day-btn.active {
-            background: var(--primary);
-            color: white;
-            font-weight: bold;
-        }
+        .day-btn.active { background: var(--primary); color: white; font-weight: bold; }
 
         /* --- 行程卡片 & 天氣 --- */
         .timeline { position: relative; padding-left: 15px; }
@@ -87,14 +72,10 @@
         }
         
         .day-header-box {
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            border-left: 5px solid #2196F3;
-            position: relative; z-index: 2;
-            scroll-margin-top: 120px; /* 點擊滾動時預留空間 */
+            background: white; border-radius: 15px; padding: 15px;
+            margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border-left: 5px solid #2196F3; position: relative; z-index: 2;
+            scroll-margin-top: 120px;
         }
         .day-title { font-size: 1.3rem; font-weight: bold; color: #1565C0; margin-bottom: 8px; }
         .weather-info { 
@@ -103,28 +84,30 @@
         }
         .weather-icon { font-size: 2rem; }
         .cloth-advice { font-size: 0.95rem; color: #555; margin-top: 8px; display: block; line-height: 1.5; font-weight: bold;}
-        .loading-text { font-size: 0.9rem; color: #999; }
 
         .event-card {
-            background: var(--card-bg);
-            margin-bottom: 15px; padding: 15px;
-            border-radius: 12px;
-            position: relative;
+            background: var(--card-bg); margin-bottom: 15px; padding: 15px;
+            border-radius: 12px; position: relative;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             border-left: 4px solid var(--primary);
-            cursor: pointer;
-            transition: transform 0.1s;
-            margin-left: 10px;
+            transition: transform 0.1s; margin-left: 10px;
         }
-        .event-card:active { transform: scale(0.98); background: #fff0f5; }
+        /* 有互動功能的卡片 */
+        .event-card.interactive { cursor: pointer; }
+        .event-card.interactive:active { transform: scale(0.98); background: #fff0f5; }
+        
+        /* 無互動功能的卡片 */
+        .event-card.static { border-left-color: #ccc; background: #fafafa; }
+        
         .event-time { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
+        .event-card.static .event-time { color: #888; }
         .event-title { font-size: 1.1rem; font-weight: bold; margin: 4px 0; }
-        .tap-hint { font-size: 0.8rem; color: #aaa; float: right; margin-top: -20px; }
+        .tap-hint { font-size: 0.8rem; color: #aaa; float: right; margin-top: -20px; display: none; }
+        .event-card.interactive .tap-hint { display: block; }
 
         /* --- 彈跳視窗 --- */
         #modal {
-            display: none;
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); z-index: 1000;
             justify-content: center; align-items: center;
         }
@@ -135,7 +118,20 @@
         }
         @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .close-btn { position: absolute; top: 15px; right: 15px; background: #eee; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 1.2rem; }
-        .modal-img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; background: #eee; margin-bottom: 15px; }
+        .modal-img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; background: #eee; margin-bottom: 15px; display: none; }
+        
+        /* 影片容器 */
+        .video-container {
+            position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
+            margin-bottom: 15px; border-radius: 10px; display: none;
+        }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+        .btn-link {
+            display: block; width: 100%; padding: 12px; margin-top: 10px;
+            background: #E0F7FA; color: #006064; text-align: center;
+            text-decoration: none; border-radius: 8px; font-weight: bold;
+        }
 
         /* --- 記帳表單 --- */
         .input-box {
@@ -161,9 +157,7 @@
             padding: 12px; border-bottom: 1px solid #eee; background: white; 
             margin-bottom: 8px; border-radius: 8px;
         }
-        .expense-item.prepaid {
-            background: #F0F8FF; border-left: 4px solid #2196F3;
-        }
+        .expense-item.prepaid { background: #F0F8FF; border-left: 4px solid #2196F3; }
         .exp-icon { font-size: 1.5rem; margin-right: 10px; width: 30px; text-align: center; }
         .exp-info { flex-grow: 1; }
         .exp-meta { font-size: 0.85rem; color: #888; margin-top: 2px; }
@@ -258,11 +252,17 @@
 <div id="modal" onclick="closeModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
         <button class="close-btn" onclick="closeModal()">✕</button>
+        <div class="video-container" id="m-video-box">
+            <iframe id="m-video" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
         <img id="m-img" class="modal-img" src="" alt="">
+        
         <h2 id="m-title" style="margin:0 0 5px 0;"></h2>
         <div style="margin-bottom:15px; color:#888;" id="m-meta"></div>
         <p id="m-desc" style="line-height:1.6; color:#555; white-space: pre-line;"></p>
-        <a id="m-map" href="#" target="_blank" class="btn-submit" style="display:block; text-align:center; text-decoration:none; margin-top:15px;">📍 Google 導航</a>
+        
+        <a id="m-link" href="#" target="_blank" class="btn-link">🔗 相關資訊 / 官網</a>
+        <a id="m-map" href="#" target="_blank" class="btn-submit" style="display:block; text-align:center; text-decoration:none; margin-top:10px;">📍 Google 導航</a>
     </div>
 </div>
 
@@ -286,8 +286,7 @@ const firebaseConfig = {
     const db = getFirestore(app);
     const RATE = 0.22; 
 
-    // --- 0. 已預付項目 (靜態資料) ---
-    // 這些會自動顯示在記帳列表最上方
+    // --- 0. 已預付項目 ---
     const prepaidExpenses = [
         { item: "✈️ 虎航來回機票", cat: "transport", pay: "card", twd: 41490, jpy: 0, note: "行前已付" },
         { item: "🎫 Klook 一日遊 (3人)", cat: "transport", pay: "card", twd: 4239, jpy: 0, note: "北九州一日遊" },
@@ -295,30 +294,35 @@ const firebaseConfig = {
         { item: "🍱 車上便當 (晚餐)", cat: "food", pay: "cash", twd: 1260, jpy: 6000, note: "由布院之森便當" }
     ];
 
-    // --- 1. 行程資料 (圖片已改為佔位符，支援本地讀取) ---
-    /* 【如何使用本地圖片？】
-       1. 在 GitHub 專案裡建立一個資料夾叫 images
-       2. 把照片上傳進去，例如 day1.jpg
-       3. 把下方的 img: "..." 改成 img: "./images/day1.jpg"
-    */
+    // --- 1. 詳細行程資料 (Day 1 & 2 更新，Day 3-5 簡易版) ---
+    // 有 desc, img, link, youtube 的項目才會變為「可點擊」
     const fixedSchedule = [
-        { day: "Day 1", date: "1/13 (二)", time: "04:45", title: "✈️ 桃園機場 T1", desc: "抵達第一航廈櫃檯報到，準備出發！", img: "https://placehold.co/600x400/FF8BA7/white?text=Airport", loc: "桃園機場第一航廈" },
-        { day: "Day 1", date: "1/13 (二)", time: "10:00", title: "🛬 抵達福岡", desc: "快速通關領行李。", img: "https://placehold.co/600x400/87CEEB/white?text=Fukuoka", loc: "福岡機場" },
-        { day: "Day 1", date: "1/13 (二)", time: "11:00", title: "🧳 行李寄送", desc: "位置：國際線 1F「Cargo Pass」。\n寄往：「Mitsui Garden Nakasu」。", img: "https://placehold.co/600x400/FFA500/white?text=Luggage", loc: "福岡機場 Cargo Pass" },
-        { day: "Day 1", date: "1/13 (二)", time: "11:45", title: "🍲 必吃「大山」牛雜鍋", desc: "【博多靈魂美食】\n味噌湯頭濃郁，牛腸軟嫩。排隊太久可改吃拉麵跑道。", img: "https://placehold.co/600x400/FF6347/white?text=Motsunabe", loc: "博多もつ鍋おおやま 福岡空港" },
-        { day: "Day 1", date: "1/13 (二)", time: "13:12", title: "🚌 高速巴士往由布院", desc: "國內線 2 號站牌。\n請務必確認看板，往「由布院」方向。", img: "https://placehold.co/600x400/4682B4/white?text=Bus", loc: "福岡機場巴士站" },
-        { day: "Day 1", date: "1/13 (二)", time: "15:00", title: "🏨 入住：山水館", desc: "辦理入住，換上浴衣看山景。", img: "https://placehold.co/600x400/8B4513/white?text=Hotel", loc: "由布院山水館" },
-        { day: "Day 1", date: "1/13 (二)", time: "18:00", title: "🦀 海陸晚宴", desc: "和牛與松葉蟹自助餐吃到飽！", img: "https://placehold.co/600x400/DC143C/white?text=Crab+Dinner", loc: "由布院山水館" },
-        
-        { day: "Day 2", date: "1/14 (三)", time: "10:30", title: "🌊 金鱗湖散策", desc: "晨霧夢幻美景，必拍倒影。", img: "https://placehold.co/600x400/20B2AA/white?text=Lake", loc: "金鱗湖" },
-        { day: "Day 2", date: "1/14 (三)", time: "17:11", title: "🌲 由布院之森", desc: "搭乘特急 6 號返回博多。\n綠色復古列車。", img: "https://placehold.co/600x400/228B22/white?text=Train", loc: "由布院駅" },
-        
-        { day: "Day 3", date: "1/15 (四)", time: "10:00", title: "⛩️ 博多文化散策", desc: "參拜櫛田神社，看巨大山笠。", img: "https://placehold.co/600x400/FF4500/white?text=Shrine", loc: "櫛田神社" },
-        { day: "Day 3", date: "1/15 (四)", time: "19:30", title: "🥘 晚餐：水炊雞", desc: "博多名物，雞湯濃郁。", img: "https://placehold.co/600x400/DAA520/white?text=Chicken+Pot", loc: "博多華味鳥" },
+        // === Day 1 (1/13) ===
+        { day: "Day 1", date: "1/13 (二)", time: "04:45", title: "✈️ 桃園機場 T1", desc: "抵達櫃檯報到。" },
+        { day: "Day 1", date: "1/13 (二)", time: "10:00", title: "🛬 抵達福岡", desc: "快速通關領行李。" },
+        { day: "Day 1", date: "1/13 (二)", time: "11:00", title: "🧳 國際線 1F「Cargo Pass」", desc: "行李寄往「Mitsui Garden Nakasu」，空手旅行！", link: "https://cargopass.jp", loc: "福岡機場 Cargo Pass" },
+        { day: "Day 1", date: "1/13 (二)", time: "11:45", title: "🍲 國內線 3F 美食：必吃「大山」牛雜鍋", desc: "【博多靈魂美食】\n博多牛腸鍋起源於二戰後物資匱乏的福岡博多地區... (略)\n\n必吃大山的味噌湯頭，非常濃郁！", img: "https://ginalitw.github.io/fukuoka-app/images/0101.png", loc: "博多もつ鍋おおやま 福岡空港" },
+        { day: "Day 1", date: "1/13 (二)", time: "13:12", title: "🚌 高速巴士前往由布院", desc: "國內線 2 號站牌上車。\n「湯布院號」直達由布院站前巴士中心，車程約2小時。", img: "https://ginalitw.github.io/fukuoka-app/images/0102.jpg", link: "https://www.nishitetsu.jp/bus/highwaybus/rosen/yufuin/", loc: "福岡機場巴士站" },
+        { day: "Day 1", date: "1/13 (二)", time: "15:00", title: "🏨 入住由布院山水館", desc: "四星級溫泉旅館，可看由布岳山景。\n浴場開放時間：\n[2F朝霧之湯] 13:00~25:00\n[1F由布之湯] 05:00~09:30", img: "https://ginalitw.github.io/fukuoka-app/images/0103.jpg", link: "https://www.sansuikan.co.jp/", loc: "由布院山水館" },
+        { day: "Day 1", date: "1/13 (二)", time: "18:00", title: "🦀 海陸晚宴", desc: "和牛與松葉蟹自助餐（至 21:00）。", loc: "由布院山水館" },
+        { day: "Day 1", date: "1/13 (二)", time: "21:00", title: "♨️ 睡前溫泉", desc: "朝霧之湯享受露天風呂（開放至 25:00）。", loc: "由布院山水館" },
 
-        { day: "Day 4", date: "1/16 (五)", time: "10:00", title: "🍣 唐戶市場", desc: "週五限定馬關街！壽司自助餐。", img: "https://placehold.co/600x400/FF69B4/white?text=Sushi", loc: "唐戶市場" },
-        
-        { day: "Day 5", date: "1/17 (六)", time: "10:55", title: "✈️ 告別福岡", desc: "搭乘虎航 IT241 愉快返台。", img: "https://placehold.co/600x400/1E90FF/white?text=Flight", loc: "福岡機場" },
+        // === Day 2 (1/14) ===
+        { day: "Day 2", date: "1/14 (三)", time: "07:30", title: "🛌 起床", desc: "在山間清新的空氣中醒來。" },
+        { day: "Day 2", date: "1/14 (三)", time: "08:30", title: "🍳 元氣早餐", desc: "飯店自助早餐(供應至 09:00)，餐後可最後一泡！" },
+        { day: "Day 2", date: "1/14 (三)", time: "10:00", title: "〽️ Checkout", desc: "辦理退房，輕鬆散步。" },
+        { day: "Day 2", date: "1/14 (三)", time: "10:30", title: "🌊 金鱗湖散策", desc: "淡水和溫泉流入湖中...冬天清晨水氣從水面上蒸發的迷濛美麗景象。", img: "https://ginalitw.github.io/fukuoka-app/images/0104.jpg", loc: "金鱗湖" },
+        { day: "Day 2", date: "1/14 (三)", time: "11:30", title: "🛍️ 湯之坪街道、花卉村", desc: "逛特色雜貨、吃在地小吃。\n推薦：豐後牛釜飯、可樂餅、SNOOPY茶屋。", link: "https://tw.wamazing.com/media/article/a-1062/", loc: "湯之坪街道" },
+        { day: "Day 2", date: "1/14 (三)", time: "17:11", title: "🌲 由布院之森列車", desc: "【夢幻特急】\n寶綠色的外觀搭配金屬色系點綴，車廂內部高雅古典...", img: "https://ginalitw.github.io/fukuoka-app/images/0105.jpg", youtube: "https://www.youtube.com/embed/MLBKTMaQluk", link: "https://www.jrkyushu.co.jp/chinese/train/yufuin_no_mori.html", loc: "由布院駅" },
+        { day: "Day 2", date: "1/14 (三)", time: "18:00", title: "🍱 鐵道晚宴", desc: "在車上享用預約制的限定特製便當。", img: "https://ginalitw.github.io/fukuoka-app/images/0106.jpg", loc: "由布院之森" },
+        { day: "Day 2", date: "1/14 (三)", time: "20:00", title: "🛌 入住三井花園中洲", desc: "抵達飯店，寄送的行李已在櫃檯等您。", loc: "三井花園飯店福岡中洲" },
+
+        // === Day 3-5 (維持原本簡易版) ===
+        { day: "Day 3", date: "1/15 (四)", time: "10:00", title: "⛩️ 博多文化散策", desc: "參拜櫛田神社。", loc: "櫛田神社" },
+        { day: "Day 3", date: "1/15 (四)", time: "14:00", title: "💎 天神大採買", desc: "逛岩田屋百貨、地下街。", loc: "天神地下街" },
+        { day: "Day 3", date: "1/15 (四)", time: "19:30", title: "🥘 晚餐：水炊雞", desc: "博多名物，雞湯濃郁。", loc: "博多華味鳥" },
+        { day: "Day 4", date: "1/16 (五)", time: "10:00", title: "🍣 唐戶市場", desc: "週五限定馬關街！", loc: "唐戶市場" },
+        { day: "Day 5", date: "1/17 (六)", time: "10:55", title: "✈️ 告別福岡", desc: "搭乘虎航 IT241 愉快返台。", loc: "福岡機場" }
     ];
 
     const tripLocs = {
@@ -330,20 +334,14 @@ const firebaseConfig = {
     };
 
     // --- 2. 渲染邏輯 ---
-    // 滾動到特定天數
     window.scrollToDay = (dayId, btn) => {
-        // 更新按鈕樣式
         document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        // 滾動
         const el = document.getElementById(dayId.replace(' ',''));
-        if(el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        if(el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     async function fetchWeather(dayKey) {
-        // (維持原樣) Open-Meteo 邏輯
         const info = tripLocs[dayKey];
         if(!info) return null;
         const tripDate = new Date(info.date);
@@ -358,7 +356,7 @@ const firebaseConfig = {
             const code = data.daily.weathercode[0];
             const max = data.daily.temperature_2m_max[0];
             const min = data.daily.temperature_2m_min[0];
-            const w = getWeatherDesc(code); // 需配合下方 helper
+            const w = getWeatherDesc(code);
             let advice = "洋蔥式穿搭。";
             if (max < 8) advice = "寒冷，請穿發熱衣。";
             if (code >= 51) advice += " 記得帶傘。";
@@ -388,10 +386,9 @@ const firebaseConfig = {
             if (scheduleMap[day]) {
                 const dayDate = scheduleMap[day][0].date;
                 const locName = tripLocs[day]?.name || "";
-                const idName = day.replace(' ',''); // 用於滾動定位
+                const idName = day.replace(' ','');
                 const wID = `weather-${idName}`;
 
-                // 加入 id 讓導航可以跳轉
                 html += `
                 <div class="day-header-box" id="${idName}">
                     <div class="day-title">${dayDate} (${locName})</div>
@@ -401,9 +398,15 @@ const firebaseConfig = {
                 </div>`;
 
                 scheduleMap[day].forEach(data => {
+                    // 判斷是否有內容需要點擊 (有圖片、連結、影片、或長敘述)
+                    // 簡單判斷：只要有 desc 且超過 10 字，或有 img/link/youtube 就算有互動
+                    const hasDetail = data.img || data.link || data.youtube || (data.desc && data.desc.length > 5);
+                    const interactiveClass = hasDetail ? "interactive" : "static";
+                    const clickAttr = hasDetail ? `onclick="openModal(this)" data-title="${data.title}" data-time="${data.time} ${data.date}" data-desc="${data.desc||''}" data-img="${data.img||''}" data-link="${data.link||''}" data-yt="${data.youtube||''}" data-loc="${data.loc||''}"` : "";
+
                     html += `
-                    <div class="event-card" onclick="openModal('${data.title}', '${data.time}', '${data.date}', \`${data.desc}\`, '${data.img}', '${data.loc}')">
-                        <span class="tap-hint">👆</span>
+                    <div class="event-card ${interactiveClass}" ${clickAttr}>
+                        <span class="tap-hint">👆 詳情</span>
                         <div class="event-time">${data.time}</div>
                         <div class="event-title">${data.title}</div>
                     </div>`;
@@ -425,7 +428,7 @@ const firebaseConfig = {
     }
     renderSchedule();
 
-    // --- 3. 記帳邏輯 (已預付 + Firebase) ---
+    // --- 3. 記帳邏輯 ---
     const categoryIcons = { food:"🍜", transport:"🚌", shopping:"🎁", drug:"💊", hotel:"🏨", other:"✨" };
     const categoryNames = { food:"餐飲", transport:"交通", shopping:"購物", drug:"藥妝", hotel:"住宿", other:"其他" };
     const payIcons = { cash:"💵 現金", card:"💳 刷卡", ic:"🐧 IC卡" };
@@ -436,12 +439,11 @@ const firebaseConfig = {
         let total = 0;
         let html = "";
 
-        // 1. 先渲染「已預付」項目
+        // 1. 預付
         prepaidExpenses.forEach(p => {
-            total += p.twd; // 加總台幣
+            total += p.twd;
             const icon = categoryIcons[p.cat];
             const payName = payIcons[p.pay];
-            
             html += `
             <div class="expense-item prepaid">
                 <div class="exp-icon">${icon}</div>
@@ -456,7 +458,7 @@ const firebaseConfig = {
             </div>`;
         });
 
-        // 2. 再渲染 Firebase 的動態記帳
+        // 2. Firebase
         snapshot.forEach((doc) => {
             const data = doc.data();
             const twd = Math.round(data.jpy * RATE);
@@ -464,7 +466,6 @@ const firebaseConfig = {
             const icon = categoryIcons[data.category] || "✨";
             const catName = categoryNames[data.category] || "其他";
             const payName = payIcons[data.payment] || "現金";
-
             html += `
             <div class="expense-item">
                 <div class="exp-icon">${icon}</div>
@@ -502,16 +503,38 @@ const firebaseConfig = {
 
     window.deleteExpense = async (id) => { if(confirm("確定刪除?")) await deleteDoc(doc(db, "expenses", id)); };
     
-    // UI Helpers
-    window.openModal = (title, time, date, desc, img, loc) => {
-        document.getElementById("m-title").innerText = title;
-        document.getElementById("m-meta").innerText = `${date} ${time}`;
-        document.getElementById("m-desc").innerText = desc;
-        document.getElementById("m-img").src = img;
-        document.getElementById("m-map").href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc + " 福岡")}`;
+    // UI Helpers: Open Modal with Data Attributes
+    window.openModal = (el) => {
+        const ds = el.dataset;
+        document.getElementById("m-title").innerText = ds.title;
+        document.getElementById("m-meta").innerText = ds.time;
+        document.getElementById("m-desc").innerText = ds.desc;
+        
+        // 圖片
+        const imgEl = document.getElementById("m-img");
+        if(ds.img) { imgEl.src = ds.img; imgEl.style.display = "block"; } 
+        else { imgEl.style.display = "none"; }
+        
+        // 影片
+        const vidBox = document.getElementById("m-video-box");
+        const vidEl = document.getElementById("m-video");
+        if(ds.yt) { vidEl.src = ds.yt; vidBox.style.display = "block"; }
+        else { vidBox.style.display = "none"; vidEl.src = ""; }
+
+        // 連結
+        const linkEl = document.getElementById("m-link");
+        if(ds.link) { linkEl.href = ds.link; linkEl.style.display = "block"; }
+        else { linkEl.style.display = "none"; }
+
+        // 導航
+        document.getElementById("m-map").href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ds.loc + " 福岡")}`;
+        
         document.getElementById("modal").style.display = "flex";
     };
-    window.closeModal = () => document.getElementById("modal").style.display = "none";
+    window.closeModal = () => {
+        document.getElementById("modal").style.display = "none";
+        document.getElementById("m-video").src = ""; // 停止影片播放
+    };
     window.switchPage = (id, btn) => {
         document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
         document.getElementById('p-'+id).classList.add('active');
