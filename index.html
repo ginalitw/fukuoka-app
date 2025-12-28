@@ -21,6 +21,7 @@
             margin: 0; padding: 0;
             color: var(--text-dark);
             -webkit-tap-highlight-color: transparent;
+            padding-bottom: 80px; /* 避開底部導航 */
         }
 
         #app {
@@ -28,8 +29,8 @@
             margin: 0 auto;
             background: var(--bg-color);
             min-height: 100vh;
-            padding-bottom: 90px;
             position: relative;
+            padding-bottom: 90px;
         }
 
         /* Header */
@@ -47,6 +48,37 @@
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: 0; } }
 
+        /* --- 滾動式天數選單 (Day Nav) --- */
+        .day-nav {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            background: white;
+            padding: 10px;
+            position: sticky;
+            top: 55px; /* Header 高度 */
+            z-index: 98;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin: 0 -20px 20px -20px; /* 抵銷 padding */
+        }
+        .day-nav::-webkit-scrollbar { display: none; } /* 隱藏捲軸 */
+        .day-btn {
+            background: #f0f0f0;
+            border: none;
+            padding: 8px 16px;
+            margin: 0 5px;
+            border-radius: 20px;
+            color: #666;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .day-btn.active {
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+        }
+
         /* --- 行程卡片 & 天氣 --- */
         .timeline { position: relative; padding-left: 15px; }
         .timeline::before {
@@ -62,6 +94,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             border-left: 5px solid #2196F3;
             position: relative; z-index: 2;
+            scroll-margin-top: 120px; /* 點擊滾動時預留空間 */
         }
         .day-title { font-size: 1.3rem; font-weight: bold; color: #1565C0; margin-bottom: 8px; }
         .weather-info { 
@@ -128,6 +161,9 @@
             padding: 12px; border-bottom: 1px solid #eee; background: white; 
             margin-bottom: 8px; border-radius: 8px;
         }
+        .expense-item.prepaid {
+            background: #F0F8FF; border-left: 4px solid #2196F3;
+        }
         .exp-icon { font-size: 1.5rem; margin-right: 10px; width: 30px; text-align: center; }
         .exp-info { flex-grow: 1; }
         .exp-meta { font-size: 0.85rem; color: #888; margin-top: 2px; }
@@ -154,6 +190,14 @@
     </header>
 
     <div id="p-schedule" class="page active">
+        <div class="day-nav">
+            <button class="day-btn active" onclick="scrollToDay('Day 1', this)">Day 1 (1/13)</button>
+            <button class="day-btn" onclick="scrollToDay('Day 2', this)">Day 2 (1/14)</button>
+            <button class="day-btn" onclick="scrollToDay('Day 3', this)">Day 3 (1/15)</button>
+            <button class="day-btn" onclick="scrollToDay('Day 4', this)">Day 4 (1/16)</button>
+            <button class="day-btn" onclick="scrollToDay('Day 5', this)">Day 5 (1/17)</button>
+        </div>
+
         <div class="timeline" id="schedule-list">
             </div>
     </div>
@@ -162,6 +206,7 @@
         <div style="background:#FAFFC7; padding:15px; border-radius:15px; text-align:center; margin-bottom:20px;">
             <div style="color:#555;">總花費 (台幣)</div>
             <div id="total-twd" style="font-size:2rem; font-weight:bold; color:#E91E63;">NT$ 0</div>
+            <div style="font-size:0.9rem; color:#888; margin-top:5px;">(含已預付項目)</div>
         </div>
 
         <div class="input-box">
@@ -195,6 +240,8 @@
             </div>
             <button class="btn-submit" id="btn-add-exp">記上一筆</button>
         </div>
+
+        <div style="margin-bottom:10px; font-weight:bold; color:#444;">📋 消費列表</div>
         <div id="expense-list" style="padding-bottom:20px;"></div>
     </div>
 
@@ -224,8 +271,8 @@
     import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } 
     from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-    // ↓↓↓ 請貼上您的 Firebase Config (請務必換成真的!) ↓↓↓
-    const firebaseConfig = {
+    // ↓↓↓ 請貼上您的 Firebase Config ↓↓↓
+const firebaseConfig = {
   apiKey: "AIzaSyDZzgq0W4xdHIhf6H1xC_dEScEHmAnXtiE",
   authDomain: "fukuokagina2026.firebaseapp.com",
   projectId: "fukuokagina2026",
@@ -239,48 +286,41 @@
     const db = getFirestore(app);
     const RATE = 0.22; 
 
-    // --- 0. 靜態行程資料 (您提供的行程) ---
-    // 我已經幫您加入了圖片連結與詳細介紹
-    const fixedSchedule = [
-        // === Day 1 ===
-        { day: "Day 1", date: "1/13 (二)", time: "04:45", title: "✈️ 桃園機場 T1", desc: "抵達第一航廈櫃檯報到，準備出發！", img: "https://images.unsplash.com/photo-1576166578058-299d638dc5b1?auto=format&fit=crop&w=600&q=80", loc: "桃園機場第一航廈" },
-        { day: "Day 1", date: "1/13 (二)", time: "10:00", title: "🛬 抵達福岡", desc: "快速通關領行李。", img: "https://images.unsplash.com/photo-1596898246995-103305c4533e?auto=format&fit=crop&w=600&q=80", loc: "福岡機場" },
-        { day: "Day 1", date: "1/13 (二)", time: "11:00", title: "🧳 行李寄送", desc: "位置：國際線 1F「Cargo Pass」。\n寄往：「Mitsui Garden Nakasu」。\n空手去由布院超輕鬆！", img: "https://images.unsplash.com/photo-1552354518-872dc9205565?auto=format&fit=crop&w=600&q=80", loc: "福岡機場 Cargo Pass" },
-        { day: "Day 1", date: "1/13 (二)", time: "11:45", title: "🍲 必吃「大山」牛雜鍋", desc: "【博多靈魂美食 Motsunabe】\n牛雜鍋起源於二戰後，當時物資缺乏，人們將牛內臟與韭菜、大蒜一起燉煮，意外成為美味的料理。\n\n大山的味噌湯頭非常濃郁，牛腸處理得像豆腐一樣軟嫩，滿滿膠原蛋白！排隊太久可改吃旁邊的拉麵跑道。", img: "https://tabelog.com/imgview/original?id=r8745522730630", loc: "博多もつ鍋おおやま 福岡空港" },
-        { day: "Day 1", date: "1/13 (二)", time: "13:12", title: "🚌 高速巴士往由布院", desc: "地點：國內線 2 號站牌。\n請務必確認看板，往「由布院」方向。", img: "https://images.unsplash.com/photo-1570125909232-eb2be79a1c74?auto=format&fit=crop&w=600&q=80", loc: "福岡機場巴士站" },
-        { day: "Day 1", date: "1/13 (二)", time: "15:00", title: "🏨 入住：山水館", desc: "辦理入住，換上浴衣，一邊喝茶一邊看由布岳山景。", img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/49581835.jpg?k=3a6f4a8e2e8e0e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e&o=&hp=1", loc: "由布院山水館" },
-        { day: "Day 1", date: "1/13 (二)", time: "18:00", title: "🦀 海陸晚宴", desc: "和牛與松葉蟹自助餐吃到飽！(供應至 21:00)", img: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=80", loc: "由布院山水館" },
-        { day: "Day 1", date: "1/13 (二)", time: "21:00", title: "♨️ 睡前溫泉", desc: "前往「朝霧之湯」享受露天風呂，看星星。(開放至 25:00)", img: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80", loc: "由布院山水館" },
-
-        // === Day 2 ===
-        { day: "Day 2", date: "1/14 (三)", time: "08:30", title: "🍳 飯店早餐", desc: "供應至 09:00，吃飽後可以再泡一次湯。", img: "https://images.unsplash.com/photo-1525351463629-487053039d27?auto=format&fit=crop&w=600&q=80", loc: "由布院山水館" },
-        { day: "Day 2", date: "1/14 (三)", time: "10:30", title: "🌊 金鱗湖散策", desc: "湖底同時湧出溫泉與清水，早晨湖面會飄著夢幻霧氣，必拍！", img: "https://images.unsplash.com/photo-1624623278313-a930126a11c3?auto=format&fit=crop&w=600&q=80", loc: "金鱗湖" },
-        { day: "Day 2", date: "1/14 (三)", time: "11:30", title: "🛍️ 湯之坪街道", desc: "特色小店一條街。\n必吃：金賞可樂餅、B-Speak 生乳捲。\n午餐可吃釜飯或蕎麥麵。", img: "https://images.unsplash.com/photo-1578271887552-5ac3a72752bc?auto=format&fit=crop&w=600&q=80", loc: "湯之坪街道" },
-        { day: "Day 2", date: "1/14 (三)", time: "17:11", title: "🌲 由布院之森", desc: "搭乘特急 6 號返回博多。\n綠色復古列車，車廂內裝潢非常高雅。", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/JR_Kyushu_Kiha_71_Yufuin_no_Mori_20090801.jpg/800px-JR_Kyushu_Kiha_71_Yufuin_no_Mori_20090801.jpg", loc: "由布院駅" },
-        { day: "Day 2", date: "1/14 (三)", time: "18:00", title: "🍱 鐵道晚宴", desc: "在車上享用預約制的限定特製便當。", img: "https://images.unsplash.com/photo-1582234032483-205128038596?auto=format&fit=crop&w=600&q=80", loc: "由布院之森" },
-        { day: "Day 2", date: "1/14 (三)", time: "20:00", title: "🏨 入住：三井花園中洲", desc: "抵達飯店，第一天寄送的行李已經在櫃檯等您囉！", img: "https://cf.bstatic.com/xdata/images/hotel/max1280x900/256873967.jpg?k=b4e3658253106197177894326578051648083816&o=&hp=1", loc: "三井花園飯店福岡中洲" },
-
-        // === Day 3 ===
-        { day: "Day 3", date: "1/15 (四)", time: "08:30", title: "🥐 飯店早餐", desc: "1F 享用 ONO no HANARE 高水準自助餐。", img: "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=600&q=80", loc: "三井花園飯店福岡中洲" },
-        { day: "Day 3", date: "1/15 (四)", time: "10:00", title: "⛩️ 博多文化散策", desc: "參拜櫛田神社（看巨大山笠），接著逛上川端老街商店街。", img: "https://images.unsplash.com/photo-1565103405786-88c227891788?auto=format&fit=crop&w=600&q=80", loc: "櫛田神社" },
-        { day: "Day 3", date: "1/15 (四)", time: "14:00", title: "💎 天神大採買", desc: "岩田屋百貨、天神地下街。\n累了隨時回飯店休息。", img: "https://images.unsplash.com/photo-1557297926-0a0614457e5b?auto=format&fit=crop&w=600&q=80", loc: "天神地下街" },
-        { day: "Day 3", date: "1/15 (四)", time: "19:30", title: "🥘 晚餐：水炊雞", desc: "博多名物「水炊き」，雞湯濃郁充滿膠原蛋白，溫潤鮮美。", img: "https://tabelog.com/imgview/original?id=r68551121096707", loc: "博多華味鳥" },
-        { day: "Day 3", date: "1/15 (四)", time: "21:00", title: "♨️ 頂樓放鬆", desc: "前往 13F 景觀大浴場洗去疲累。", img: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80", loc: "三井花園飯店福岡中洲" },
-
-        // === Day 4 ===
-        { day: "Day 4", date: "1/16 (五)", time: "08:30", title: "🚐 Klook 一日遊", desc: "博多站筑紫口集合，準時出發，車上補眠。", img: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80", loc: "博多站筑紫口" },
-        { day: "Day 4", date: "1/16 (五)", time: "10:00", title: "🍣 唐戶市場", desc: "【週五限定馬關街！】\n就像壽司自助餐一樣，拿夾子自己夾喜歡的握壽司，便宜又新鮮，尤其是河豚生魚片必試。", img: "https://lh5.googleusercontent.com/p/AF1QipNqR9t5C519789370603789427497127137", loc: "唐戶市場" },
-        { day: "Day 4", date: "1/16 (五)", time: "13:30", title: "🏯 小倉城散策", desc: "參觀白色天守閣與神社庭園。", img: "https://images.unsplash.com/photo-1599554316362-e2c72b2269a2?auto=format&fit=crop&w=600&q=80", loc: "小倉城" },
-        { day: "Day 4", date: "1/16 (五)", time: "16:20", title: "🌅 宮地嶽神社", desc: "參拜巨大注連繩。\n運氣好的話可以看到「光之參道」絕景。", img: "https://lh5.googleusercontent.com/p/AF1QipPj74533083625442571253026362846467", loc: "宮地嶽神社" },
-        { day: "Day 4", date: "1/16 (五)", time: "18:30", title: "🍜 回博多站晚餐", desc: "車站百貨晚餐，最後補齊伴手禮（如明太子、拉麵包）。", img: "https://images.unsplash.com/photo-1589112704944-e20092c4794e?auto=format&fit=crop&w=600&q=80", loc: "博多站" },
-
-        // === Day 5 ===
-        { day: "Day 5", date: "1/17 (六)", time: "08:10", title: "🚕 直奔機場", desc: "搭乘計程車前往福岡機場（車程約 15 分鐘）。", img: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=600&q=80", loc: "福岡機場" },
-        { day: "Day 5", date: "1/17 (六)", time: "08:30", title: "🛫 機場報到", desc: "辦理登機與免稅店最後採買。", img: "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?auto=format&fit=crop&w=600&q=80", loc: "福岡機場" },
-        { day: "Day 5", date: "1/17 (六)", time: "10:55", title: "✈️ 告別福岡", desc: "搭乘虎航 IT241 愉快返台。", img: "https://images.unsplash.com/photo-1483450389192-3d3a06df5258?auto=format&fit=crop&w=600&q=80", loc: "福岡機場" },
+    // --- 0. 已預付項目 (靜態資料) ---
+    // 這些會自動顯示在記帳列表最上方
+    const prepaidExpenses = [
+        { item: "✈️ 虎航來回機票", cat: "transport", pay: "card", twd: 41490, jpy: 0, note: "行前已付" },
+        { item: "🎫 Klook 一日遊 (3人)", cat: "transport", pay: "card", twd: 4239, jpy: 0, note: "北九州一日遊" },
+        { item: "🚄 JR 由布院之森", cat: "transport", pay: "card", twd: 3862, jpy: 18390, note: "指定席預估" },
+        { item: "🍱 車上便當 (晚餐)", cat: "food", pay: "cash", twd: 1260, jpy: 6000, note: "由布院之森便當" }
     ];
 
-    // --- 1. 天氣資料設定 ---
+    // --- 1. 行程資料 (圖片已改為佔位符，支援本地讀取) ---
+    /* 【如何使用本地圖片？】
+       1. 在 GitHub 專案裡建立一個資料夾叫 images
+       2. 把照片上傳進去，例如 day1.jpg
+       3. 把下方的 img: "..." 改成 img: "./images/day1.jpg"
+    */
+    const fixedSchedule = [
+        { day: "Day 1", date: "1/13 (二)", time: "04:45", title: "✈️ 桃園機場 T1", desc: "抵達第一航廈櫃檯報到，準備出發！", img: "https://placehold.co/600x400/FF8BA7/white?text=Airport", loc: "桃園機場第一航廈" },
+        { day: "Day 1", date: "1/13 (二)", time: "10:00", title: "🛬 抵達福岡", desc: "快速通關領行李。", img: "https://placehold.co/600x400/87CEEB/white?text=Fukuoka", loc: "福岡機場" },
+        { day: "Day 1", date: "1/13 (二)", time: "11:00", title: "🧳 行李寄送", desc: "位置：國際線 1F「Cargo Pass」。\n寄往：「Mitsui Garden Nakasu」。", img: "https://placehold.co/600x400/FFA500/white?text=Luggage", loc: "福岡機場 Cargo Pass" },
+        { day: "Day 1", date: "1/13 (二)", time: "11:45", title: "🍲 必吃「大山」牛雜鍋", desc: "【博多靈魂美食】\n味噌湯頭濃郁，牛腸軟嫩。排隊太久可改吃拉麵跑道。", img: "https://placehold.co/600x400/FF6347/white?text=Motsunabe", loc: "博多もつ鍋おおやま 福岡空港" },
+        { day: "Day 1", date: "1/13 (二)", time: "13:12", title: "🚌 高速巴士往由布院", desc: "國內線 2 號站牌。\n請務必確認看板，往「由布院」方向。", img: "https://placehold.co/600x400/4682B4/white?text=Bus", loc: "福岡機場巴士站" },
+        { day: "Day 1", date: "1/13 (二)", time: "15:00", title: "🏨 入住：山水館", desc: "辦理入住，換上浴衣看山景。", img: "https://placehold.co/600x400/8B4513/white?text=Hotel", loc: "由布院山水館" },
+        { day: "Day 1", date: "1/13 (二)", time: "18:00", title: "🦀 海陸晚宴", desc: "和牛與松葉蟹自助餐吃到飽！", img: "https://placehold.co/600x400/DC143C/white?text=Crab+Dinner", loc: "由布院山水館" },
+        
+        { day: "Day 2", date: "1/14 (三)", time: "10:30", title: "🌊 金鱗湖散策", desc: "晨霧夢幻美景，必拍倒影。", img: "https://placehold.co/600x400/20B2AA/white?text=Lake", loc: "金鱗湖" },
+        { day: "Day 2", date: "1/14 (三)", time: "17:11", title: "🌲 由布院之森", desc: "搭乘特急 6 號返回博多。\n綠色復古列車。", img: "https://placehold.co/600x400/228B22/white?text=Train", loc: "由布院駅" },
+        
+        { day: "Day 3", date: "1/15 (四)", time: "10:00", title: "⛩️ 博多文化散策", desc: "參拜櫛田神社，看巨大山笠。", img: "https://placehold.co/600x400/FF4500/white?text=Shrine", loc: "櫛田神社" },
+        { day: "Day 3", date: "1/15 (四)", time: "19:30", title: "🥘 晚餐：水炊雞", desc: "博多名物，雞湯濃郁。", img: "https://placehold.co/600x400/DAA520/white?text=Chicken+Pot", loc: "博多華味鳥" },
+
+        { day: "Day 4", date: "1/16 (五)", time: "10:00", title: "🍣 唐戶市場", desc: "週五限定馬關街！壽司自助餐。", img: "https://placehold.co/600x400/FF69B4/white?text=Sushi", loc: "唐戶市場" },
+        
+        { day: "Day 5", date: "1/17 (六)", time: "10:55", title: "✈️ 告別福岡", desc: "搭乘虎航 IT241 愉快返台。", img: "https://placehold.co/600x400/1E90FF/white?text=Flight", loc: "福岡機場" },
+    ];
+
     const tripLocs = {
         "Day 1": { lat: 33.5902, lon: 130.4017, date: "2025-01-13", name: "福岡市" },
         "Day 2": { lat: 33.2628, lon: 131.3575, date: "2025-01-14", name: "由布院" },
@@ -289,23 +329,27 @@
         "Day 5": { lat: 33.5902, lon: 130.4017, date: "2025-01-17", name: "福岡市" }
     };
 
-    function getWeatherDesc(code) {
-        if (code === 0) return { icon: "☀️", text: "晴朗" };
-        if (code >= 1 && code <= 3) return { icon: "⛅", text: "多雲" };
-        if (code >= 45 && code <= 48) return { icon: "🌫️", text: "有霧" };
-        if (code >= 51 && code <= 67) return { icon: "🌧️", text: "有雨" };
-        return { icon: "🌤️", text: "晴時多雲" };
+    // --- 2. 渲染邏輯 ---
+    // 滾動到特定天數
+    window.scrollToDay = (dayId, btn) => {
+        // 更新按鈕樣式
+        document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        // 滾動
+        const el = document.getElementById(dayId.replace(' ',''));
+        if(el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     }
 
     async function fetchWeather(dayKey) {
+        // (維持原樣) Open-Meteo 邏輯
         const info = tripLocs[dayKey];
         if(!info) return null;
         const tripDate = new Date(info.date);
         const today = new Date();
         const diffDays = Math.ceil((tripDate - today) / (1000 * 60 * 60 * 24));
-
         if (diffDays > 16) return { valid: false, msg: "📅 預報尚未發布" };
-
         try {
             const url = `https://api.open-meteo.com/v1/forecast?latitude=${info.lat}&longitude=${info.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&start_date=${info.date}&end_date=${info.date}`;
             const res = await fetch(url);
@@ -314,22 +358,25 @@
             const code = data.daily.weathercode[0];
             const max = data.daily.temperature_2m_max[0];
             const min = data.daily.temperature_2m_min[0];
-            const w = getWeatherDesc(code);
+            const w = getWeatherDesc(code); // 需配合下方 helper
             let advice = "洋蔥式穿搭。";
             if (max < 8) advice = "寒冷，請穿發熱衣。";
             if (code >= 51) advice += " 記得帶傘。";
-
             return { valid: true, icon: w.icon, temp: `${min}°C ~ ${max}°C`, advice: `💡 ${w.text}，${advice}` };
         } catch (e) { return { valid: false, msg: "連線失敗" }; }
     }
+    
+    function getWeatherDesc(code) {
+        if (code === 0) return { icon: "☀️", text: "晴朗" };
+        if (code >= 1 && code <= 3) return { icon: "⛅", text: "多雲" };
+        if (code >= 45 && code <= 48) return { icon: "🌫️", text: "有霧" };
+        if (code >= 51 && code <= 67) return { icon: "🌧️", text: "有雨" };
+        return { icon: "🌤️", text: "晴時多雲" };
+    }
 
-    // --- 2. 渲染行程 (靜態) ---
     async function renderSchedule() {
         const list = document.getElementById("schedule-list");
         let html = "";
-        let currentDay = "";
-        
-        // 依照天數分組
         let scheduleMap = {};
         fixedSchedule.forEach(item => {
             if (!scheduleMap[item.day]) scheduleMap[item.day] = [];
@@ -341,10 +388,12 @@
             if (scheduleMap[day]) {
                 const dayDate = scheduleMap[day][0].date;
                 const locName = tripLocs[day]?.name || "";
-                const wID = `weather-${day.replace(' ','')}`;
+                const idName = day.replace(' ',''); // 用於滾動定位
+                const wID = `weather-${idName}`;
 
+                // 加入 id 讓導航可以跳轉
                 html += `
-                <div class="day-header-box">
+                <div class="day-header-box" id="${idName}">
                     <div class="day-title">${dayDate} (${locName})</div>
                     <div class="weather-info" id="${wID}">
                         <span class="loading-text">☁️ 連線氣象中...</span>
@@ -360,14 +409,11 @@
                     </div>`;
                 });
 
-                // 抓天氣
                 fetchWeather(day).then(w => {
                     const el = document.getElementById(wID);
                     if(el) {
                         if (w && w.valid) {
-                            el.innerHTML = `
-                                <div class="weather-icon">${w.icon}</div>
-                                <div><div style="font-weight:bold;">${w.temp}</div><div class="cloth-advice">${w.advice}</div></div>`;
+                            el.innerHTML = `<div class="weather-icon">${w.icon}</div><div><div style="font-weight:bold;">${w.temp}</div><div class="cloth-advice">${w.advice}</div></div>`;
                         } else {
                             el.innerHTML = `<span style="color:#999; font-size:0.9rem;">${w ? w.msg : ""}</span>`;
                         }
@@ -377,9 +423,9 @@
         }
         list.innerHTML = html;
     }
-    renderSchedule(); // 啟動渲染
+    renderSchedule();
 
-    // --- 3. 記帳邏輯 (Firebase) ---
+    // --- 3. 記帳邏輯 (已預付 + Firebase) ---
     const categoryIcons = { food:"🍜", transport:"🚌", shopping:"🎁", drug:"💊", hotel:"🏨", other:"✨" };
     const categoryNames = { food:"餐飲", transport:"交通", shopping:"購物", drug:"藥妝", hotel:"住宿", other:"其他" };
     const payIcons = { cash:"💵 現金", card:"💳 刷卡", ic:"🐧 IC卡" };
@@ -389,6 +435,28 @@
         const list = document.getElementById("expense-list");
         let total = 0;
         let html = "";
+
+        // 1. 先渲染「已預付」項目
+        prepaidExpenses.forEach(p => {
+            total += p.twd; // 加總台幣
+            const icon = categoryIcons[p.cat];
+            const payName = payIcons[p.pay];
+            
+            html += `
+            <div class="expense-item prepaid">
+                <div class="exp-icon">${icon}</div>
+                <div class="exp-info">
+                    <div style="font-weight:bold;">${p.item} <span style="font-size:0.8rem; color:#2196F3;">(✅ 已付)</span></div>
+                    <div class="exp-meta">${p.note} · <span class="tag-pill">${payName}</span></div>
+                </div>
+                <div style="text-align:right;">
+                    <div class="exp-price">NT$ ${p.twd.toLocaleString()}</div>
+                    ${p.jpy > 0 ? `<div style="font-size:0.8rem; color:#aaa;">¥${p.jpy.toLocaleString()}</div>` : ''}
+                </div>
+            </div>`;
+        });
+
+        // 2. 再渲染 Firebase 的動態記帳
         snapshot.forEach((doc) => {
             const data = doc.data();
             const twd = Math.round(data.jpy * RATE);
@@ -405,12 +473,13 @@
                     <div class="exp-meta">${catName} · <span class="tag-pill">${payName}</span></div>
                 </div>
                 <div style="text-align:right;">
-                    <div class="exp-price">NT$ ${twd}</div>
+                    <div class="exp-price">NT$ ${twd.toLocaleString()}</div>
                     <div style="font-size:0.8rem; color:#aaa;">¥${data.jpy}</div>
                     <span class="btn-del" onclick="deleteExpense('${doc.id}')">刪除</span>
                 </div>
             </div>`;
         });
+        
         list.innerHTML = html;
         document.getElementById("total-twd").innerText = "NT$ " + total.toLocaleString();
     });
@@ -438,7 +507,7 @@
         document.getElementById("m-title").innerText = title;
         document.getElementById("m-meta").innerText = `${date} ${time}`;
         document.getElementById("m-desc").innerText = desc;
-        document.getElementById("m-img").src = img || "https://placehold.co/600x400?text=No+Photo";
+        document.getElementById("m-img").src = img;
         document.getElementById("m-map").href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc + " 福岡")}`;
         document.getElementById("modal").style.display = "flex";
     };
