@@ -33,7 +33,7 @@
         /* 倒數計時 */
         #countdown-bar { background: #FFF3E0; color: #E65100; text-align: center; padding: 10px; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #FFCC80; }
 
-        /* Page */
+        /* Page System */
         .page { display: none; padding: 20px; animation: fadeIn 0.3s; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: 0; } }
@@ -63,7 +63,7 @@
         .cb-icon { font-size: 1.2rem; margin-right: 15px; color: #ccc; width: 24px; text-align: center;}
         .checklist-item.checked .cb-icon { color: var(--accent-spot); content: "✔"; }
 
-        /* Wishlist/Foodlist */
+        /* Wishlist */
         .wish-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
         .wish-item { position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; padding-bottom: 5px; }
         .wish-img { width: 100%; height: 150px; object-fit: cover; display: block; cursor: zoom-in; }
@@ -79,9 +79,9 @@
         /* Expense */
         .info-card { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .input-box { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 2px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #dfe6e9; border-radius: 8px; font-size: 1rem; box-sizing: border-box; font-family: inherit; }
-        .btn-primary { background: var(--primary); color: white; border: none; width: 100%; padding: 15px; border-radius: 30px; font-size: 1.2rem; font-weight: bold; display: block; margin: 15px auto; box-shadow: 0 4px 10px rgba(255, 139, 167, 0.4); cursor: pointer; }
-        .btn-outline { background: white; border: 2px solid #dfe6e9; color: #636E72; width: 100%; padding: 10px; border-radius: 30px; font-size: 1rem; font-weight: bold; cursor: pointer; margin: 10px auto; text-align: center; display: block;}
+        input, select, textarea { width: 100%; padding: 15px; margin-bottom: 12px; border: 1px solid #dfe6e9; border-radius: 12px; font-size: 1.1rem; box-sizing: border-box; font-family: inherit; }
+        .btn-primary { background: var(--primary); color: white; border: none; width: 85%; padding: 15px; border-radius: 30px; font-size: 1.2rem; font-weight: bold; display: block; margin: 15px auto; box-shadow: 0 4px 10px rgba(255, 139, 167, 0.4); cursor: pointer; }
+        .btn-outline { background: white; border: 2px solid #dfe6e9; color: #636E72; width: 85%; padding: 10px; border-radius: 30px; font-size: 1rem; font-weight: bold; cursor: pointer; margin: 10px auto; text-align: center; display: block;}
         .expense-item { background: white; padding: 18px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #FF9800; font-size: 1.1rem; }
         .prepaid-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.95rem; color: #555; }
         .prepaid-row:last-child { border-bottom: none; }
@@ -137,22 +137,20 @@
         .nav-icon { font-size: 1.8rem; display: block; margin-bottom: 4px; }
         .nav-label { font-size: 0.9rem; }
 
-        /* Modal Overlay */
-        #modal, #modal-tool, #modal-link, #modal-lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
-        
-        /* 編輯行程 Modal 樣式優化 */
-        .modal-box { background: white; width: 85%; max-width: 400px; padding: 0; border-radius: 20px; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; }
-        .modal-header-bar { padding: 15px; border-bottom: 1px solid #eee; text-align: center; font-size: 1.2rem; font-weight: bold; background: #fafafa; }
-        .modal-body { padding: 20px; }
-        .modal-footer { padding: 15px; border-top: 1px solid #eee; background: #fafafa; display: flex; gap: 10px; flex-direction: column; }
-        
-        .form-group { margin-bottom: 15px; }
-        .form-label { display: block; font-size: 0.95rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
-        
+        /* Modal */
+        #modal, #modal-tool, #modal-link, #modal-lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
+        .modal-box { background: white; width: 85%; max-width: 400px; padding: 25px; border-radius: 20px; max-height: 85vh; overflow-y: auto; }
         #lightbox-img { max-width: 90%; max-height: 80vh; border-radius: 8px; }
+        
         .hl-food { background: #fff3cd; color: #856404; padding: 0 4px; border-radius: 4px; }
         .hl-buy { background: #e2e3f5; color: #383d41; padding: 0 4px; border-radius: 4px; }
         .hl-res { background: #f8d7da; color: #721c24; padding: 0 4px; border-radius: 4px; }
+
+        /* 匯率計算機 */
+        .rate-calc-box { background: white; border: 2px solid var(--primary); border-radius: 16px; padding: 15px; margin: 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .rate-input { width: 80px; padding: 8px; border: 1px solid #ddd; border-radius: 8px; font-size: 1.1rem; text-align: center; }
+        .rate-result { font-size: 1.2rem; font-weight: bold; color: #2D3436; }
+        .rate-setting { font-size: 0.8rem; color: #888; text-decoration: underline; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -176,9 +174,7 @@
             <label class="carousel-btn">📷 上傳封面 <input type="file" accept="image/*" style="display:none;" onchange="window.uploadBanner(this)"></label>
         </div>
         
-        <a href="https://photos.app.goo.gl/ukaRg1J12MkCrYsw5" target="_blank" class="album-link-btn">
-            📂 開啟 Google 完整相簿 (共用)
-        </a>
+        <a href="https://photos.app.goo.gl/ukaRg1J12MkCrYsw5" target="_blank" class="album-link-btn">📂 開啟 Google 完整相簿 (共用)</a>
 
         <div id="schedule-content-pad" style="padding:0 15px 20px 15px;">
             <button id="add-fab" onclick="window.openEditModal(null)">+</button>
@@ -193,14 +189,8 @@
             </div>
 
             <div class="weather-banner">
-                <div>
-                    <div style="font-size:2rem; font-weight:bold;" id="w-temp">--°C</div>
-                    <div id="w-loc" style="font-weight:500; opacity:0.9; font-size:1.1rem;">氣象連線中...</div>
-                </div>
-                <div style="text-align:right;">
-                    <div id="w-icon" style="font-size:3rem;">☁️</div>
-                    <div style="font-size:1rem; font-weight:500;" id="w-tips">穿搭建議</div>
-                </div>
+                <div><div style="font-size:2rem; font-weight:bold;" id="w-temp">--°C</div><div id="w-loc" style="font-weight:500; opacity:0.9; font-size:1.1rem;">氣象連線中...</div></div>
+                <div style="text-align:right;"><div id="w-icon" style="font-size:3rem;">☁️</div><div style="font-size:1rem; font-weight:500;" id="w-tips">穿搭建議</div></div>
             </div>
 
             <div id="schedule-container" style="margin-top:20px;"></div>
@@ -210,15 +200,10 @@
     <!-- 2. 記帳頁 -->
     <div id="p-money" class="page">
         <div class="page-content">
-            <!-- 匯率計算機 -->
             <div class="rate-calc-box">
-                <div>
-                    <input type="number" id="calc-in-money" class="rate-input" placeholder="日幣" oninput="window.updateCalc('money')"> JPY
-                </div>
+                <div><input type="number" id="calc-in-money" class="rate-input" placeholder="日幣" oninput="window.updateCalc('money')"> JPY</div>
                 <div style="font-weight:bold;">=</div>
-                <div>
-                    <span id="calc-res-money" class="rate-result">0</span> TWD
-                </div>
+                <div><span id="calc-res-money" class="rate-result">0</span> TWD</div>
             </div>
             <div style="text-align:right; font-size:0.9rem; color:#888; margin-bottom:20px; padding-right:15px;">
                 匯率: <span id="rate-display-money">0.22</span> <span class="rate-setting" onclick="window.setRate()">[修改]</span>
@@ -272,11 +257,10 @@
         </div>
     </div>
 
-    <!-- 3. 工具頁 (新增美食口袋) -->
+    <!-- 3. 工具頁 -->
     <div id="p-tools" class="page">
         <div class="page-content">
             <h2 style="text-align:center; color:var(--primary);">🧰 旅遊工具箱</h2>
-            <!-- 匯率計算機 -->
             <div class="rate-calc-box">
                 <div><input type="number" id="calc-in-tool" class="rate-input" placeholder="日幣" oninput="window.updateCalc('tool')"> JPY</div>
                 <div style="font-weight:bold;">=</div>
@@ -316,7 +300,7 @@
                 <div style="color:#d63031; font-weight:800; font-size:1.6rem;">080-1004-0243</div>
             </div>
             <div style="text-align:center; margin-top:30px;">
-                <button onclick="window.resetData()" style="background:#b2bec3; color:white; border:none; padding:12px 20px; border-radius:25px; font-size:1rem;">⚠️ 重置行程 (修復用)</button>
+                <button onclick="window.resetData()" style="background:#b2bec3; color:white; border:none; padding:12px 20px; border-radius:25px; font-size:1rem;">⚠️ 重置行程</button>
             </div>
         </div>
     </div>
@@ -339,89 +323,42 @@
     <div id="sub-content" class="sub-content"></div>
 </div>
 
-<!-- 編輯行程 Modal (V36 版面修復版) -->
+<!-- Modal -->
 <div id="modal">
     <div class="modal-box">
-        <div class="modal-header-bar">✏️ 編輯/新增行程</div>
-        <div class="modal-body">
-            <input type="hidden" id="edit-id">
-            
-            <div class="form-group">
-                <label class="form-label">選擇日期</label>
-                <select id="edit-day">
-                    <option value="Day 1">Day 1 (1/13)</option>
-                    <option value="Day 2">Day 2 (1/14)</option>
-                    <option value="Day 3">Day 3 (1/15)</option>
-                    <option value="Day 4">Day 4 (1/16)</option>
-                    <option value="Day 5">Day 5 (1/17)</option>
-                </select>
-            </div>
-            
-            <div class="form-group" style="display:flex; gap:10px;">
-                <div style="flex:1;">
-                    <label class="form-label">時間</label>
-                    <input type="time" id="edit-time">
-                </div>
-                <div style="flex:1;">
-                    <label class="form-label">分類 (顏色)</label>
-                    <select id="edit-type">
-                        <option value="spot">景點 (綠)</option>
-                        <option value="food">美食 (橘)</option>
-                        <option value="trans">交通 (藍)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">行程標題</label>
-                <input type="text" id="edit-title" placeholder="例如：大山牛雜鍋">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">詳細說明 (導遊筆記)</label>
-                <textarea id="edit-desc" rows="5" placeholder="輸入「必吃、必買、預約」會自動亮顯喔！"></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">圖片連結 (選填)</label>
-                <input type="text" id="edit-img" placeholder="https://...">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">相關連結 (選填)</label>
-                <input type="text" id="edit-link" placeholder="官網或攻略網址">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Google Map 地點 (導航用)</label>
-                <input type="text" id="edit-loc" placeholder="輸入地點名稱">
-            </div>
+        <div class="modal-header" id="modal-title">編輯行程</div>
+        <input type="hidden" id="edit-id">
+        <label>日期</label>
+        <select id="edit-day"><option value="Day 1">Day 1 (1/13)</option><option value="Day 2">Day 2 (1/14)</option><option value="Day 3">Day 3 (1/15)</option><option value="Day 4">Day 4 (1/16)</option><option value="Day 5">Day 5 (1/17)</option></select>
+        <label>時間</label><input type="time" id="edit-time">
+        <label>分類</label>
+        <select id="edit-type"><option value="spot">景點 (綠)</option><option value="food">美食 (橘)</option><option value="trans">交通 (藍)</option></select>
+        <label>標題</label><input type="text" id="edit-title">
+        <label>詳細說明</label>
+        <textarea id="edit-desc" rows="5" placeholder="導遊小撇步：輸入「必吃、必買、預約」會自動亮顯喔！"></textarea>
+        <label>圖片連結 (選填)</label><input type="text" id="edit-img" placeholder="https://...">
+        <label>相關連結 (選填)</label><input type="text" id="edit-link" placeholder="https://...">
+        <label>Google Map 地點</label><input type="text" id="edit-loc">
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button onclick="window.saveSchedule()" class="btn-primary" style="flex:1;">儲存</button>
+            <button onclick="window.closeModal()" style="flex:1; background:#dfe6e9; color:#636E72; border:none; border-radius:30px; font-weight:bold;">取消</button>
         </div>
-        
-        <div class="modal-footer">
-            <button onclick="window.saveSchedule()" class="btn-primary" style="margin:0;">儲存變更</button>
-            <button onclick="window.closeModal()" class="btn-outline" style="margin:0;">取消</button>
-            <button id="btn-del-sch" onclick="window.deleteSchedule()" style="background:none; border:none; color:red; padding:10px; font-weight:bold; cursor:pointer;">🗑️ 刪除此行程</button>
-        </div>
+        <button id="btn-del-sch" onclick="window.deleteSchedule()" style="width:100%; background:white; border:2px solid #ff7675; color:#ff7675; padding:10px; margin-top:15px; border-radius:30px; font-weight:bold;">刪除此行程</button>
     </div>
 </div>
 
 <!-- Tool Input Modal -->
 <div id="modal-tool">
     <div class="modal-box">
-        <div class="modal-header-bar">➕ 新增項目</div>
-        <div class="modal-body">
-            <input type="text" id="tool-name" placeholder="名稱 (必填)">
-            <textarea id="tool-note" rows="3" placeholder="備註 / 必吃餐點 (選填)"></textarea>
-            <input type="text" id="tool-link" placeholder="相關連結 (選填)">
-            <input type="text" id="tool-loc" placeholder="Google Map 地點 (選填, 美食專用)">
-            <label class="btn-outline">📷 選取照片 <input type="file" id="tool-file" accept="image/*" style="display:none;"></label>
-            <div id="tool-loading" style="display:none; text-align:center; color:#888;">正在壓縮並上傳...</div>
-        </div>
-        <div class="modal-footer">
-            <button onclick="window.saveToolItem()" class="btn-primary">上傳</button>
-            <button onclick="document.getElementById('modal-tool').style.display='none'" class="btn-outline">取消</button>
-        </div>
+        <h3>➕ 新增項目</h3>
+        <input type="text" id="tool-name" placeholder="名稱 (必填)">
+        <textarea id="tool-note" rows="3" placeholder="備註 / 必吃餐點 (選填)"></textarea>
+        <input type="text" id="tool-link" placeholder="相關連結 (選填)">
+        <input type="text" id="tool-loc" placeholder="Google Map 地點 (選填, 美食專用)">
+        <label class="btn-outline">📷 選取照片 <input type="file" id="tool-file" accept="image/*" style="display:none;"></label>
+        <div id="tool-loading" style="display:none; text-align:center; color:#888;">正在壓縮並上傳...</div>
+        <button onclick="window.saveToolItem()" class="btn-primary">上傳</button>
+        <button onclick="document.getElementById('modal-tool').style.display='none'" style="width:100%; color:#888; border:none; background:none; margin-top:10px;">取消</button>
     </div>
 </div>
 
@@ -456,16 +393,13 @@ const firebaseConfig = {
 
     window.openTranslate = () => { window.location.href = "googletranslate://"; setTimeout(() => { window.open("https://translate.google.com/?sl=ja&tl=zh-TW", "_blank"); }, 500); };
 
-    // --- 0. 倒數計時 & 匯率 (修正年份為 2026) ---
+    // --- 0. 倒數計時 ---
     function updateCountdown() {
         const today = new Date();
-        const start = new Date(2026, 0, 13); // 2026/01/13
+        const start = new Date(2026, 0, 13);
         const end = new Date(2026, 0, 17, 23, 59, 59);
         let msg = "";
-        
-        // 只比較日期
         const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        
         if (todayDate < start) {
             const diff = Math.ceil((start - todayDate) / (1000 * 60 * 60 * 24));
             msg = `⏳ 距離福岡之旅還有 ${diff} 天！`;
@@ -524,9 +458,16 @@ const firebaseConfig = {
     window.delBanner = async (id) => { if(confirm("刪除這張封面？")) await deleteDoc(doc(db, "banners", id)); };
 
     // --- 2. 行程邏輯 ---
+    // ★★★ 記憶功能變數 ★★★
+    let currentSelectedDay = "Day 1";
+    
     const qSch = query(collection(db, "schedule"), orderBy("day"), orderBy("time"));
     onSnapshot(qSch, (snapshot) => {
         const container = document.getElementById("schedule-container");
+        
+        // ★★★ 記錄當前捲動位置 ★★★
+        const scrollPos = window.scrollY;
+
         let html="", currentDay="";
         if(snapshot.empty) { container.innerHTML="<div style='text-align:center; padding:20px; color:#999;'>尚無行程</div>"; return; }
         snapshot.forEach((doc) => {
@@ -549,13 +490,26 @@ const firebaseConfig = {
             </div>`;
         });
         container.innerHTML = html;
-        window.filterDay('Day 1', document.querySelector('.day-btn'));
+        
+        // ★★★ 恢復到原本選擇的天數 ★★★
+        const btn = Array.from(document.querySelectorAll('.day-btn')).find(b => b.innerText.includes(currentSelectedDay));
+        window.filterDay(currentSelectedDay, btn);
+        
+        // ★★★ 恢復捲動位置 (避免跳動) ★★★
+        if(scrollPos > 0) window.scrollTo(0, scrollPos);
     });
 
     let isLocked = true;
     window.toggleLock = () => { isLocked=!isLocked; const b=document.getElementById("btn-lock"); const a=document.getElementById("add-fab"); if(isLocked){b.innerHTML="🔒";b.className="fab-btn";a.style.display="none"; document.querySelectorAll(".card").forEach(c=>c.classList.remove("editable"));}else{b.innerHTML="🔓";b.className="fab-btn unlocked";a.style.display="flex"; document.querySelectorAll(".card").forEach(c=>c.classList.add("editable"));} };
     window.cardClick = (id,day,time,type,title,desc,img,loc,link) => { if(!isLocked) window.openEditModal(id,day,time,type,title,desc,img,loc,link); };
-    window.filterDay = (dayStr, btn) => { document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); document.querySelectorAll('.card, .day-divider').forEach(el => { if(el.dataset.day && el.dataset.day.includes(dayStr)) el.style.display='block'; else el.style.display='none'; }); window.updateWeather(dayStr); };
+    
+    // ★★★ 優化篩選與記憶 ★★★
+    window.filterDay = (dayStr, btn) => {
+        currentSelectedDay = dayStr; // 記住選擇
+        document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+        if(btn) btn.classList.add('active');
+        document.querySelectorAll('.card, .day-divider').forEach(el => { if(el.dataset.day && el.dataset.day.includes(dayStr)) el.style.display='block'; else el.style.display='none'; }); window.updateWeather(dayStr); 
+    };
 
     // --- 3. 記帳邏輯 ---
     let allExpenses = [];
@@ -621,7 +575,7 @@ const firebaseConfig = {
         document.getElementById("exp-name").value=""; document.getElementById("exp-amt").value=""; document.getElementById("img-preview").style.display="none"; alert("記帳成功");
     });
 
-    // --- 3. 工具頁邏輯 (含美食口袋) ---
+    // --- 3. 工具頁邏輯 ---
     let currentTool = "";
     const checkItems = ["護照", "日幣", "信用卡", "SIM卡/Wifi機", "充電器", "行動電源", "常備藥", "牙刷牙膏", "換洗衣物", "好走的鞋"];
 
@@ -730,8 +684,8 @@ const firebaseConfig = {
         // Reset fields
         document.getElementById("tool-name").value = "";
         document.getElementById("tool-link").value = "";
-        if(document.getElementById("tool-note")) document.getElementById("tool-note").value = "";
-        if(document.getElementById("tool-loc")) document.getElementById("tool-loc").value = "";
+        document.getElementById("tool-note").value = "";
+        document.getElementById("tool-loc").value = "";
         document.getElementById("tool-file").value = "";
         btn.style.display = "block"; loading.style.display = "none";
     };
