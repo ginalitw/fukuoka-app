@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>福岡好好玩 V34 🌸</title>
+    <title>福岡好好玩 V34.5 🌸</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -23,20 +23,21 @@
 
         /* Header */
         header {
-            background: rgba(255, 139, 167, 0.98); backdrop-filter: blur(5px); color: white;
-            padding: 12px 20px; text-align: center; position: sticky; top: 0; z-index: 100;
-            box-shadow: 0 2px 10px rgba(255, 139, 167, 0.2); display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255, 139, 167, 0.95); backdrop-filter: blur(10px); color: white;
+            padding: 15px 20px; text-align: center; position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 10px rgba(255, 139, 167, 0.3); display: flex; justify-content: space-between; align-items: center;
         }
-        h1 { margin: 0; font-size: 1.3rem; font-weight: 700; }
+        h1 { margin: 0; font-size: 1.4rem; font-weight: 700; }
         .icon-btn { background: rgba(255,255,255,0.25); border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; }
 
         /* 倒數計時條 */
         #countdown-bar {
-            background: #FFF3E0; color: #E65100; text-align: center; padding: 8px;
-            font-weight: bold; font-size: 1rem; border-bottom: 1px solid #FFCC80;
+            background: #FFF3E0; color: #E65100; text-align: center; padding: 10px;
+            font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #FFCC80;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
-        /* 匯率計算機 (共用樣式) */
+        /* 匯率計算機 */
         .rate-calc-box {
             background: white; border: 2px solid var(--primary); border-radius: 16px; padding: 15px; margin: 15px;
             display: flex; align-items: center; justify-content: space-between; gap: 10px;
@@ -46,63 +47,45 @@
         .rate-result { font-size: 1.2rem; font-weight: bold; color: #2D3436; }
         .rate-setting { font-size: 0.8rem; color: #888; text-decoration: underline; cursor: pointer; }
 
-        /* --- 輪播 (Carousel) --- */
-        .carousel-container {
-            position: relative; width: 100%; height: 240px; overflow: hidden;
-            background: #eee; margin-bottom: 0;
-        }
-        .carousel-track {
-            display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
-            width: 100%; height: 100%; -webkit-overflow-scrolling: touch; 
-        }
-        .carousel-track::-webkit-scrollbar { display: none; }
-        .carousel-slide {
-            flex: 0 0 100%; width: 100%; height: 100%; scroll-snap-align: center; position: relative;
-        }
-        .carousel-img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .carousel-btn {
-            position: absolute; bottom: 15px; right: 15px;
-            background: rgba(0,0,0,0.6); color: white; border: none;
-            padding: 8px 15px; border-radius: 20px; font-size: 0.9rem;
-            cursor: pointer; backdrop-filter: blur(4px); display: flex; align-items: center; gap: 5px;
-        }
-        .carousel-del {
-            position: absolute; top: 10px; right: 10px;
-            background: rgba(255,0,0,0.7); color: white; border: none;
-            width: 35px; height: 35px; border-radius: 50%; font-size: 1.2rem;
-            cursor: pointer; display: none; 
-        }
-        .carousel-slide:hover .carousel-del { display: flex; justify-content: center; align-items: center; }
-
         /* Page System */
-        .page { display: none; padding: 0; animation: fadeIn 0.3s; } /* 預設無 padding，各區塊自己加 */
-        .page-content { padding: 15px; } /* 通用內距 */
+        .page { display: none; padding: 0; animation: fadeIn 0.3s; } 
+        .page-content { padding: 15px; } 
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: 0; } }
+
+        /* Carousel */
+        .carousel-container { position: relative; width: 100%; height: 240px; overflow: hidden; background: #eee; margin-bottom: 0; }
+        .carousel-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; width: 100%; height: 100%; -webkit-overflow-scrolling: touch; }
+        .carousel-track::-webkit-scrollbar { display: none; }
+        .carousel-slide { flex: 0 0 100%; width: 100%; height: 100%; scroll-snap-align: center; position: relative; }
+        .carousel-img { width: 100%; height: 100%; object-fit: cover; }
+        .carousel-btn { position: absolute; bottom: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; cursor: pointer; backdrop-filter: blur(4px); display: flex; align-items: center; gap: 5px; }
+        .carousel-del { position: absolute; top: 10px; right: 10px; background: rgba(255,0,0,0.7); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: none; }
+        .carousel-slide:hover .carousel-del { display: flex; justify-content: center; align-items: center; }
+
+        /* 相簿連結 */
+        .album-link-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: white; border: 2px solid #4285F4; color: #4285F4; margin: 15px 15px; padding: 12px; border-radius: 12px; font-weight: bold; text-decoration: none; font-size: 1.1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.1s; }
+        .album-link-btn:active { background: #E8F0FE; transform: scale(0.98); }
 
         /* 行程樣式 */
         .day-nav { display: flex; overflow-x: auto; white-space: nowrap; background: white; padding: 12px 15px; position: sticky; top: 0; z-index: 98; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         .day-btn { background: #F1F2F6; border: none; padding: 8px 18px; margin-right: 8px; border-radius: 25px; color: #636E72; font-size: 1rem; cursor: pointer; }
         .day-btn.active { background: var(--primary); color: white; font-weight: bold; }
-        
         .weather-banner { background: linear-gradient(135deg, #81D4FA, #29B6F6); border-radius: 16px; padding: 20px; display: flex; align-items: center; justify-content: space-between; color: white; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(41, 182, 246, 0.3); }
-        
+        .day-divider { margin: 30px 0 15px 0; font-weight: bold; color: #2196F3; border-bottom: 3px dashed #ccc; padding-bottom: 5px; font-size: 1.3rem; }
         .card { background: white; border-radius: 16px; margin-bottom: 20px; padding: 20px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); border-left: 8px solid #ccc; cursor: pointer; }
         .card.food { border-left-color: var(--accent-food); } .card.spot { border-left-color: var(--accent-spot); } .card.trans { border-left-color: var(--accent-trans); }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .card-title { font-size: 1.4rem; font-weight: 700; margin: 0 0 10px 0; color: #2D3436; line-height: 1.3; }
-        .time-badge { background: #F1F2F6; padding: 5px 12px; border-radius: 8px; font-weight: 700; font-size: 1rem; color: #2D3436; }
-        .card-desc { font-size: 1.1rem; color: #333; line-height: 1.8; white-space: pre-line; margin-bottom: 15px; }
+        .card-title { font-size: 1.5rem; font-weight: 700; margin: 0 0 10px 0; color: #2D3436; line-height: 1.3; }
+        .time-badge { background: #F1F2F6; padding: 5px 12px; border-radius: 8px; font-weight: 700; font-size: 1.1rem; color: #2D3436; }
+        .card-desc { font-size: 1.15rem; color: #333; line-height: 1.8; white-space: pre-line; margin-bottom: 15px; }
         .card-img { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; margin-top: 10px; display:block; background:#eee;}
-
         .btn-group { display: flex; gap: 15px; margin-top: 18px; }
         .action-btn { flex: 1; padding: 12px; border-radius: 12px; text-align: center; text-decoration: none; font-size: 1rem; font-weight: 700; display: block; transition: transform 0.1s; }
         .btn-map { background: #E8F5E9; color: #27ae60; border: 1px solid #C8E6C9; }
         .btn-link { background: #E3F2FD; color: #0984e3; border: 1px solid #BBDEFB; }
-        .day-divider { margin: 30px 0 15px 0; font-weight: bold; color: #2196F3; border-bottom: 3px dashed #ccc; padding-bottom: 5px; font-size: 1.3rem; }
 
-        /* 記帳樣式 */
+        /* 記帳 & 其他 */
         .info-card { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .input-box { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 2px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         input, select { width: 100%; padding: 15px; margin-bottom: 12px; border: 1px solid #dfe6e9; border-radius: 12px; font-size: 1.1rem; box-sizing: border-box; }
@@ -111,8 +94,6 @@
         .expense-item { background: white; padding: 18px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #FF9800; font-size: 1.1rem; }
         .prepaid-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.95rem; color: #555; }
         .prepaid-row:last-child { border-bottom: none; }
-        
-        /* 分帳看板 */
         #split-section { display: none; }
         .split-dashboard { background: #FFF8E1; border: 2px solid #FFE082; border-radius: 16px; padding: 20px; margin-bottom: 25px; }
         .split-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1.1rem; border-bottom: 1px dashed #ccc; padding-bottom: 8px; }
@@ -124,12 +105,6 @@
         .tool-card { background: white; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid #eee; cursor: pointer; height: 110px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .tool-icon { font-size: 2.5rem; margin-bottom: 8px; }
         .tool-name { font-weight: bold; color: #555; font-size: 1.1rem; }
-        
-        /* Sub Page */
-        .sub-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 200; display: none; flex-direction: column; overflow-y: auto; }
-        .sub-header { background: white; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 201; }
-        .back-btn { font-size: 1.8rem; background: none; border: none; margin-right: 15px; cursor: pointer; padding: 5px; }
-        .sub-content { padding: 20px; padding-bottom: 100px; }
         .checklist-item { background: white; padding: 18px; margin-bottom: 12px; border-radius: 12px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; font-size: 1.1rem; }
         .checklist-item.checked { opacity: 0.5; background: #f0f0f0; }
         .checklist-item.checked .cb-text { text-decoration: line-through; }
@@ -158,7 +133,10 @@
         #modal, #modal-tool, #modal-link, #modal-lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
         .modal-box { background: white; width: 85%; max-width: 400px; padding: 25px; border-radius: 20px; max-height: 85vh; overflow-y: auto; }
         #lightbox-img { max-width: 90%; max-height: 80vh; border-radius: 8px; }
-        
+        .sub-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 200; display: none; flex-direction: column; overflow-y: auto; }
+        .sub-header { background: white; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 201; }
+        .back-btn { font-size: 1.8rem; background: none; border: none; margin-right: 15px; cursor: pointer; padding: 5px; }
+        .sub-content { padding: 20px; padding-bottom: 100px; }
         .hl-food { background: #fff3cd; color: #856404; padding: 0 4px; border-radius: 4px; }
         .hl-buy { background: #e2e3f5; color: #383d41; padding: 0 4px; border-radius: 4px; }
         .hl-res { background: #f8d7da; color: #721c24; padding: 0 4px; border-radius: 4px; }
@@ -178,7 +156,6 @@
 
     <!-- 1. 行程頁 -->
     <div id="p-schedule" class="page active">
-        <!-- 輪播 -->
         <div class="carousel-container" style="position:relative; width:100%; height:240px; overflow:hidden; margin-bottom:10px;">
             <div id="carousel-track" style="width:100%; height:100%;">
                 <img src="https://ginalitw.github.io/fukuoka-app/images/0104.jpg" style="width:100%; height:100%; object-fit:cover;">
@@ -186,11 +163,15 @@
             <label class="carousel-btn">📷 上傳封面 <input type="file" accept="image/*" style="display:none;" onchange="window.uploadBanner(this)"></label>
         </div>
         
+        <!-- Google 相簿按鈕 -->
+        <a href="https://photos.app.goo.gl/ukaRg1J12MkCrYsw5" target="_blank" class="album-link-btn">
+            📂 開啟 Google 完整相簿 (共用)
+        </a>
+
         <div id="schedule-content-pad" style="padding:0 15px 20px 15px;">
             <button id="add-fab" onclick="window.openEditModal(null)">+</button>
             <button id="btn-lock" onclick="window.toggleLock()">🔒</button>
 
-            <!-- 天數切換 -->
             <div class="day-nav">
                 <button class="day-btn active" onclick="window.filterDay('Day 1', this)">Day 1</button>
                 <button class="day-btn" onclick="window.filterDay('Day 2', this)">Day 2</button>
@@ -199,7 +180,6 @@
                 <button class="day-btn" onclick="window.filterDay('Day 5', this)">Day 5</button>
             </div>
 
-            <!-- 天氣小卡 -->
             <div class="weather-banner">
                 <div>
                     <div style="font-size:2rem; font-weight:bold;" id="w-temp">--°C</div>
@@ -280,11 +260,10 @@
         </div>
     </div>
 
-    <!-- 3. 工具頁 (新增計算機) -->
+    <!-- 3. 工具頁 -->
     <div id="p-tools" class="page">
         <div class="page-content">
             <h2 style="text-align:center; color:var(--primary);">🧰 旅遊工具箱</h2>
-            
             <!-- 匯率計算機 -->
             <div class="rate-calc-box">
                 <div><input type="number" id="calc-in-tool" class="rate-input" placeholder="日幣" oninput="window.updateCalc('tool')"> JPY</div>
@@ -418,16 +397,20 @@ const firebaseConfig = {
 
     // --- 0. 倒數計時 & 匯率 ---
     function updateCountdown() {
+        // 使用數字格式 (年, 月-1, 日) 確保兼容性
         const today = new Date();
-        const start = new Date("2025-01-13T00:00:00");
-        const end = new Date("2025-01-17T23:59:59");
+        const start = new Date(2025, 0, 13); 
+        const end = new Date(2025, 0, 17, 23, 59, 59);
         let msg = "";
         
-        if (today < start) {
-            const diff = Math.ceil((start - today) / (1000 * 60 * 60 * 24));
+        // 只比較日期，忽略時間
+        const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        
+        if (todayDate < start) {
+            const diff = Math.ceil((start - todayDate) / (1000 * 60 * 60 * 24));
             msg = `⏳ 距離福岡之旅還有 ${diff} 天！`;
-        } else if (today >= start && today <= end) {
-            const diff = Math.ceil((today - start) / (1000 * 60 * 60 * 24)) + 1;
+        } else if (todayDate >= start && today <= end) {
+            const diff = Math.ceil((todayDate - start) / (1000 * 60 * 60 * 24)) + 1;
             msg = `🚀 福岡之旅 Day ${diff}！玩得開心！`;
         } else {
             msg = "🏠 旅程圓滿結束，歡迎回家！";
