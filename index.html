@@ -256,7 +256,7 @@
                 <div style="margin-bottom:15px; text-align:center;">
                     <label style="font-weight:bold; color:var(--primary); font-size:1.2rem;">誰付的錢？</label><br>
                     <select id="exp-payer" style="width:70%; margin-top:5px; text-align:center; font-weight:bold; font-size:1.1rem;">
-                        <option value="我">我</option><option value="芬">芬</option><option value="珍">珍</option><option value="公費">💰 公費 (從公款扣)</option>
+                        <option value="蓉">蓉</option><option value="芬">芬</option><option value="珍">珍</option><option value="公費">💰 公費 (從公款扣)</option>
                     </select>
                 </div>
                 <input type="text" id="exp-name" placeholder="品項名稱 (如: 拉麵)">
@@ -542,13 +542,13 @@ const firebaseConfig = {
         const list = document.getElementById("expense-list");
         const dashList = document.getElementById("split-result-list");
         let tripTotalCost = 0; let html = "";
-        let splitMap = { "我":0, "芬":0, "珍":0 }; 
+        let splitMap = { "蓉":0, "芬":0, "珍":0 }; 
         allExpenses = [];
 
         snapshot.forEach((doc) => {
             const d = doc.data();
             let amt = Number(d.amount)||0; let curr = d.currency||"TWD";
-            let payer = d.payer||"我"; let cat = d.category||"其他";
+            let payer = d.payer||"蓉"; let cat = d.category||"其他";
             let twd = curr==="JPY" ? Math.round(amt*RATE) : amt;
             
             allExpenses.push({date: new Date(d.timestamp.seconds*1000).toLocaleDateString(), item:d.item, cat:cat, payer:payer, amt:amt, curr:curr, twd:twd});
@@ -566,7 +566,7 @@ const firebaseConfig = {
         
         let avg = Math.round(tripTotalCost / PEOPLE_COUNT);
         let splitHtml = `<div style="text-align:center; margin-bottom:15px; font-weight:bold; color:#2D3436; background:white; padding:10px; border-radius:10px;">總支出: $${tripTotalCost.toLocaleString()} <br> 平均每人: $${avg.toLocaleString()}</div>`;
-        ["我", "芬", "珍"].forEach(p => {
+        ["蓉", "芬", "珍"].forEach(p => {
             let paid = splitMap[p] || 0; let balance = paid - avg;
             let color = balance >= 0 ? "split-get" : "split-owe";
             let text = balance >= 0 ? `+${balance.toLocaleString()} (收回)` : `${balance.toLocaleString()} (需付)`;
@@ -730,3 +730,4 @@ const firebaseConfig = {
 </script>
 </body>
 </html>
+
