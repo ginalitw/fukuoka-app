@@ -78,10 +78,22 @@
         .info-card { background: var(--white); padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .prepaid-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.95rem; color: #555; }
         .prepaid-row:last-child { border-bottom: none; }
-        .input-box { background: var(--white); padding: 20px 15px; border-radius: 15px; margin-bottom: 20px; border: 2px solid var(--primary); }
+        
+        .input-box { background: var(--white); padding: 20px 15px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #FFC6C7; }
         input, select, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1rem;}
-        .btn-camera { background: #E0F7FA; color: #006064; border: 1px dashed #00ACC1; width: 85%; padding: 12px; border-radius: 30px; cursor: pointer; text-align: center; display: block; margin: 15px auto 10px auto; font-weight: bold; }
-        .btn-submit { background: var(--primary); color: white; border: none; width: 85%; padding: 12px; border-radius: 30px; font-size: 1.1rem; display: block; margin: 0 auto; box-shadow: 0 4px 6px rgba(255, 139, 167, 0.3); }
+        
+        /* 按鈕優化: 縮小置中 */
+        .btn-camera { 
+            background: #E0F7FA; color: #006064; border: 1px dashed #00ACC1; 
+            width: 85%; padding: 10px; border-radius: 25px; cursor: pointer; 
+            text-align: center; display: block; margin: 10px auto; font-weight: bold;
+        }
+        .btn-submit { 
+            background: var(--primary); color: white; border: none; 
+            width: 85%; padding: 12px; border-radius: 25px; font-size: 1.1rem; 
+            display: block; margin: 15px auto 0 auto; box-shadow: 0 4px 6px rgba(255, 139, 167, 0.3);
+        }
+        
         .receipt-preview { max-width: 100%; max-height: 150px; display: none; margin: 10px auto; border-radius: 5px;}
         .expense-item { background: white; padding: 12px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #FF9800; }
 
@@ -139,7 +151,7 @@
         </div>
         <div class="info-card" style="text-align:center; border:2px solid #FFC6C7;">
             <div style="color:#666;">總花費 (已付 + 新增)</div>
-            <div id="total-display" style="font-size:2rem; font-weight:bold; color:#E91E63;">NT$ 50,851</div>
+            <div id="total-display" style="font-size:2rem; font-weight:bold; color:#E91E63;">計算中...</div>
         </div>
         <div class="input-box">
             <h3 style="margin-top:0; text-align:center;">➕ 新增消費</h3>
@@ -226,7 +238,7 @@
     import { getStorage, ref, uploadBytes, getDownloadURL } 
     from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
-    // ↓↓↓ 請貼上您的 Firebase Config ↓↓↓
+    // 1. Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyDZzgq0W4xdHIhf6H1xC_dEScEHmAnXtiE",
   authDomain: "fukuokagina2026.firebaseapp.com",
@@ -235,7 +247,6 @@ const firebaseConfig = {
   messagingSenderId: "762021519656",
   appId: "1:762021519656:web:15c443c2ca2f13f9bc701d"
     };
-    // ↑↑↑ End Config ↑↑↑
 
     // 2. Gemini API Key (請在此填入您的 Gemini Key)
     const GEMINI_API_KEY = "AIzaSyDiGJ6p3K7j0PsI3tF7n0vNK89xx6KuI1E"; 
@@ -252,7 +263,7 @@ const firebaseConfig = {
         const btn = document.querySelector(".btn-ai");
         
         if (!title && !loc) return alert("請先輸入標題或地點，AI 才知道要介紹什麼！");
-        if (GEMINI_API_KEY === "您的_GEMINI_API_KEY") return alert("請先在程式碼中填入 Gemini API Key！");
+        if (GEMINI_API_KEY.includes("您的")) return alert("請先在程式碼中填入 Gemini API Key！");
 
         const prompt = `你是專業福岡導遊。請用繁體中文，針對「${title} (${loc})」寫一段約 80 字的吸睛介紹。
         必須包含：必吃美食、必買伴手禮、或注意事項。
@@ -268,7 +279,6 @@ const firebaseConfig = {
             });
             const data = await response.json();
             const aiText = data.candidates[0].content.parts[0].text;
-            
             document.getElementById("edit-desc").value = aiText;
         } catch (error) {
             console.error(error);
@@ -290,10 +300,134 @@ const firebaseConfig = {
         { day: "Day 4", time: "10:00", title: "唐戶市場", type: "food", loc: "唐戶市場", desc: "【必吃】週五限定「馬關街」壽司自助餐！\n河豚生魚片必試，新鮮又便宜。", img: "https://lh5.googleusercontent.com/p/AF1QipNqR9t5C519789370603789427497127137" }
     ];
 
-    // --- 記帳 & 行程邏輯 ---
+    // --- 記帳 & 行程邏輯 (防呆修復版) ---
     const prepaidList = [ {name:"機票 (虎航)", amt:41490}, {name:"Klook 一日遊", amt:4239}, {name:"JR 由布院之森", amt:3862}, {name:"車上便當", amt:1260} ];
     let prepaidTotal = 0;
     function initPrepaid() { let h="", t=0; prepaidList.forEach(p=>{t+=p.amt; h+=`<div class="prepaid-row"><span>${p.name}</span><b>$${p.amt.toLocaleString()}</b></div>`}); document.getElementById("prepaid-list").innerHTML=h; prepaidTotal=t; }
     initPrepaid();
 
-    const qExp = query(collection
+    const qExp = query(collection(db, "expenses"), orderBy("timestamp", "desc"));
+    onSnapshot(qExp, (snapshot) => {
+        const list = document.getElementById("expense-list");
+        let dynTotal = 0;
+        let html = "";
+        
+        snapshot.forEach((doc) => {
+            const d = doc.data();
+            // ★★★ V18 關鍵修正：確保金額是數字且不為 null ★★★
+            let amt = Number(d.amount) || 0; 
+            let curr = d.currency || "TWD";
+            let twd = curr === "JPY" ? Math.round(amt * RATE) : amt;
+            dynTotal += twd;
+            
+            html += `
+            <div class="expense-item">
+                <div>
+                    <div style="font-weight:bold;">${d.item||"未命名"}</div>
+                    <div style="font-size:0.8rem; color:#888;">${d.category} · ${d.payment}</div>
+                    ${d.img ? `<a href="${d.img}" target="_blank" style="font-size:0.8rem; color:#2196F3;">📄 收據</a>` : ''}
+                </div>
+                <div style="text-align:right;">
+                    <div style="color:#E91E63; font-weight:bold;">$${twd.toLocaleString()}</div>
+                    ${curr==='JPY'?`<div style="font-size:0.8rem; color:#aaa;">¥${amt.toLocaleString()}</div>`:''}
+                    <button onclick="delExp('${doc.id}')" style="color:red; border:none; background:none; font-size:0.8rem; margin-top:5px;">刪除</button>
+                </div>
+            </div>`;
+        });
+        list.innerHTML = html || "<div style='text-align:center; color:#999;'>尚無新增消費</div>";
+        document.getElementById("total-display").innerText = "NT$ " + (prepaidTotal + dynTotal).toLocaleString();
+    });
+
+    // 螢光筆
+    function highlight(text) {
+        if(!text) return "";
+        return text.replace(/(必吃.*?)(?=\s|$|，|。)/g, '<span class="hl-food">$1</span>')
+                   .replace(/(必買.*?)(?=\s|$|，|。)/g, '<span class="hl-buy">$1</span>')
+                   .replace(/(預約.*?)(?=\s|$|，|。)/g, '<span class="hl-res">$1</span>')
+                   .replace(/(推薦.*?)(?=\s|$|，|。)/g, '<span class="hl-star">$1</span>')
+                   .replace(/【(.*?)】/g, '<span style="color:#E91E63; font-weight:bold;">【$1】</span>');
+    }
+
+    const qSch = query(collection(db, "schedule"), orderBy("day"), orderBy("time"));
+    onSnapshot(qSch, (snapshot) => {
+        const container = document.getElementById("schedule-container");
+        let html="", currentDay="";
+        if(snapshot.empty) { container.innerHTML="<div style='text-align:center; padding:20px; color:#999;'>尚無行程，請按 + 新增<br>或到資訊頁按重置</div>"; return; }
+        
+        snapshot.forEach((doc) => {
+            const d = doc.data();
+            if(d.day !== currentDay) { currentDay=d.day; html+=`<div class="day-divider" id="${d.day.replace(' ','')}">${d.day}</div>`; updateWeather(d.day); }
+            const desc = highlight(d.desc);
+            html += `<div class="card ${d.type}" onclick="openEditModal('${doc.id}','${d.day}','${d.time}','${d.type}','${d.title}',\`${d.desc||''}\`,'${d.img||''}','${d.loc||''}','${d.link||''}')">
+                <div style="display:flex; justify-content:space-between;"><span class="time-badge">${d.time}</span></div>
+                <div class="card-title">${d.title}</div>
+                <div class="card-desc">${desc}</div>
+                ${d.img ? `<img src="${d.img}" class="card-img">` : ''}
+                <div class="btn-group">
+                    <a href="https://www.google.com/maps/search/?api=1&query=${d.loc}+福岡" target="_blank" onclick="event.stopPropagation()" class="action-btn btn-map">📍 導航</a>
+                    ${d.link ? `<a href="${d.link}" target="_blank" onclick="event.stopPropagation()" class="action-btn btn-link">🔗 攻略/資訊</a>` : ''}
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    });
+
+    // 將函數綁定到 window (解決 switchPage is not defined)
+    window.openEditModal = (id, day, time, type, title, desc, img, loc, link) => {
+        document.getElementById("modal").style.display = "flex";
+        if(id) {
+            document.getElementById("modal-title").innerText="✏️ 編輯行程";
+            document.getElementById("edit-id").value=id; document.getElementById("edit-day").value=day; document.getElementById("edit-time").value=time; document.getElementById("edit-type").value=type;
+            document.getElementById("edit-title").value=title; document.getElementById("edit-desc").value=desc; document.getElementById("edit-img").value=img; document.getElementById("edit-loc").value=loc; document.getElementById("edit-link").value=link||"";
+            document.getElementById("btn-del-sch").style.display="block";
+        } else {
+            document.getElementById("modal-title").innerText="➕ 新增行程";
+            document.getElementById("edit-id").value=""; document.getElementById("edit-time").value="10:00"; document.getElementById("edit-title").value=""; document.getElementById("edit-desc").value=""; document.getElementById("edit-img").value=""; document.getElementById("edit-loc").value=""; document.getElementById("edit-link").value="";
+            document.getElementById("btn-del-sch").style.display="none";
+        }
+    };
+
+    window.saveSchedule = async () => {
+        const id = document.getElementById("edit-id").value;
+        const data = { day: document.getElementById("edit-day").value, time: document.getElementById("edit-time").value, type: document.getElementById("edit-type").value, title: document.getElementById("edit-title").value, desc: document.getElementById("edit-desc").value, img: document.getElementById("edit-img").value, loc: document.getElementById("edit-loc").value, link: document.getElementById("edit-link").value };
+        if(id) await updateDoc(doc(db, "schedule", id), data); else await addDoc(collection(db, "schedule"), data);
+        window.closeModal();
+    };
+
+    window.resetData = async () => {
+        if(!confirm("確定要刪除現有行程，重新載入【導遊精選版】預設值嗎？")) return;
+        const q = query(collection(db, "schedule"));
+        const snapshot = await getDocs(q);
+        const batch = writeBatch(db);
+        snapshot.forEach(doc => batch.delete(doc.ref));
+        await batch.commit();
+        for(let item of initialSchedule) await addDoc(collection(db, "schedule"), item);
+        alert("導遊資料載入完成！請回行程頁查看。");
+    };
+
+    window.deleteSchedule = async () => { const id = document.getElementById("edit-id").value; if(id && confirm("確定刪除？")) { await deleteDoc(doc(db, "schedule", id)); window.closeModal(); } };
+    window.closeModal = () => document.getElementById("modal").style.display = "none";
+    
+    // 記帳與其他 helpers
+    window.previewImage = (input) => { if(input.files[0]){ let r = new FileReader(); r.onload=e=>{document.getElementById("img-preview").src=e.target.result; document.getElementById("img-preview").style.display="block";}; r.readAsDataURL(input.files[0]); } };
+    window.calcRate = () => { const v = document.getElementById("exp-amt").value; const c = document.getElementById("exp-curr").value; document.getElementById("rate-calc").innerText = c==="JPY" ? `約台幣 ${Math.round(v*RATE)}` : "台幣計價"; };
+    window.delExp = async(id) => { if(confirm("刪除?")) await deleteDoc(doc(db,"expenses",id)); };
+    
+    window.updateWeather = (day) => { 
+        const t = document.getElementById("w-tips"), l = document.getElementById("w-loc"), tm = document.getElementById("w-temp"); 
+        if(day.includes("Day 1")) { l.innerText="福岡市"; tm.innerText="10°C"; t.innerText="🧥 微涼，帶薄外套"; } 
+        else if(day.includes("Day 2")) { l.innerText="由布院"; tm.innerText="8°C"; t.innerText="❄️ 山區冷，穿發熱衣"; } 
+        else if(day.includes("Day 4")) { l.innerText="門司港"; tm.innerText="9°C"; t.innerText="💨 海風大，戴帽子"; }
+        else { l.innerText="福岡市"; tm.innerText="11°C"; t.innerText="⛅ 舒適，洋蔥式穿搭"; } 
+    };
+    
+    window.scrollToDay = (id, btn) => { 
+        document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active')); 
+        btn.classList.add('active'); 
+        const el = document.getElementById(id.replace(' ','')); 
+        if(el) el.scrollIntoView({behavior:'smooth', block:'start'}); 
+        window.updateWeather(id); 
+    };
+    
+    window.switchPage = (id, btn) => { 
+        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
