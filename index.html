@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>福岡好好玩 V36 🌸</title>
+    <title>福岡好好玩 V37 🌸</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -30,15 +30,12 @@
         h1 { margin: 0; font-size: 1.4rem; font-weight: 700; }
         .icon-btn { background: rgba(255,255,255,0.25); border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; }
 
-        /* 倒數計時 */
-        #countdown-bar { background: #FFF3E0; color: #E65100; text-align: center; padding: 10px; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #FFCC80; }
-
         /* Page System */
         .page { display: none; padding: 20px; animation: fadeIn 0.3s; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: 0; } }
 
-        /* Tools Grid */
+        /* Tools */
         .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
         .tool-card {
             background: white; border-radius: 16px; padding: 20px; text-align: center;
@@ -51,19 +48,24 @@
         .tool-name { font-weight: bold; color: #555; }
 
         /* Sub Page */
-        .sub-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 200; display: none; flex-direction: column; overflow-y: auto; }
-        .sub-header { background: white; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 201; }
+        .sub-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color);
+            z-index: 200; display: none; flex-direction: column; overflow-y: auto;
+        }
+        .sub-header {
+            background: white; padding: 15px; display: flex; align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 201;
+        }
         .back-btn { font-size: 1.5rem; background: none; border: none; margin-right: 15px; cursor: pointer; padding: 5px; }
         .sub-content { padding: 20px; padding-bottom: 100px; }
-
-        /* Checklist */
-        .checklist-item { background: white; padding: 15px; margin-bottom: 10px; border-radius: 12px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; }
+        .checklist-item {
+            background: white; padding: 15px; margin-bottom: 10px; border-radius: 12px;
+            display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer;
+        }
         .checklist-item.checked { opacity: 0.5; background: #f0f0f0; }
         .checklist-item.checked .cb-text { text-decoration: line-through; }
         .cb-icon { font-size: 1.2rem; margin-right: 15px; color: #ccc; width: 24px; text-align: center;}
         .checklist-item.checked .cb-icon { color: var(--accent-spot); content: "✔"; }
-
-        /* Wishlist */
         .wish-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
         .wish-item { position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; padding-bottom: 5px; }
         .wish-img { width: 100%; height: 150px; object-fit: cover; display: block; cursor: zoom-in; }
@@ -92,7 +94,7 @@
         .split-get { color: #27ae60; font-weight: bold; }
 
         /* Carousel */
-        .carousel-container { position: relative; width: 100%; height: 240px; overflow: hidden; background: #eee; margin-bottom: 10px; }
+        .carousel-container { position: relative; width: 100%; height: 240px; overflow: hidden; background: #eee; margin-bottom: 0; }
         .carousel-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; width: 100%; height: 100%; -webkit-overflow-scrolling: touch; }
         .carousel-track::-webkit-scrollbar { display: none; }
         .carousel-slide { flex: 0 0 100%; width: 100%; height: 100%; scroll-snap-align: center; position: relative; }
@@ -138,15 +140,17 @@
         .nav-label { font-size: 0.9rem; }
 
         /* Modal */
-        #modal, #modal-tool, #modal-link, #modal-lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
-        .modal-box { background: white; width: 85%; max-width: 400px; padding: 25px; border-radius: 20px; max-height: 85vh; overflow-y: auto; }
-        #lightbox-img { max-width: 90%; max-height: 80vh; border-radius: 8px; }
-        
-        .hl-food { background: #fff3cd; color: #856404; padding: 0 4px; border-radius: 4px; }
-        .hl-buy { background: #e2e3f5; color: #383d41; padding: 0 4px; border-radius: 4px; }
-        .hl-res { background: #f8d7da; color: #721c24; padding: 0 4px; border-radius: 4px; }
+        #modal, #modal-tool, #modal-link, #modal-lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
+        /* 編輯行程 Modal 優化 */
+        .modal-box { background: white; width: 85%; max-width: 400px; padding: 0; border-radius: 20px; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; }
+        .modal-header-bar { padding: 15px; border-bottom: 1px solid #eee; text-align: center; font-size: 1.2rem; font-weight: bold; background: #fafafa; }
+        .modal-body { padding: 20px; }
+        .modal-footer { padding: 15px; border-top: 1px solid #eee; background: #fafafa; display: flex; gap: 10px; flex-direction: column; }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.95rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
 
-        /* 匯率計算機 */
+        #lightbox-img { max-width: 90%; max-height: 80vh; border-radius: 8px; }
+        #countdown-bar { background: #FFF3E0; color: #E65100; text-align: center; padding: 10px; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #FFCC80; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .rate-calc-box { background: white; border: 2px solid var(--primary); border-radius: 16px; padding: 15px; margin: 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .rate-input { width: 80px; padding: 8px; border: 1px solid #ddd; border-radius: 8px; font-size: 1.1rem; text-align: center; }
         .rate-result { font-size: 1.2rem; font-weight: bold; color: #2D3436; }
@@ -162,7 +166,6 @@
         <button class="icon-btn" onclick="window.openTranslate()">🈚️</button>
     </header>
     
-    <!-- 計時器 -->
     <div id="countdown-bar"></div>
 
     <!-- 1. 行程頁 -->
@@ -174,7 +177,9 @@
             <label class="carousel-btn">📷 上傳封面 <input type="file" accept="image/*" style="display:none;" onchange="window.uploadBanner(this)"></label>
         </div>
         
-        <a href="https://photos.app.goo.gl/ukaRg1J12MkCrYsw5" target="_blank" class="album-link-btn">📂 開啟 Google 完整相簿 (共用)</a>
+        <a href="https://photos.app.goo.gl/ukaRg1J12MkCrYsw5" target="_blank" class="album-link-btn">
+            📂 開啟 Google 完整相簿 (共用)
+        </a>
 
         <div id="schedule-content-pad" style="padding:0 15px 20px 15px;">
             <button id="add-fab" onclick="window.openEditModal(null)">+</button>
@@ -189,8 +194,14 @@
             </div>
 
             <div class="weather-banner">
-                <div><div style="font-size:2rem; font-weight:bold;" id="w-temp">--°C</div><div id="w-loc" style="font-weight:500; opacity:0.9; font-size:1.1rem;">氣象連線中...</div></div>
-                <div style="text-align:right;"><div id="w-icon" style="font-size:3rem;">☁️</div><div style="font-size:1rem; font-weight:500;" id="w-tips">穿搭建議</div></div>
+                <div>
+                    <div style="font-size:2rem; font-weight:bold;" id="w-temp">--°C</div>
+                    <div id="w-loc" style="font-weight:500; opacity:0.9; font-size:1.1rem;">氣象連線中...</div>
+                </div>
+                <div style="text-align:right;">
+                    <div id="w-icon" style="font-size:3rem;">☁️</div>
+                    <div style="font-size:1rem; font-weight:500;" id="w-tips">穿搭建議</div>
+                </div>
             </div>
 
             <div id="schedule-container" style="margin-top:20px;"></div>
@@ -218,8 +229,12 @@
                 <h3 style="margin-top:0; text-align:center; color:var(--text-main);">➕ 新增消費</h3>
                 <div style="margin-bottom:15px; text-align:center;">
                     <label style="font-weight:bold; color:var(--primary); font-size:1.2rem;">誰付的錢？</label><br>
+                    <!-- 修改：預設為公費，且付款人包含「蓉」 -->
                     <select id="exp-payer" style="width:70%; margin-top:5px; text-align:center; font-weight:bold; font-size:1.1rem;">
-                        <option value="我">我</option><option value="芬">芬</option><option value="珍">珍</option><option value="公費">💰 公費 (從公款扣)</option>
+                        <option value="公費" selected>💰 公費 (從公款扣)</option>
+                        <option value="蓉">蓉</option>
+                        <option value="芬">芬</option>
+                        <option value="珍">珍</option>
                     </select>
                 </div>
                 <input type="text" id="exp-name" placeholder="品項名稱 (如: 拉麵)">
@@ -323,42 +338,90 @@
     <div id="sub-content" class="sub-content"></div>
 </div>
 
-<!-- Modal -->
+<!-- 編輯行程 Modal (修正版) -->
 <div id="modal">
     <div class="modal-box">
-        <div class="modal-header" id="modal-title">編輯行程</div>
-        <input type="hidden" id="edit-id">
-        <label>日期</label>
-        <select id="edit-day"><option value="Day 1">Day 1 (1/13)</option><option value="Day 2">Day 2 (1/14)</option><option value="Day 3">Day 3 (1/15)</option><option value="Day 4">Day 4 (1/16)</option><option value="Day 5">Day 5 (1/17)</option></select>
-        <label>時間</label><input type="time" id="edit-time">
-        <label>分類</label>
-        <select id="edit-type"><option value="spot">景點 (綠)</option><option value="food">美食 (橘)</option><option value="trans">交通 (藍)</option></select>
-        <label>標題</label><input type="text" id="edit-title">
-        <label>詳細說明</label>
-        <textarea id="edit-desc" rows="5" placeholder="導遊小撇步：輸入「必吃、必買、預約」會自動亮顯喔！"></textarea>
-        <label>圖片連結 (選填)</label><input type="text" id="edit-img" placeholder="https://...">
-        <label>相關連結 (選填)</label><input type="text" id="edit-link" placeholder="https://...">
-        <label>Google Map 地點</label><input type="text" id="edit-loc">
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button onclick="window.saveSchedule()" class="btn-primary" style="flex:1;">儲存</button>
-            <button onclick="window.closeModal()" style="flex:1; background:#dfe6e9; color:#636E72; border:none; border-radius:30px; font-weight:bold;">取消</button>
+        <div class="modal-header-bar">✏️ 編輯/新增行程</div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-id">
+            
+            <div class="form-group">
+                <label class="form-label">選擇日期</label>
+                <select id="edit-day">
+                    <option value="Day 1">Day 1 (1/13)</option>
+                    <option value="Day 2">Day 2 (1/14)</option>
+                    <option value="Day 3">Day 3 (1/15)</option>
+                    <option value="Day 4">Day 4 (1/16)</option>
+                    <option value="Day 5">Day 5 (1/17)</option>
+                </select>
+            </div>
+            
+            <div class="form-group" style="display:flex; gap:10px;">
+                <div style="flex:1;">
+                    <label class="form-label">時間</label>
+                    <input type="time" id="edit-time">
+                </div>
+                <div style="flex:1;">
+                    <label class="form-label">分類</label>
+                    <select id="edit-type">
+                        <option value="spot">景點 (綠)</option>
+                        <option value="food">美食 (橘)</option>
+                        <option value="trans">交通 (藍)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">行程標題</label>
+                <input type="text" id="edit-title" placeholder="例如：大山牛雜鍋">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">詳細說明</label>
+                <textarea id="edit-desc" rows="5" placeholder="導遊筆記..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">圖片 (上傳或連結)</label>
+                <label class="btn-outline" style="margin-bottom:10px;">📷 上傳照片 <input type="file" id="edit-file" accept="image/*" style="display:none;"></label>
+                <input type="text" id="edit-img" placeholder="或貼上圖片連結...">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">相關連結</label>
+                <input type="text" id="edit-link" placeholder="官網或攻略網址">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Google Map 地點</label>
+                <input type="text" id="edit-loc" placeholder="輸入地點名稱">
+            </div>
         </div>
-        <button id="btn-del-sch" onclick="window.deleteSchedule()" style="width:100%; background:white; border:2px solid #ff7675; color:#ff7675; padding:10px; margin-top:15px; border-radius:30px; font-weight:bold;">刪除此行程</button>
+        
+        <div class="modal-footer">
+            <button onclick="window.saveSchedule()" class="btn-primary" style="margin:0;">儲存變更</button>
+            <button onclick="window.closeModal()" class="btn-outline" style="margin:0;">取消</button>
+            <button id="btn-del-sch" onclick="window.deleteSchedule()" style="background:none; border:none; color:red; padding:10px; font-weight:bold; cursor:pointer;">🗑️ 刪除此行程</button>
+        </div>
     </div>
 </div>
 
 <!-- Tool Input Modal -->
 <div id="modal-tool">
     <div class="modal-box">
-        <h3>➕ 新增項目</h3>
-        <input type="text" id="tool-name" placeholder="名稱 (必填)">
-        <textarea id="tool-note" rows="3" placeholder="備註 / 必吃餐點 (選填)"></textarea>
-        <input type="text" id="tool-link" placeholder="相關連結 (選填)">
-        <input type="text" id="tool-loc" placeholder="Google Map 地點 (選填, 美食專用)">
-        <label class="btn-outline">📷 選取照片 <input type="file" id="tool-file" accept="image/*" style="display:none;"></label>
-        <div id="tool-loading" style="display:none; text-align:center; color:#888;">正在壓縮並上傳...</div>
-        <button onclick="window.saveToolItem()" class="btn-primary">上傳</button>
-        <button onclick="document.getElementById('modal-tool').style.display='none'" style="width:100%; color:#888; border:none; background:none; margin-top:10px;">取消</button>
+        <div class="modal-header-bar">➕ 新增項目</div>
+        <div class="modal-body">
+            <input type="text" id="tool-name" placeholder="名稱 (必填)">
+            <textarea id="tool-note" rows="3" placeholder="備註 / 必吃餐點 (選填)"></textarea>
+            <input type="text" id="tool-link" placeholder="相關連結 (選填)">
+            <input type="text" id="tool-loc" placeholder="Google Map 地點 (選填, 美食專用)">
+            <label class="btn-outline">📷 選取照片 <input type="file" id="tool-file" accept="image/*" style="display:none;"></label>
+            <div id="tool-loading" style="display:none; text-align:center; color:#888;">正在壓縮並上傳...</div>
+        </div>
+        <div class="modal-footer">
+            <button onclick="window.saveToolItem()" class="btn-primary">上傳</button>
+            <button onclick="document.getElementById('modal-tool').style.display='none'" class="btn-outline">取消</button>
+        </div>
     </div>
 </div>
 
@@ -393,7 +456,7 @@ const firebaseConfig = {
 
     window.openTranslate = () => { window.location.href = "googletranslate://"; setTimeout(() => { window.open("https://translate.google.com/?sl=ja&tl=zh-TW", "_blank"); }, 500); };
 
-    // --- 0. 倒數計時 ---
+    // --- 0. 倒數計時 & 匯率 ---
     function updateCountdown() {
         const today = new Date();
         const start = new Date(2026, 0, 13);
@@ -458,27 +521,28 @@ const firebaseConfig = {
     window.delBanner = async (id) => { if(confirm("刪除這張封面？")) await deleteDoc(doc(db, "banners", id)); };
 
     // --- 2. 行程邏輯 ---
-    // ★★★ 記憶功能變數 ★★★
-    let currentSelectedDay = "Day 1";
-    
+    // ★★★ 關鍵變數：暫存所有行程資料，方便編輯取用 ★★★
+    let scheduleDataMap = {}; 
+
     const qSch = query(collection(db, "schedule"), orderBy("day"), orderBy("time"));
     onSnapshot(qSch, (snapshot) => {
         const container = document.getElementById("schedule-container");
-        
-        // ★★★ 記錄當前捲動位置 ★★★
-        const scrollPos = window.scrollY;
-
         let html="", currentDay="";
+        scheduleDataMap = {}; // 重置
+
         if(snapshot.empty) { container.innerHTML="<div style='text-align:center; padding:20px; color:#999;'>尚無行程</div>"; return; }
+        
         snapshot.forEach((doc) => {
             const d = doc.data();
+            scheduleDataMap[doc.id] = d; // 存入 Map
+            
             if(d.day !== currentDay) { currentDay=d.day; html+=`<div class="day-divider" data-day="${d.day}">${d.day}</div>`; }
             
             let desc = (d.desc||"").replace(/(必吃.*?)(?=\s|$|，|。)/g, '<span class="hl-food">$1</span>')
                                   .replace(/(必買.*?)(?=\s|$|，|。)/g, '<span class="hl-buy">$1</span>')
                                   .replace(/(預約.*?)(?=\s|$|，|。)/g, '<span class="hl-res">$1</span>');
 
-            html += `<div class="card ${d.type}" data-day="${d.day}" onclick="window.cardClick('${doc.id}', '${d.day}', '${d.time}', '${d.type}', '${d.title}', \`${d.desc||''}\`, '${d.img||''}', '${d.loc||''}', '${d.link||''}')">
+            html += `<div class="card ${d.type}" data-day="${d.day}" onclick="window.cardClick('${doc.id}')">
                 <div class="card-header"><span class="time-badge">${d.time}</span></div>
                 <div class="card-title">${d.title}</div>
                 <div class="card-desc">${desc}</div>
@@ -490,26 +554,13 @@ const firebaseConfig = {
             </div>`;
         });
         container.innerHTML = html;
-        
-        // ★★★ 恢復到原本選擇的天數 ★★★
-        const btn = Array.from(document.querySelectorAll('.day-btn')).find(b => b.innerText.includes(currentSelectedDay));
-        window.filterDay(currentSelectedDay, btn);
-        
-        // ★★★ 恢復捲動位置 (避免跳動) ★★★
-        if(scrollPos > 0) window.scrollTo(0, scrollPos);
+        window.filterDay('Day 1', document.querySelector('.day-btn'));
     });
 
     let isLocked = true;
     window.toggleLock = () => { isLocked=!isLocked; const b=document.getElementById("btn-lock"); const a=document.getElementById("add-fab"); if(isLocked){b.innerHTML="🔒";b.className="fab-btn";a.style.display="none"; document.querySelectorAll(".card").forEach(c=>c.classList.remove("editable"));}else{b.innerHTML="🔓";b.className="fab-btn unlocked";a.style.display="flex"; document.querySelectorAll(".card").forEach(c=>c.classList.add("editable"));} };
-    window.cardClick = (id,day,time,type,title,desc,img,loc,link) => { if(!isLocked) window.openEditModal(id,day,time,type,title,desc,img,loc,link); };
-    
-    // ★★★ 優化篩選與記憶 ★★★
-    window.filterDay = (dayStr, btn) => {
-        currentSelectedDay = dayStr; // 記住選擇
-        document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
-        if(btn) btn.classList.add('active');
-        document.querySelectorAll('.card, .day-divider').forEach(el => { if(el.dataset.day && el.dataset.day.includes(dayStr)) el.style.display='block'; else el.style.display='none'; }); window.updateWeather(dayStr); 
-    };
+    window.cardClick = (id) => { if(!isLocked) window.openEditModal(id); };
+    window.filterDay = (dayStr, btn) => { document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); document.querySelectorAll('.card, .day-divider').forEach(el => { if(el.dataset.day && el.dataset.day.includes(dayStr)) el.style.display='block'; else el.style.display='none'; }); window.updateWeather(dayStr); };
 
     // --- 3. 記帳邏輯 ---
     let allExpenses = [];
@@ -523,13 +574,13 @@ const firebaseConfig = {
         const list = document.getElementById("expense-list");
         const dashList = document.getElementById("split-result-list");
         let tripTotalCost = 0; let html = "";
-        let splitMap = { "我":0, "芬":0, "珍":0 }; 
+        let splitMap = { "蓉":0, "芬":0, "珍":0 }; 
         allExpenses = [];
 
         snapshot.forEach((doc) => {
             const d = doc.data();
             let amt = Number(d.amount)||0; let curr = d.currency||"TWD";
-            let payer = d.payer||"我"; let cat = d.category||"其他";
+            let payer = d.payer||"蓉"; let cat = d.category||"其他";
             let twd = curr==="JPY" ? Math.round(amt*RATE) : amt;
             
             allExpenses.push({date: new Date(d.timestamp.seconds*1000).toLocaleDateString(), item:d.item, cat:cat, payer:payer, amt:amt, curr:curr, twd:twd});
@@ -547,7 +598,7 @@ const firebaseConfig = {
         
         let avg = Math.round(tripTotalCost / PEOPLE_COUNT);
         let splitHtml = `<div style="text-align:center; margin-bottom:15px; font-weight:bold; color:#2D3436; background:white; padding:10px; border-radius:10px;">總支出: $${tripTotalCost.toLocaleString()} <br> 平均每人: $${avg.toLocaleString()}</div>`;
-        ["我", "芬", "珍"].forEach(p => {
+        ["蓉", "芬", "珍"].forEach(p => {
             let paid = splitMap[p] || 0; let balance = paid - avg;
             let color = balance >= 0 ? "split-get" : "split-owe";
             let text = balance >= 0 ? `+${balance.toLocaleString()} (收回)` : `${balance.toLocaleString()} (需付)`;
@@ -570,7 +621,12 @@ const firebaseConfig = {
         const payer = document.getElementById("exp-payer").value;
         if(!name || !amt) return alert("請輸入完整資料");
         let imgUrl = "";
-        if(file) { const sRef = ref(storage, 'receipts/'+Date.now()+'_'+file.name); await uploadBytes(sRef, file); imgUrl = await getDownloadURL(sRef); }
+        if(file) { 
+             const compressed = await compressImage(file, 800, 0.7);
+             const sRef = ref(storage, 'receipts/'+Date.now()+'_'+file.name); 
+             await uploadBytes(sRef, compressed); 
+             imgUrl = await getDownloadURL(sRef); 
+        }
         await addDoc(collection(db, "expenses"), { item: name, category: document.getElementById("exp-cat").value, payment: document.getElementById("exp-pay").value, currency: document.getElementById("exp-curr").value, amount: amt, payer: payer, img: imgUrl, timestamp: new Date() });
         document.getElementById("exp-name").value=""; document.getElementById("exp-amt").value=""; document.getElementById("img-preview").style.display="none"; alert("記帳成功");
     });
@@ -681,11 +737,10 @@ const firebaseConfig = {
         });
         
         document.getElementById("modal-tool").style.display = "none";
-        // Reset fields
         document.getElementById("tool-name").value = "";
         document.getElementById("tool-link").value = "";
-        document.getElementById("tool-note").value = "";
-        document.getElementById("tool-loc").value = "";
+        if(document.getElementById("tool-note")) document.getElementById("tool-note").value = "";
+        if(document.getElementById("tool-loc")) document.getElementById("tool-loc").value = "";
         document.getElementById("tool-file").value = "";
         btn.style.display = "block"; loading.style.display = "none";
     };
@@ -694,8 +749,68 @@ const firebaseConfig = {
     window.delWish = async(id) => { if(confirm("刪除？")) await deleteDoc(doc(db, "wishlist", id)); };
 
     // --- Helpers ---
-    window.openEditModal = (id,day,time,type,title,desc,img,loc,link) => { document.getElementById("modal").style.display="flex"; document.getElementById("edit-id").value=id||""; document.getElementById("edit-day").value=day||"Day 1"; document.getElementById("edit-time").value=time||"10:00"; };
-    window.saveSchedule = async () => { const id = document.getElementById("edit-id").value; const data={day: document.getElementById("edit-day").value, time: document.getElementById("edit-time").value, type: document.getElementById("edit-type").value, title: document.getElementById("edit-title").value, desc: document.getElementById("edit-desc").value, img: document.getElementById("edit-img").value, loc: document.getElementById("edit-loc").value, link: document.getElementById("edit-link").value}; if(id) await updateDoc(doc(db,"schedule",id),data); else await addDoc(collection(db,"schedule"),data); window.closeModal(); };
+    // ★★★ V37 修正：改用 ID 查詢，解決資料空白問題 ★★★
+    window.openEditModal = (id) => {
+        document.getElementById("modal").style.display="flex";
+        if(id) {
+            const data = scheduleDataMap[id]; // 從快取拿資料
+            document.getElementById("modal-title").innerText="✏️ 編輯行程";
+            document.getElementById("edit-id").value = id;
+            document.getElementById("edit-day").value = data.day;
+            document.getElementById("edit-time").value = data.time;
+            document.getElementById("edit-type").value = data.type;
+            document.getElementById("edit-title").value = data.title;
+            document.getElementById("edit-desc").value = data.desc || "";
+            document.getElementById("edit-img").value = data.img || "";
+            document.getElementById("edit-loc").value = data.loc || "";
+            document.getElementById("edit-link").value = data.link || "";
+            document.getElementById("btn-del-sch").style.display="block";
+        } else {
+            document.getElementById("modal-title").innerText="➕ 新增行程";
+            document.getElementById("edit-id").value="";
+            document.getElementById("edit-time").value="10:00";
+            document.getElementById("edit-title").value="";
+            document.getElementById("edit-desc").value="";
+            document.getElementById("edit-img").value="";
+            document.getElementById("edit-loc").value="";
+            document.getElementById("edit-link").value="";
+            document.getElementById("btn-del-sch").style.display="none";
+        }
+    };
+
+    window.saveSchedule = async () => {
+        const id = document.getElementById("edit-id").value;
+        const file = document.getElementById("edit-file").files[0];
+        let imgUrl = document.getElementById("edit-img").value;
+
+        // ★★★ V37 新增：行程照片上傳 ★★★
+        if(file) {
+            const btn = document.querySelector("#modal .btn-primary");
+            btn.innerText = "上傳中..."; btn.disabled = true;
+            const compressed = await compressImage(file, 800, 0.7);
+            const sRef = ref(storage, 'schedule/'+Date.now()+'_'+file.name);
+            await uploadBytes(sRef, compressed);
+            imgUrl = await getDownloadURL(sRef);
+            btn.innerText = "儲存"; btn.disabled = false;
+        }
+
+        const data = { 
+            day: document.getElementById("edit-day").value, 
+            time: document.getElementById("edit-time").value, 
+            type: document.getElementById("edit-type").value, 
+            title: document.getElementById("edit-title").value, 
+            desc: document.getElementById("edit-desc").value, 
+            img: imgUrl, 
+            loc: document.getElementById("edit-loc").value, 
+            link: document.getElementById("edit-link").value 
+        };
+        
+        if(id) await updateDoc(doc(db,"schedule",id), data); 
+        else await addDoc(collection(db,"schedule"), data);
+        
+        window.closeModal();
+    };
+
     window.deleteSchedule = async () => { const id=document.getElementById("edit-id").value; if(id) await deleteDoc(doc(db,"schedule",id)); window.closeModal(); };
     window.closeModal = () => document.getElementById("modal").style.display="none";
     window.delExp = async(id) => { if(confirm("刪除?")) await deleteDoc(doc(db,"expenses",id)); };
