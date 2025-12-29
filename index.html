@@ -29,7 +29,7 @@
         }
         .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: white; }
 
-        /* FAB (新增按鈕) */
+        /* FAB */
         #add-fab {
             position: fixed; bottom: 120px; right: 20px;
             background: var(--primary); color: white;
@@ -52,7 +52,6 @@
         
         .day-divider { margin: 25px 0 10px 0; font-weight: bold; color: #2196F3; border-bottom: 2px dashed #ccc; padding-bottom: 5px; scroll-margin-top: 130px; font-size: 1.1rem; }
 
-        /* 行程卡片 */
         .card { background: var(--white); border-radius: 16px; margin-bottom: 15px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 6px solid #ccc; cursor: pointer; }
         .card:active { transform: scale(0.98); background: #fff0f5; }
         .card.food { border-left-color: var(--accent-food); }
@@ -75,7 +74,7 @@
         .hl-res { background: #FFEBEE; color: #C62828; padding: 2px 4px; border-radius: 4px; font-weight: bold; }
         .hl-star { background: #FFF9C4; color: #F57F17; padding: 2px 4px; border-radius: 4px; font-weight: bold; }
 
-        /* 記帳頁優化 */
+        /* Expense & Info */
         .info-card { background: var(--white); padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .prepaid-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.95rem; color: #555; }
         .prepaid-row:last-child { border-bottom: none; }
@@ -83,7 +82,6 @@
         .input-box { background: var(--white); padding: 20px 15px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #FFC6C7; }
         input, select, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1rem;}
         
-        /* ★★★ 按鈕樣式優化: 縮小置中 ★★★ */
         .btn-camera { 
             background: #E0F7FA; color: #006064; border: 1px dashed #00ACC1; 
             width: 85%; padding: 10px; border-radius: 25px; cursor: pointer; 
@@ -249,7 +247,7 @@ const firebaseConfig = {
   appId: "1:762021519656:web:15c443c2ca2f13f9bc701d"
     };
 
-    // 2. Gemini API Key (請在此填入您的 Gemini Key)
+    // 2. Gemini API Key
     const GEMINI_API_KEY = "AIzaSyDiGJ6p3K7j0PsI3tF7n0vNK89xx6KuI1E"; 
 
     const app = initializeApp(firebaseConfig);
@@ -257,7 +255,7 @@ const firebaseConfig = {
     const storage = getStorage(app);
     const RATE = 0.22;
 
-    // --- Gemini AI 整合 ---
+    // --- Gemini AI 整合 (修復版: 使用 gemini-pro 模型) ---
     window.askGemini = async () => {
         const title = document.getElementById("edit-title").value;
         const loc = document.getElementById("edit-loc").value;
@@ -266,24 +264,26 @@ const firebaseConfig = {
         if (!title && !loc) return alert("請先輸入標題或地點，AI 才知道要介紹什麼！");
         if (GEMINI_API_KEY.includes("您的")) return alert("請先在程式碼中填入 Gemini API Key！");
 
-        const prompt = `你是專業福岡導遊。請用繁體中文，針對「${title} (${loc})」寫一段約 80 字的吸睛介紹。
-        必須包含：必吃美食、必買伴手禮、或注意事項。
-        請在重點詞彙前後加上標籤，例如：【必吃】、【必買】、【預約】、【推薦】。`;
+        const prompt = `你是專業福岡導遊。請用繁體中文，針對「${title} (${loc})」寫一段約 80 字的吸睛介紹。包含：必吃美食、必買伴手禮。請在重點詞彙前後加上標籤，例如：【必吃】、【必買】、【預約】、【推薦】。`;
 
         btn.innerText = "🤖 AI 思考中..."; btn.disabled = true;
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+            // ★★★ V19 關鍵修正：改用 gemini-pro 模型 ★★★
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
             });
+            
+            if (!response.ok) throw new Error("AI 回應錯誤: " + response.status);
+            
             const data = await response.json();
             const aiText = data.candidates[0].content.parts[0].text;
             document.getElementById("edit-desc").value = aiText;
         } catch (error) {
             console.error(error);
-            alert("AI 連線失敗，請檢查 Key 是否正確");
+            alert("AI 連線失敗，請檢查 Key 是否正確或額度已滿。");
         } finally {
             btn.innerText = "✨ AI 自動撰寫介紹"; btn.disabled = false;
         }
@@ -301,7 +301,7 @@ const firebaseConfig = {
         { day: "Day 4", time: "10:00", title: "唐戶市場", type: "food", loc: "唐戶市場", desc: "【必吃】週五限定「馬關街」壽司自助餐！\n河豚生魚片必試，新鮮又便宜。", img: "https://lh5.googleusercontent.com/p/AF1QipNqR9t5C519789370603789427497127137" }
     ];
 
-    // --- 記帳 & 行程邏輯 (★V18 防呆修復版★) ---
+    // --- 記帳 & 行程邏輯 ---
     const prepaidList = [ {name:"機票 (虎航)", amt:41490}, {name:"Klook 一日遊", amt:4239}, {name:"JR 由布院之森", amt:3862}, {name:"車上便當", amt:1260} ];
     let prepaidTotal = 0;
     function initPrepaid() { let h="", t=0; prepaidList.forEach(p=>{t+=p.amt; h+=`<div class="prepaid-row"><span>${p.name}</span><b>$${p.amt.toLocaleString()}</b></div>`}); document.getElementById("prepaid-list").innerHTML=h; prepaidTotal=t; }
@@ -315,11 +315,8 @@ const firebaseConfig = {
         
         snapshot.forEach((doc) => {
             const d = doc.data();
-            // ★★★ V18 關鍵修正：確保金額是數字且不為 null ★★★
-            // 這行是救命丹，只要金額是空的，自動當 0，程式就不會死了
             let amt = Number(d.amount) || 0; 
             let curr = d.currency || "TWD";
-            
             let twd = curr === "JPY" ? Math.round(amt * RATE) : amt;
             dynTotal += twd;
             
@@ -387,7 +384,7 @@ const firebaseConfig = {
         container.innerHTML = html;
     });
 
-    // 綁定到 Window 解決按鈕無反應問題
+    // 綁定到 Window
     window.openEditModal = (id, day, time, type, title, desc, img, loc, link) => {
         document.getElementById("modal").style.display = "flex";
         if(id) {
