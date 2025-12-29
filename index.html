@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>福岡好好玩 V34.5 🌸</title>
+    <title>福岡好好玩 V35 🌸</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -37,21 +37,76 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
-        /* 匯率計算機 */
-        .rate-calc-box {
-            background: white; border: 2px solid var(--primary); border-radius: 16px; padding: 15px; margin: 15px;
-            display: flex; align-items: center; justify-content: space-between; gap: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-        .rate-input { width: 80px; padding: 8px; border: 1px solid #ddd; border-radius: 8px; font-size: 1.1rem; text-align: center; }
-        .rate-result { font-size: 1.2rem; font-weight: bold; color: #2D3436; }
-        .rate-setting { font-size: 0.8rem; color: #888; text-decoration: underline; cursor: pointer; }
-
         /* Page System */
-        .page { display: none; padding: 0; animation: fadeIn 0.3s; } 
-        .page-content { padding: 15px; } 
+        .page { display: none; padding: 20px; animation: fadeIn 0.3s; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: 0; } }
+
+        /* --- 工具頁 (Tools) 樣式 --- */
+        .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .tool-card {
+            background: white; border-radius: 16px; padding: 20px; text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid #eee; cursor: pointer;
+            transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 110px; position: relative;
+        }
+        .tool-card:active { transform: scale(0.95); background: #FFF0F5; border-color: var(--primary); }
+        .tool-icon { font-size: 2.5rem; margin-bottom: 8px; }
+        .tool-name { font-weight: bold; color: #555; }
+
+        /* 子工具頁面 */
+        .sub-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color);
+            z-index: 200; display: none; flex-direction: column; overflow-y: auto;
+        }
+        .sub-header {
+            background: white; padding: 15px; display: flex; align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 201;
+        }
+        .back-btn { font-size: 1.5rem; background: none; border: none; margin-right: 15px; cursor: pointer; padding: 5px; }
+        .sub-content { padding: 20px; padding-bottom: 100px; }
+
+        /* 1. 行李清單 */
+        .checklist-item {
+            background: white; padding: 15px; margin-bottom: 10px; border-radius: 12px;
+            display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer;
+        }
+        .checklist-item.checked { opacity: 0.5; background: #f0f0f0; }
+        .checklist-item.checked .cb-text { text-decoration: line-through; }
+        .cb-icon { font-size: 1.2rem; margin-right: 15px; color: #ccc; width: 24px; text-align: center;}
+        .checklist-item.checked .cb-icon { color: var(--accent-spot); content: "✔"; }
+
+        /* 2. 必買清單/優惠券/美食口袋 */
+        .wish-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+        .wish-item { position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; padding-bottom: 5px; }
+        .wish-img { width: 100%; height: 150px; object-fit: cover; display: block; cursor: zoom-in; }
+        .wish-info { padding: 10px; }
+        .wish-title { font-size: 1rem; font-weight: bold; color: #333; margin-bottom: 5px; }
+        .wish-note { font-size: 0.85rem; color: #666; margin-bottom: 8px; white-space: pre-line; }
+        .wish-del { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; line-height: 24px; font-size: 0.8rem; cursor: pointer; z-index: 10; }
+        
+        .tool-actions { display: flex; gap: 5px; }
+        .tool-link-btn { flex: 1; display: block; background: #E3F2FD; color: #1565C0; text-align: center; text-decoration: none; padding: 6px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; }
+        .tool-map-btn { flex: 1; display: block; background: #E8F5E9; color: #2E7D32; text-align: center; text-decoration: none; padding: 6px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; }
+
+        /* 記帳本 */
+        .info-card { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .input-box { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 2px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input, select, textarea { width: 100%; padding: 15px; margin-bottom: 12px; border: 1px solid #dfe6e9; border-radius: 12px; font-size: 1.1rem; box-sizing: border-box; font-family: inherit; }
+        
+        .btn-primary { background: var(--primary); color: white; border: none; width: 85%; padding: 15px; border-radius: 30px; font-size: 1.2rem; font-weight: bold; display: block; margin: 15px auto; box-shadow: 0 4px 10px rgba(255, 139, 167, 0.4); cursor: pointer; }
+        .btn-outline { background: white; border: 2px solid #dfe6e9; color: #636E72; width: 85%; padding: 10px; border-radius: 30px; font-size: 1rem; font-weight: bold; cursor: pointer; margin: 10px auto; text-align: center; display: block;}
+        
+        .expense-item { background: white; padding: 18px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #FF9800; font-size: 1.1rem; }
+        .prepaid-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.95rem; color: #555; }
+        .prepaid-row:last-child { border-bottom: none; }
+        
+        /* 分帳看板 */
+        #split-section { display: none; }
+        .split-dashboard { background: #FFF8E1; border: 2px solid #FFE082; border-radius: 16px; padding: 20px; margin-bottom: 25px; }
+        .split-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1.1rem; border-bottom: 1px dashed #ccc; padding-bottom: 8px; }
+        .split-owe { color: #e74c3c; font-weight: bold; }
+        .split-get { color: #27ae60; font-weight: bold; }
 
         /* Carousel */
         .carousel-container { position: relative; width: 100%; height: 240px; overflow: hidden; background: #eee; margin-bottom: 0; }
@@ -68,6 +123,9 @@
         .album-link-btn:active { background: #E8F0FE; transform: scale(0.98); }
 
         /* 行程樣式 */
+        #p-schedule { padding: 0; } 
+        #schedule-content-pad { padding: 0 15px 20px 15px; }
+
         .day-nav { display: flex; overflow-x: auto; white-space: nowrap; background: white; padding: 12px 15px; position: sticky; top: 0; z-index: 98; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         .day-btn { background: #F1F2F6; border: none; padding: 8px 18px; margin-right: 8px; border-radius: 25px; color: #636E72; font-size: 1rem; cursor: pointer; }
         .day-btn.active { background: var(--primary); color: white; font-weight: bold; }
@@ -80,43 +138,12 @@
         .time-badge { background: #F1F2F6; padding: 5px 12px; border-radius: 8px; font-weight: 700; font-size: 1.1rem; color: #2D3436; }
         .card-desc { font-size: 1.15rem; color: #333; line-height: 1.8; white-space: pre-line; margin-bottom: 15px; }
         .card-img { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; margin-top: 10px; display:block; background:#eee;}
+
         .btn-group { display: flex; gap: 15px; margin-top: 18px; }
         .action-btn { flex: 1; padding: 12px; border-radius: 12px; text-align: center; text-decoration: none; font-size: 1rem; font-weight: 700; display: block; transition: transform 0.1s; }
         .btn-map { background: #E8F5E9; color: #27ae60; border: 1px solid #C8E6C9; }
         .btn-link { background: #E3F2FD; color: #0984e3; border: 1px solid #BBDEFB; }
-
-        /* 記帳 & 其他 */
-        .info-card { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .input-box { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 2px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        input, select { width: 100%; padding: 15px; margin-bottom: 12px; border: 1px solid #dfe6e9; border-radius: 12px; font-size: 1.1rem; box-sizing: border-box; }
-        .btn-primary { background: var(--primary); color: white; border: none; width: 85%; padding: 15px; border-radius: 30px; font-size: 1.2rem; font-weight: bold; display: block; margin: 15px auto; box-shadow: 0 4px 10px rgba(255, 139, 167, 0.4); cursor: pointer; }
-        .btn-outline { background: white; border: 2px solid #dfe6e9; color: #636E72; width: 85%; padding: 10px; border-radius: 30px; font-size: 1rem; font-weight: bold; cursor: pointer; margin: 10px auto; text-align: center; display: block;}
-        .expense-item { background: white; padding: 18px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #FF9800; font-size: 1.1rem; }
-        .prepaid-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.95rem; color: #555; }
-        .prepaid-row:last-child { border-bottom: none; }
-        #split-section { display: none; }
-        .split-dashboard { background: #FFF8E1; border: 2px solid #FFE082; border-radius: 16px; padding: 20px; margin-bottom: 25px; }
-        .split-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1.1rem; border-bottom: 1px dashed #ccc; padding-bottom: 8px; }
-        .split-owe { color: #e74c3c; font-weight: bold; }
-        .split-get { color: #27ae60; font-weight: bold; }
-
-        /* Tools */
-        .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
-        .tool-card { background: white; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid #eee; cursor: pointer; height: 110px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .tool-icon { font-size: 2.5rem; margin-bottom: 8px; }
-        .tool-name { font-weight: bold; color: #555; font-size: 1.1rem; }
-        .checklist-item { background: white; padding: 18px; margin-bottom: 12px; border-radius: 12px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; font-size: 1.1rem; }
-        .checklist-item.checked { opacity: 0.5; background: #f0f0f0; }
-        .checklist-item.checked .cb-text { text-decoration: line-through; }
-        .cb-icon { font-size: 1.4rem; margin-right: 15px; color: #ccc; width: 30px; text-align: center;}
-        .checklist-item.checked .cb-icon { color: var(--accent-spot); content: "✔"; }
-        .wish-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-        .wish-item { position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; padding-bottom: 5px; }
-        .wish-img { width: 100%; height: 160px; object-fit: cover; display: block; cursor: zoom-in; }
-        .wish-title { padding: 8px 5px 5px 5px; font-size: 0.9rem; text-align: center; font-weight: bold; color: #555; }
-        .wish-del { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 1rem; cursor: pointer; }
-        .tool-link-btn { display: block; background: #E3F2FD; color: #1565C0; text-align: center; text-decoration: none; padding: 8px; margin: 0 10px 10px 10px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; }
-
+        
         /* FAB */
         #add-fab { position: fixed; bottom: 100px; right: 20px; background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center; font-size: 2.2rem; z-index: 99; cursor: pointer; border: none; display:none; }
         #btn-lock { position: fixed; bottom: 180px; right: 20px; width: 50px; height: 50px; border-radius: 50%; background: white; border: 2px solid #ccc; z-index: 99; font-size: 1.4rem; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
@@ -133,13 +160,20 @@
         #modal, #modal-tool, #modal-link, #modal-lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
         .modal-box { background: white; width: 85%; max-width: 400px; padding: 25px; border-radius: 20px; max-height: 85vh; overflow-y: auto; }
         #lightbox-img { max-width: 90%; max-height: 80vh; border-radius: 8px; }
-        .sub-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 200; display: none; flex-direction: column; overflow-y: auto; }
-        .sub-header { background: white; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 201; }
-        .back-btn { font-size: 1.8rem; background: none; border: none; margin-right: 15px; cursor: pointer; padding: 5px; }
-        .sub-content { padding: 20px; padding-bottom: 100px; }
+        
         .hl-food { background: #fff3cd; color: #856404; padding: 0 4px; border-radius: 4px; }
         .hl-buy { background: #e2e3f5; color: #383d41; padding: 0 4px; border-radius: 4px; }
         .hl-res { background: #f8d7da; color: #721c24; padding: 0 4px; border-radius: 4px; }
+
+        /* 匯率計算機 */
+        .rate-calc-box {
+            background: white; border: 2px solid var(--primary); border-radius: 16px; padding: 15px; margin: 15px;
+            display: flex; align-items: center; justify-content: space-between; gap: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .rate-input { width: 80px; padding: 8px; border: 1px solid #ddd; border-radius: 8px; font-size: 1.1rem; text-align: center; }
+        .rate-result { font-size: 1.2rem; font-weight: bold; color: #2D3436; }
+        .rate-setting { font-size: 0.8rem; color: #888; text-decoration: underline; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -168,7 +202,7 @@
             📂 開啟 Google 完整相簿 (共用)
         </a>
 
-        <div id="schedule-content-pad" style="padding:0 15px 20px 15px;">
+        <div id="schedule-content-pad">
             <button id="add-fab" onclick="window.openEditModal(null)">+</button>
             <button id="btn-lock" onclick="window.toggleLock()">🔒</button>
 
@@ -260,7 +294,7 @@
         </div>
     </div>
 
-    <!-- 3. 工具頁 -->
+    <!-- 3. 工具頁 (移除相片牆，新增美食口袋) -->
     <div id="p-tools" class="page">
         <div class="page-content">
             <h2 style="text-align:center; color:var(--primary);">🧰 旅遊工具箱</h2>
@@ -276,7 +310,7 @@
 
             <div class="tools-grid">
                 <div class="tool-card" onclick="window.openSubPage('check')"><div class="tool-icon">🧳</div><div class="tool-name">行李清單</div></div>
-                <div class="tool-card" onclick="window.openSubPage('gallery')"><div class="tool-icon">📸</div><div class="tool-name">回憶相片牆</div></div>
+                <div class="tool-card" onclick="window.openSubPage('foodlist')"><div class="tool-icon" style="color:#E65100;">🍜</div><div class="tool-name">美食口袋</div></div>
                 <div class="tool-card" onclick="window.openSubPage('wish')"><div class="tool-icon">🎁</div><div class="tool-name">必買清單</div></div>
                 <div class="tool-card" onclick="window.openSubPage('coupon')"><div class="tool-icon">🔖</div><div class="tool-name">優惠券夾</div></div>
             </div>
@@ -351,12 +385,14 @@
     </div>
 </div>
 
-<!-- Tool Input Modal -->
+<!-- Tool Input Modal (通用：伴手禮/優惠券/美食) -->
 <div id="modal-tool">
     <div class="modal-box">
         <h3>➕ 新增項目</h3>
-        <input type="text" id="tool-name" placeholder="名稱 (選填)">
+        <input type="text" id="tool-name" placeholder="名稱 (必填)">
+        <textarea id="tool-note" rows="3" placeholder="備註 / 必吃餐點 (選填)"></textarea>
         <input type="text" id="tool-link" placeholder="相關連結 (選填)">
+        <input type="text" id="tool-loc" placeholder="Google Map 地點 (選填, 美食專用)">
         <label class="btn-outline">📷 選取照片 <input type="file" id="tool-file" accept="image/*" style="display:none;"></label>
         <div id="tool-loading" style="display:none; text-align:center; color:#888;">正在壓縮並上傳...</div>
         <button onclick="window.saveToolItem()" class="btn-primary">上傳</button>
@@ -395,15 +431,12 @@ const firebaseConfig = {
 
     window.openTranslate = () => { window.location.href = "googletranslate://"; setTimeout(() => { window.open("https://translate.google.com/?sl=ja&tl=zh-TW", "_blank"); }, 500); };
 
-    // --- 0. 倒數計時 & 匯率 ---
+    // --- 0. 倒數計時 & 匯率 (修正年份為 2026) ---
     function updateCountdown() {
-        // 使用數字格式 (年, 月-1, 日) 確保兼容性
         const today = new Date();
-        const start = new Date(2025, 0, 13); 
-        const end = new Date(2025, 0, 17, 23, 59, 59);
+        const start = new Date(2026, 0, 13); // 修正為 2026
+        const end = new Date(2026, 0, 17, 23, 59, 59);
         let msg = "";
-        
-        // 只比較日期，忽略時間
         const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         
         if (todayDate < start) {
@@ -561,7 +594,7 @@ const firebaseConfig = {
         document.getElementById("exp-name").value=""; document.getElementById("exp-amt").value=""; document.getElementById("img-preview").style.display="none"; alert("記帳成功");
     });
 
-    // --- 3. 工具頁邏輯 ---
+    // --- 3. 工具頁邏輯 (新增美食口袋) ---
     let currentTool = "";
     const checkItems = ["護照", "日幣", "信用卡", "SIM卡/Wifi機", "充電器", "行動電源", "常備藥", "牙刷牙膏", "換洗衣物", "好走的鞋"];
 
@@ -580,8 +613,10 @@ const firebaseConfig = {
                 html += `<div class="checklist-item ${isChecked}" onclick="window.toggleCheck(this, '${item}')"><div class="cb-icon">✔</div><div class="cb-text">${item}</div></div>`;
             });
             content.innerHTML = html;
-        } else if (tool === 'wish' || tool === 'coupon' || tool === 'gallery') {
-            title.innerText = tool==='wish' ? "🎁 必買清單" : (tool==='coupon' ? "🔖 優惠券" : "📸 大家的回憶牆");
+        } else if (tool === 'wish' || tool === 'coupon' || tool === 'foodlist') {
+            if(tool==='wish') title.innerText = "🎁 必買清單";
+            else if(tool==='coupon') title.innerText = "🔖 優惠券";
+            else title.innerText = "🍜 美食口袋";
             loadWishlist(tool);
         }
     };
@@ -596,20 +631,22 @@ const firebaseConfig = {
 
     function loadWishlist(type) {
         const content = document.getElementById("sub-content");
-        const btnText = type === 'gallery' ? "📷 上傳相片" : (type === 'coupon' ? "➕ 新增優惠券" : "➕ 新增圖片");
-        content.innerHTML = `<button class="btn-primary" onclick="window.openToolModal()">${btnText}</button><div id="wish-grid" class="${type==='gallery'?'gallery-grid':'wish-grid'}"></div>`;
+        let btnText = "➕ 新增圖片";
+        if(type === 'foodlist') btnText = "➕ 新增美食";
+        else if(type === 'coupon') btnText = "➕ 新增優惠券";
+
+        content.innerHTML = `<button class="btn-primary" onclick="window.openToolModal()">${btnText}</button><div id="wish-grid" class="wish-grid"></div>`;
         const q = query(collection(db, "wishlist"), orderBy("timestamp", "desc"));
         onSnapshot(q, (snapshot) => {
             let html = "";
             snapshot.forEach(doc => {
                 const d = doc.data();
                 if(d.type === type) {
-                    if(type === 'gallery') {
-                         html += `<div class="gallery-item" onclick="window.openLightbox('${d.img}')"><img src="${d.img}" class="gallery-img"><button class="gallery-del" onclick="event.stopPropagation(); window.delWish('${doc.id}')">✕</button></div>`;
-                    } else {
-                         const linkBtn = d.link ? `<a href="${d.link}" target="_blank" class="tool-link-btn" onclick="event.stopPropagation()">🔗 開啟連結</a>` : '';
-                         html += `<div class="wish-item" onclick="window.openLightbox('${d.img}')"><img src="${d.img}" class="wish-img"><div class="wish-title">${d.name}</div>${linkBtn}<button class="wish-del" onclick="event.stopPropagation(); window.delWish('${doc.id}')">✕</button></div>`;
-                    }
+                     const linkBtn = d.link ? `<a href="${d.link}" target="_blank" class="tool-link-btn" onclick="event.stopPropagation()">🔗 攻略/官網</a>` : '';
+                     const mapBtn = d.loc ? `<a href="https://www.google.com/maps/search/?api=1&query=${d.loc}+福岡" target="_blank" class="tool-map-btn" onclick="event.stopPropagation()">📍 導航</a>` : '';
+                     const note = d.note ? `<div class="wish-note">${d.note}</div>` : '';
+                     
+                     html += `<div class="wish-item" onclick="window.openLightbox('${d.img}')"><img src="${d.img}" class="wish-img"><div class="wish-info"><div class="wish-title">${d.name}</div>${note}<div class="tool-actions">${linkBtn}${mapBtn}</div></div><button class="wish-del" onclick="event.stopPropagation(); window.delWish('${doc.id}')">✕</button></div>`;
                 }
             });
             const grid = document.getElementById("wish-grid");
@@ -642,6 +679,9 @@ const firebaseConfig = {
     window.saveToolItem = async () => {
         const name = document.getElementById("tool-name").value; 
         const link = document.getElementById("tool-link") ? document.getElementById("tool-link").value : "";
+        const note = document.getElementById("tool-note") ? document.getElementById("tool-note").value : "";
+        const loc = document.getElementById("tool-loc") ? document.getElementById("tool-loc").value : "";
+        
         const file = document.getElementById("tool-file").files[0];
         if(!file) return alert("請選圖片");
         
@@ -654,11 +694,17 @@ const firebaseConfig = {
         await uploadBytes(sRef, compressedFile); 
         const imgUrl = await getDownloadURL(sRef);
         
-        await addDoc(collection(db, "wishlist"), { name: name || "照片", link: link, type: currentTool, img: imgUrl, timestamp: new Date() });
+        await addDoc(collection(db, "wishlist"), { 
+            name: name || "照片", link: link, note: note, loc: loc,
+            type: currentTool, img: imgUrl, timestamp: new Date() 
+        });
         
         document.getElementById("modal-tool").style.display = "none";
+        // Reset fields
         document.getElementById("tool-name").value = "";
-        if(document.getElementById("tool-link")) document.getElementById("tool-link").value = "";
+        document.getElementById("tool-link").value = "";
+        document.getElementById("tool-note").value = "";
+        document.getElementById("tool-loc").value = "";
         document.getElementById("tool-file").value = "";
         btn.style.display = "block"; loading.style.display = "none";
     };
