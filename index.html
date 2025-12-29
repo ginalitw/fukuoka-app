@@ -87,7 +87,7 @@
         .time-badge { background: #eee; padding: 3px 8px; border-radius: 5px; font-weight: bold; font-size: 0.9rem; }
         .card-img { width: 100%; height: 160px; object-fit: cover; border-radius: 10px; margin-top: 10px; display:block; background:#eee;}
 
-        /* --- 記帳頁樣式 (V14 優化) --- */
+        /* --- 記帳頁樣式 (V15 優化版) --- */
         .info-card { background: var(--white); padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         
         .prepaid-row { 
@@ -99,15 +99,15 @@
         .input-box { background: var(--white); padding: 20px 15px; border-radius: 15px; margin-bottom: 20px; border: 2px solid var(--primary); }
         input, select, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1rem;}
         
-        /* 按鈕樣式 (縮小置中) */
+        /* V15 按鈕樣式: 縮小置中 */
         .btn-camera { 
             background: #E0F7FA; color: #006064; border: 1px dashed #00ACC1; 
-            width: 85%; padding: 10px; border-radius: 25px; cursor: pointer; 
-            text-align: center; display: block; margin: 10px auto; font-weight: bold;
+            width: 85%; padding: 12px; border-radius: 30px; cursor: pointer; 
+            text-align: center; display: block; margin: 15px auto 10px auto; font-weight: bold;
         }
         .btn-submit { 
             background: var(--primary); color: white; border: none; 
-            width: 85%; padding: 12px; border-radius: 25px; font-size: 1.1rem; 
+            width: 85%; padding: 12px; border-radius: 30px; font-size: 1.1rem; 
             display: block; margin: 0 auto; box-shadow: 0 4px 6px rgba(255, 139, 167, 0.3);
         }
         .receipt-preview { max-width: 100%; max-height: 150px; display: none; margin: 10px auto; border-radius: 5px;}
@@ -175,7 +175,7 @@
 
         <div class="info-card" style="text-align:center; border:2px solid #FFC6C7;">
             <div style="color:#666;">總花費 (已付 + 新增)</div>
-            <div id="total-display" style="font-size:2rem; font-weight:bold; color:#E91E63;">計算中...</div>
+            <div id="total-display" style="font-size:2rem; font-weight:bold; color:#E91E63;">NT$ 50,851</div>
         </div>
 
         <div class="input-box">
@@ -298,7 +298,7 @@ const firebaseConfig = {
     const storage = getStorage(app);
     const RATE = 0.22;
 
-    // --- 1. 預付項目 & 記帳邏輯 ---
+    // --- 1. 預付項目 & 記帳邏輯 (V15 防呆修復版) ---
     const prepaidList = [ 
         {name:"機票 (虎航)", amt:41490}, 
         {name:"Klook 一日遊", amt:4239}, 
@@ -306,7 +306,6 @@ const firebaseConfig = {
         {name:"車上便當", amt:1260} 
     ];
 
-    // 初始化顯示預付 (不等 Firebase)
     let prepaidTotal = 0;
     function initPrepaid() {
         let html = "";
@@ -316,10 +315,9 @@ const firebaseConfig = {
             html += `<div class="prepaid-row"><span>${p.name}</span><b>$${p.amt.toLocaleString()}</b></div>`; 
         });
         document.getElementById("prepaid-list").innerHTML = html;
-        // 先顯示預付總額
         document.getElementById("total-display").innerText = "NT$ " + prepaidTotal.toLocaleString();
     }
-    initPrepaid(); // 網頁一開就執行
+    initPrepaid();
 
     const qExp = query(collection(db, "expenses"), orderBy("timestamp", "desc"));
     onSnapshot(qExp, (snapshot) => {
@@ -332,26 +330,30 @@ const firebaseConfig = {
         } else {
             snapshot.forEach((doc) => {
                 const d = doc.data();
-                let twd = d.currency === "JPY" ? Math.round(d.amount * RATE) : d.amount;
+                // ★★★ V15 關鍵防呆：若資料有缺，自動補 0，防止崩潰 ★★★
+                let safeAmt = d.amount ? d.amount : 0;
+                let safeCurr = d.currency ? d.currency : "TWD";
+                
+                let twd = safeCurr === "JPY" ? Math.round(safeAmt * RATE) : safeAmt;
                 dynTotal += twd;
                 
                 html += `
                 <div class="expense-item">
                     <div>
-                        <div style="font-weight:bold;">${d.item}</div>
-                        <div style="font-size:0.8rem; color:#888;">${d.category} · ${d.payment}</div>
+                        <div style="font-weight:bold;">${d.item || "未命名"}</div>
+                        <div style="font-size:0.8rem; color:#888;">${d.category || "其他"} · ${d.payment || "現金"}</div>
                         ${d.img ? `<a href="${d.img}" target="_blank" style="font-size:0.8rem; color:#2196F3;">📄 收據</a>` : ''}
                     </div>
                     <div style="text-align:right;">
                         <div style="color:#E91E63; font-weight:bold;">$${twd.toLocaleString()}</div>
-                        ${d.currency==='JPY' ? `<div style="font-size:0.8rem; color:#aaa;">¥${d.amount}</div>` : ''}
+                        ${safeCurr==='JPY' ? `<div style="font-size:0.8rem; color:#aaa;">¥${safeAmt.toLocaleString()}</div>` : ''}
                         <button onclick="delExp('${doc.id}')" style="color:red; border:none; background:none; font-size:0.8rem; margin-top:5px;">刪除</button>
                     </div>
                 </div>`;
             });
             list.innerHTML = html;
         }
-        // 更新總金額 (預付 + 動態)
+        // 更新總金額
         document.getElementById("total-display").innerText = "NT$ " + (prepaidTotal + dynTotal).toLocaleString();
     });
 
@@ -519,7 +521,7 @@ const firebaseConfig = {
         document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
     };
-    window.delExp = window.delExp; // Bind to window
+    window.delExp = window.delExp; 
     let fs = 1; window.toggleFontSize = () => { fs = fs===1?1.3:1; document.documentElement.style.setProperty('--font-scale', fs); };
 </script>
 </body>
