@@ -10,15 +10,12 @@
         body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding-bottom: 90px; -webkit-tap-highlight-color: transparent; font-size: 16px; }
         #app { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; }
         
-        /* Header */
         header { background: var(--primary); color: var(--white); padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
         .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: white; }
 
-        /* FAB & Top Btn */
         #add-fab { position: fixed; bottom: 90px; right: 20px; background: var(--primary); color: white; width: 55px; height: 55px; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center; font-size: 2rem; z-index: 99; cursor: pointer; border: none; }
         #top-btn { position: fixed; bottom: 160px; right: 20px; background: white; color: var(--primary); width: 45px; height: 45px; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: none; justify-content: center; align-items: center; font-size: 1.5rem; z-index: 99; cursor: pointer; border: 2px solid var(--primary); }
 
-        /* Page & Nav */
         .page { display: none; padding: 15px; animation: fadeIn 0.3s; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: 0; } }
@@ -27,11 +24,9 @@
         .day-btn { background: #f0f0f0; border: none; padding: 8px 16px; margin: 0 5px; border-radius: 20px; color: #666; font-size: 0.95rem; cursor: pointer; transition: 0.2s; }
         .day-btn.active { background: var(--primary); color: white; font-weight: bold; transform: scale(1.05); }
 
-        /* Weather */
         .weather-banner { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); border-radius: 15px; padding: 15px; display: flex; align-items: center; justify-content: space-between; color: #1565C0; margin-bottom: 20px; }
         .day-divider { margin: 25px 0 10px 0; font-weight: bold; color: #2196F3; border-bottom: 2px dashed #ccc; padding-bottom: 5px; font-size: 1.1rem; }
 
-        /* Card */
         .card { background: var(--white); border-radius: 16px; margin-bottom: 15px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 6px solid #ccc; cursor: pointer; }
         .card:active { transform: scale(0.98); background: #fff0f5; }
         .card.food { border-left-color: var(--accent-food); }
@@ -46,13 +41,11 @@
         .btn-map { background: #E8F5E9; color: #2E7D32; }
         .btn-link { background: #E3F2FD; color: #1565C0; }
 
-        /* Highlight */
         .hl-food { background: #FFF3E0; color: #E65100; padding: 2px 4px; border-radius: 4px; font-weight: bold; }
         .hl-buy { background: #F3E5F5; color: #6A1B9A; padding: 2px 4px; border-radius: 4px; font-weight: bold; }
         .hl-res { background: #FFEBEE; color: #C62828; padding: 2px 4px; border-radius: 4px; font-weight: bold; }
         .hl-star { background: #FFF9C4; color: #F57F17; padding: 2px 4px; border-radius: 4px; font-weight: bold; }
 
-        /* Expense & Info */
         .info-card { background: var(--white); padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .prepaid-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.95rem; color: #555; }
         .prepaid-row:last-child { border-bottom: none; }
@@ -63,14 +56,12 @@
         .receipt-preview { max-width: 100%; max-height: 150px; display: none; margin: 10px auto; border-radius: 5px;}
         .expense-item { background: white; padding: 12px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #FF9800; }
 
-        /* Modal */
         #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
         .modal-box { background: white; width: 90%; max-width: 400px; padding: 20px; border-radius: 15px; max-height: 90vh; overflow-y: auto; }
         .modal-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; text-align: center; }
         .btn-ai { background: linear-gradient(90deg, #6200EA, #B388FF); color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%; box-shadow: 0 2px 5px rgba(98, 0, 234, 0.3); }
         .btn-ai:disabled { opacity: 0.7; cursor: not-allowed; }
 
-        /* Nav */
         .nav-bar { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; height: 70px; display: flex; border-top: 1px solid #eee; z-index: 100; }
         .nav-item { flex: 1; text-align: center; color: #999; padding-top: 10px; cursor: pointer; }
         .nav-item.active { color: var(--primary); font-weight: bold; }
@@ -177,7 +168,7 @@
         <select id="edit-type"><option value="spot">景點 (綠)</option><option value="food">美食 (橘)</option><option value="trans">交通 (藍)</option></select>
         <label>標題</label><input type="text" id="edit-title">
         <label>詳細說明</label>
-        <button class="btn-ai" onclick="window.askGemini()">✨ AI 自動撰寫介紹 (需填Key)</button>
+        <button class="btn-ai" onclick="window.askGemini()">✨ AI 自動撰寫介紹 (Gemini-Pro)</button>
         <textarea id="edit-desc" rows="5" placeholder="輸入標題和地點，按上方按鈕讓 AI 幫你寫..."></textarea>
         <label>圖片連結 (選填)</label><input type="text" id="edit-img" placeholder="https://...">
         <label>相關連結 (選填)</label><input type="text" id="edit-link" placeholder="https://...">
@@ -208,14 +199,14 @@ const firebaseConfig = {
     };
 
     // 2. Gemini API Key (請貼上)
-    const GEMINI_API_KEY = "AIzaSyDiGJ6p3K7j0PsI3tF7n0vNK89xx6KuI1E"; 
+    const GEMINI_API_KEY = "AIzaSyDiGJ6p3K7j0PsI3tF7n0vNK89xx6KuI1E";
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const storage = getStorage(app);
     const RATE = 0.22;
 
-    // --- Gemini AI (修正為 gemini-pro) ---
+    // --- Gemini AI (V23 最終修正: 強制使用 gemini-pro) ---
     window.askGemini = async () => {
         const title = document.getElementById("edit-title").value;
         const loc = document.getElementById("edit-loc").value;
@@ -229,22 +220,28 @@ const firebaseConfig = {
         btn.innerText = "🤖 AI 思考中..."; btn.disabled = true;
 
         try {
-            // ★★★ 關鍵修復：改用 gemini-pro ★★★
+            // ★★★ 強制使用 gemini-pro，解決 404 問題 ★★★
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
+            
             const response = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
             });
-            if(!response.ok) throw new Error("AI 錯誤: " + response.status);
+            
+            if(!response.ok) {
+                const err = await response.json();
+                throw new Error(err.error?.message || "AI 回應錯誤");
+            }
+            
             const data = await response.json();
             const aiText = data.candidates[0].content.parts[0].text;
             document.getElementById("edit-desc").value = aiText;
         } catch (error) {
-            console.error(error);
-            alert("AI 連線失敗，請檢查 Key。");
+            console.error("AI Error:", error);
+            alert("AI 連線失敗: " + error.message);
         } finally {
-            btn.innerText = "✨ AI 自動撰寫介紹"; btn.disabled = false;
+            btn.innerText = "✨ AI 自動撰寫介紹 (Gemini-Pro)"; btn.disabled = false;
         }
     };
 
