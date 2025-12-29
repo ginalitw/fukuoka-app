@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>福岡好好玩 V31 🌸</title>
+    <title>福岡好好玩 V32 🌸</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -30,107 +30,80 @@
         h1 { margin: 0; font-size: 1.4rem; font-weight: 700; }
         .icon-btn { background: rgba(255,255,255,0.25); border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; }
 
-        /* --- 首頁輪播 (Carousel) --- */
-        .carousel-container {
-            position: relative; width: 100%; height: 220px; overflow: hidden;
-            background: #eee; margin-bottom: 10px;
-        }
-        .carousel-track {
-            display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
-            width: 100%; height: 100%;
-            -webkit-overflow-scrolling: touch; /* 平滑捲動 */
-        }
-        .carousel-track::-webkit-scrollbar { display: none; }
-        .carousel-slide {
-            flex: 0 0 100%; width: 100%; height: 100%; scroll-snap-align: center;
-            position: relative;
-        }
-        .carousel-img { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* 輪播上的按鈕 */
-        .carousel-btn {
-            position: absolute; bottom: 10px; right: 10px;
-            background: rgba(0,0,0,0.5); color: white; border: none;
-            padding: 5px 10px; border-radius: 20px; font-size: 0.8rem;
-            cursor: pointer; backdrop-filter: blur(4px); display: flex; align-items: center; gap: 5px;
-        }
-        .carousel-del {
-            position: absolute; top: 10px; right: 10px;
-            background: rgba(255,0,0,0.7); color: white; border: none;
-            width: 30px; height: 30px; border-radius: 50%; font-size: 1rem;
-            cursor: pointer; display: none; /* 預設隱藏刪除鈕 */
-        }
-        .carousel-slide:hover .carousel-del { display: flex; justify-content: center; align-items: center; }
-
-        /* Google 相簿按鈕 */
-        .album-link-btn {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            background: white; border: 2px solid #4285F4; color: #4285F4;
-            margin: 10px 15px; padding: 10px; border-radius: 12px;
-            font-weight: bold; text-decoration: none; font-size: 0.95rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.1s;
-        }
-        .album-link-btn:active { background: #E8F0FE; transform: scale(0.98); }
-
         /* Page System */
         .page { display: none; padding: 20px; animation: fadeIn 0.3s; }
-        #p-schedule { padding: 0; } /* 行程頁特殊處理 */
-        #schedule-content-pad { padding: 0 15px 20px 15px; } /* 行程內容內縮 */
-
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: 0; } }
 
-        /* Tools Grid */
+        /* --- 工具頁 (Tools) --- */
         .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
         .tool-card {
             background: white; border-radius: 16px; padding: 20px; text-align: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid #eee; cursor: pointer;
             transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 110px;
+            height: 110px; position: relative;
         }
         .tool-card:active { transform: scale(0.95); background: #FFF0F5; border-color: var(--primary); }
         .tool-icon { font-size: 2.5rem; margin-bottom: 8px; }
         .tool-name { font-weight: bold; color: #555; }
 
-        /* Sub Page */
-        .sub-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 200; display: none; flex-direction: column; overflow-y: auto; }
-        .sub-header { background: white; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 201; }
-        .back-btn { font-size: 1.5rem; background: none; border: none; margin-right: 15px; cursor: pointer; padding: 5px; }
+        /* --- 相片牆 (Gallery) --- */
+        .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 15px; }
+        .gallery-item { position: relative; aspect-ratio: 1/1; overflow: hidden; border-radius: 4px; background: #eee; cursor: pointer; }
+        .gallery-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .gallery-item:active .gallery-img { transform: scale(1.1); }
+        .gallery-del { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 0.8rem; display: flex; justify-content: center; align-items: center; }
+
+        /* 子工具頁面 */
+        .sub-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color);
+            z-index: 200; display: none; flex-direction: column; overflow-y: auto;
+        }
+        .sub-header {
+            background: white; padding: 15px; display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 201;
+        }
+        .back-btn { font-size: 1.5rem; background: none; border: none; cursor: pointer; padding: 5px; }
         .sub-content { padding: 20px; padding-bottom: 100px; }
 
-        /* Checklist */
-        .checklist-item { background: white; padding: 15px; margin-bottom: 10px; border-radius: 12px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; }
+        /* 行李清單 */
+        .checklist-item {
+            background: white; padding: 15px; margin-bottom: 10px; border-radius: 12px;
+            display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer;
+        }
         .checklist-item.checked { opacity: 0.5; background: #f0f0f0; }
         .checklist-item.checked .cb-text { text-decoration: line-through; }
         .cb-icon { font-size: 1.2rem; margin-right: 15px; color: #ccc; width: 24px; text-align: center;}
         .checklist-item.checked .cb-icon { color: var(--accent-spot); content: "✔"; }
 
-        /* Wishlist */
+        /* 伴手禮/優惠券 */
         .wish-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
         .wish-item { position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; }
         .wish-img { width: 100%; height: 160px; object-fit: cover; display: block; }
         .wish-title { padding: 8px; font-size: 0.9rem; text-align: center; font-weight: bold; color: #555; }
         .wish-del { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; line-height: 24px; font-size: 0.8rem; cursor: pointer; }
 
-        /* Expense */
+        /* 記帳本 */
         .info-card { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .input-box { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 2px solid var(--primary); }
         input, select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #dfe6e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box; }
+        
         .btn-primary { background: var(--primary); color: white; border: none; width: 85%; padding: 12px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; display: block; margin: 10px auto; box-shadow: 0 4px 10px rgba(255, 139, 167, 0.4); cursor: pointer; }
         .btn-outline { background: white; border: 2px solid #dfe6e9; color: #636E72; width: 85%; padding: 10px; border-radius: 30px; font-size: 1rem; font-weight: bold; cursor: pointer; margin: 10px auto; text-align: center; display: block;}
+        
         .expense-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #FF9800; }
         .exp-tag { font-size: 0.75rem; padding: 3px 8px; border-radius: 6px; margin-right: 5px; background: #eee; }
         .exp-tag.public { background: #E0F2F1; color: #00695C; }
 
-        /* Split Board */
+        /* 分帳看板 */
         #split-section { display: none; }
         .split-dashboard { background: #FFF8E1; border: 2px solid #FFE082; border-radius: 16px; padding: 15px; margin-bottom: 25px; }
         .split-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem; border-bottom: 1px dashed #ccc; padding-bottom: 5px; }
         .split-owe { color: #e74c3c; font-weight: bold; }
         .split-get { color: #27ae60; font-weight: bold; }
 
-        /* Schedule Card */
-        .day-nav { display: flex; overflow-x: auto; white-space: nowrap; background: white; padding: 12px 20px; position: sticky; top: 60px; z-index: 98; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin: 0 -15px 20px -15px; }
+        /* 行程卡片 */
+        .day-nav { display: flex; overflow-x: auto; white-space: nowrap; background: white; padding: 12px 20px; position: sticky; top: 60px; z-index: 98; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin: 0 -20px 20px -20px; }
         .day-btn { background: #F1F2F6; border: none; padding: 8px 18px; margin: 0 4px; border-radius: 20px; color: #636E72; font-size: 0.95rem; cursor: pointer; }
         .day-btn.active { background: var(--primary); color: white; font-weight: bold; }
         .weather-banner { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); border-radius: 15px; padding: 15px; display: flex; align-items: center; justify-content: space-between; color: #1565C0; margin-bottom: 20px; }
@@ -144,6 +117,7 @@
         .card-desc { font-size: 1rem; color: #636E72; line-height: 1.6; white-space: pre-line; margin-bottom: 12px; }
         .card-img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-top: 10px; display:block; background:#eee;}
 
+        /* 按鈕群組 */
         .btn-group { display: flex; gap: 12px; margin-top: 15px; }
         .action-btn { flex: 1; padding: 10px; border-radius: 10px; text-align: center; text-decoration: none; font-size: 0.95rem; font-weight: 700; display: block; transition: transform 0.1s; }
         .action-btn:active { transform: scale(0.95); }
@@ -162,8 +136,10 @@
         .nav-icon { font-size: 1.6rem; display: block; margin-bottom: 4px; }
 
         /* Modal */
-        #modal, #modal-tool { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
+        #modal, #modal-tool, #modal-link, #modal-lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
         .modal-box { background: white; width: 85%; max-width: 400px; padding: 25px; border-radius: 20px; max-height: 85vh; overflow-y: auto; }
+        #lightbox-img { max-width: 100%; max-height: 80vh; border-radius: 10px; }
+        
         .hl-food { background: #fff3cd; color: #856404; padding: 0 4px; border-radius: 4px; }
         .hl-buy { background: #e2e3f5; color: #383d41; padding: 0 4px; border-radius: 4px; }
         .hl-res { background: #f8d7da; color: #721c24; padding: 0 4px; border-radius: 4px; }
@@ -181,23 +157,14 @@
     <!-- 1. 行程頁 -->
     <div id="p-schedule" class="page active">
         <!-- 輪播 (Carousel) -->
-        <div class="carousel-container">
-            <div id="carousel-track" class="carousel-track">
-                <!-- 預設封面圖 -->
-                <div class="carousel-slide"><img src="https://ginalitw.github.io/fukuoka-app/images/0104.jpg" class="carousel-img"></div>
+        <div class="carousel-container" style="position:relative; width:100%; height:200px; overflow:hidden; margin-bottom:10px;">
+            <div id="carousel-track" style="width:100%; height:100%;">
+                <img src="https://ginalitw.github.io/fukuoka-app/images/0104.jpg" style="width:100%; height:100%; object-fit:cover;">
             </div>
-            <label class="carousel-btn">
-                📷 上傳封面
-                <input type="file" accept="image/*" style="display:none;" onchange="window.uploadBanner(this)">
-            </label>
+            <div style="position:absolute; bottom:10px; left:0; width:100%; text-align:center; color:white; font-weight:bold; text-shadow:0 1px 3px rgba(0,0,0,0.5);">Welcome to Fukuoka!</div>
         </div>
         
-        <!-- Google 相簿按鈕 -->
-        <a href="https://photos.app.goo.gl/ukaRg1J12MkCrYsw5" target="_blank" class="album-link-btn">
-            📂 開啟 Google 完整相簿 (共用)
-        </a>
-
-        <div id="schedule-content-pad">
+        <div id="schedule-content-pad" style="padding:0 15px;">
             <button id="add-fab" onclick="window.openEditModal(null)">+</button>
             <button id="btn-lock" onclick="window.toggleLock()">🔒</button>
 
@@ -281,14 +248,16 @@
         </div>
     </div>
 
-    <!-- 3. 工具頁 (移除日語) -->
+    <!-- 3. 工具頁 (全新升級：內建相簿 + 壓縮) -->
     <div id="p-tools" class="page">
         <h2 style="text-align:center; color:var(--primary);">🧰 旅遊工具箱</h2>
         <div class="tools-grid">
             <div class="tool-card" onclick="window.openSubPage('check')"><div class="tool-icon">🧳</div><div class="tool-name">行李清單</div></div>
+            <div class="tool-card" onclick="window.openSubPage('gallery')"><div class="tool-icon">📸</div><div class="tool-name">回憶相片牆</div></div>
             <div class="tool-card" onclick="window.openSubPage('wish')"><div class="tool-icon">🎁</div><div class="tool-name">必買清單</div></div>
             <div class="tool-card" onclick="window.openSubPage('coupon')"><div class="tool-icon">🔖</div><div class="tool-name">優惠券夾</div></div>
         </div>
+        <a href="https://photos.app.goo.gl/ukaRg1J12MkCrYsw5" target="_blank" class="btn-outline" style="background:white; color:#4285F4; border-color:#4285F4; margin-top:20px;">📂 開啟 Google 完整相簿</a>
     </div>
 
     <!-- 4. 資訊頁 -->
@@ -327,8 +296,8 @@
 <!-- 子頁面容器 -->
 <div id="sub-page-container" class="sub-page">
     <div class="sub-header">
-        <button class="back-btn" onclick="window.closeSubPage()">⬅</button>
         <h2 id="sub-title" style="margin:0; font-size:1.2rem;">標題</h2>
+        <button class="back-btn" onclick="window.closeSubPage()">✕</button>
     </div>
     <div id="sub-content" class="sub-content"></div>
 </div>
@@ -361,11 +330,17 @@
 <div id="modal-tool">
     <div class="modal-box">
         <h3>➕ 新增項目</h3>
-        <input type="text" id="tool-name" placeholder="名稱">
-        <label class="btn-outline">📷 上傳照片 <input type="file" id="tool-file" accept="image/*" style="display:none;"></label>
-        <button onclick="window.saveToolItem()" class="btn-primary">新增</button>
+        <input type="text" id="tool-name" placeholder="名稱 (選填)">
+        <label class="btn-outline">📷 選取照片 <input type="file" id="tool-file" accept="image/*" style="display:none;"></label>
+        <div id="tool-loading" style="display:none; text-align:center; color:#888;">正在壓縮並上傳...</div>
+        <button onclick="window.saveToolItem()" class="btn-primary">上傳</button>
         <button onclick="document.getElementById('modal-tool').style.display='none'" style="width:100%; color:#888; border:none; background:none; margin-top:10px;">取消</button>
     </div>
+</div>
+
+<!-- Lightbox -->
+<div id="modal-lightbox" onclick="this.style.display='none'">
+    <img id="lightbox-img" style="max-width:90%; max-height:80vh; border-radius:8px;">
 </div>
 
 <script type="module">
@@ -394,33 +369,7 @@ const firebaseConfig = {
 
     window.openTranslate = () => { window.location.href = "googletranslate://"; setTimeout(() => { window.open("https://translate.google.com/?sl=ja&tl=zh-TW", "_blank"); }, 500); };
 
-    // --- 1. 首頁輪播 ---
-    const qBan = query(collection(db, "banners"), orderBy("timestamp", "desc"));
-    onSnapshot(qBan, (snapshot) => {
-        const track = document.getElementById("carousel-track");
-        if(snapshot.empty) return;
-        let html = "";
-        snapshot.forEach(doc => {
-            const d = doc.data();
-            html += `<div class="carousel-slide"><img src="${d.img}" class="carousel-img"><button class="carousel-del" onclick="window.delBanner('${doc.id}')">✕</button></div>`;
-        });
-        track.innerHTML = html;
-    });
-
-    window.uploadBanner = async (input) => {
-        if(input.files[0]) {
-            if(!confirm("確定上傳這張當封面？")) return;
-            const file = input.files[0];
-            const sRef = ref(storage, 'banners/'+Date.now()+'_'+file.name);
-            await uploadBytes(sRef, file);
-            const imgUrl = await getDownloadURL(sRef);
-            await addDoc(collection(db, "banners"), { img: imgUrl, timestamp: new Date() });
-            alert("上傳成功！");
-        }
-    };
-    window.delBanner = async (id) => { if(confirm("刪除這張封面？")) await deleteDoc(doc(db, "banners", id)); };
-
-    // --- 2. 行程邏輯 ---
+    // --- 1. 行程邏輯 ---
     const qSch = query(collection(db, "schedule"), orderBy("day"), orderBy("time"));
     onSnapshot(qSch, (snapshot) => {
         const container = document.getElementById("schedule-container");
@@ -450,11 +399,11 @@ const firebaseConfig = {
     });
 
     let isLocked = true;
-    window.toggleLock = () => { isLocked=!isLocked; const b=document.getElementById("btn-lock"); const a=document.getElementById("btn-add"); if(isLocked){b.innerHTML="🔒";b.className="fab-btn";a.style.display="none"; document.querySelectorAll(".card").forEach(c=>c.classList.remove("editable"));}else{b.innerHTML="🔓";b.className="fab-btn unlocked";a.style.display="flex"; document.querySelectorAll(".card").forEach(c=>c.classList.add("editable"));} };
+    window.toggleLock = () => { isLocked=!isLocked; const b=document.getElementById("btn-lock"); const a=document.getElementById("add-fab"); if(isLocked){b.innerHTML="🔒";b.className="fab-btn";a.style.display="none"; document.querySelectorAll(".card").forEach(c=>c.classList.remove("editable"));}else{b.innerHTML="🔓";b.className="fab-btn unlocked";a.style.display="flex"; document.querySelectorAll(".card").forEach(c=>c.classList.add("editable"));} };
     window.cardClick = (id,day,time,type,title,desc,img,loc,link) => { if(!isLocked) window.openEditModal(id,day,time,type,title,desc,img,loc,link); };
     window.filterDay = (dayStr, btn) => { document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); document.querySelectorAll('.card, .day-divider').forEach(el => { if(el.dataset.day && el.dataset.day.includes(dayStr)) el.style.display='block'; else el.style.display='none'; }); window.updateWeather(dayStr); };
 
-    // --- 3. 記帳邏輯 ---
+    // --- 2. 記帳邏輯 ---
     let allExpenses = [];
     const prepaidList = [ {name:"機票", amt:41490}, {name:"Klook", amt:4239}, {name:"JR", amt:3862}, {name:"便當", amt:1260} ];
     let prepaidTotal = 0;
@@ -512,13 +461,19 @@ const firebaseConfig = {
         const name = document.getElementById("exp-name").value; const amt = parseFloat(document.getElementById("exp-amt").value); const file = document.getElementById("exp-img-file").files[0];
         const payer = document.getElementById("exp-payer").value;
         if(!name || !amt) return alert("請輸入完整資料");
+        
+        // 壓縮收據
         let imgUrl = "";
-        if(file) { const sRef = ref(storage, 'receipts/'+Date.now()+'_'+file.name); await uploadBytes(sRef, file); imgUrl = await getDownloadURL(sRef); }
+        if(file) { 
+            const compressed = await compressImage(file, 800, 0.7);
+            const sRef = ref(storage, 'receipts/'+Date.now()+'_'+file.name); 
+            await uploadBytes(sRef, compressed); imgUrl = await getDownloadURL(sRef); 
+        }
         await addDoc(collection(db, "expenses"), { item: name, category: document.getElementById("exp-cat").value, payment: document.getElementById("exp-pay").value, currency: document.getElementById("exp-curr").value, amount: amt, payer: payer, img: imgUrl, timestamp: new Date() });
         document.getElementById("exp-name").value=""; document.getElementById("exp-amt").value=""; document.getElementById("img-preview").style.display="none"; alert("記帳成功");
     });
 
-    // --- 4. 工具頁邏輯 ---
+    // --- 3. 工具頁 (含自動壓縮相片牆) ---
     let currentTool = "";
     const checkItems = ["護照", "日幣", "信用卡", "SIM卡/Wifi機", "充電器", "行動電源", "常備藥", "牙刷牙膏", "換洗衣物", "好走的鞋"];
 
@@ -537,8 +492,8 @@ const firebaseConfig = {
                 html += `<div class="checklist-item ${isChecked}" onclick="window.toggleCheck(this, '${item}')"><div class="cb-icon">✔</div><div class="cb-text">${item}</div></div>`;
             });
             content.innerHTML = html;
-        } else if (tool === 'wish' || tool === 'coupon') {
-            title.innerText = tool==='wish' ? "🎁 必買清單" : "🔖 優惠券";
+        } else if (tool === 'wish' || tool === 'coupon' || tool === 'gallery') {
+            title.innerText = tool==='wish' ? "🎁 必買清單" : (tool==='coupon' ? "🔖 優惠券" : "📸 大家的回憶牆");
             loadWishlist(tool);
         }
     };
@@ -553,13 +508,20 @@ const firebaseConfig = {
 
     function loadWishlist(type) {
         const content = document.getElementById("sub-content");
-        content.innerHTML = `<button class="btn-primary" onclick="window.openToolModal()">➕ 新增圖片</button><div id="wish-grid" class="wish-grid"></div>`;
+        const btnText = type === 'gallery' ? "📷 上傳相片" : "➕ 新增圖片";
+        content.innerHTML = `<button class="btn-primary" onclick="window.openToolModal()">${btnText}</button><div id="wish-grid" class="${type==='gallery'?'gallery-grid':'wish-grid'}"></div>`;
         const q = query(collection(db, "wishlist"), orderBy("timestamp", "desc"));
         onSnapshot(q, (snapshot) => {
             let html = "";
             snapshot.forEach(doc => {
                 const d = doc.data();
-                if(d.type === type) html += `<div class="wish-item"><img src="${d.img}" class="wish-img"><div class="wish-title">${d.name}</div><button class="wish-del" onclick="window.delWish('${doc.id}')">✕</button></div>`;
+                if(d.type === type) {
+                    if(type === 'gallery') {
+                         html += `<div class="gallery-item" onclick="window.openLightbox('${d.img}')"><img src="${d.img}" class="gallery-img"><button class="gallery-del" onclick="event.stopPropagation(); window.delWish('${doc.id}')">✕</button></div>`;
+                    } else {
+                         html += `<div class="wish-item"><img src="${d.img}" class="wish-img"><div class="wish-title">${d.name}</div><button class="wish-del" onclick="window.delWish('${doc.id}')">✕</button></div>`;
+                    }
+                }
             });
             const grid = document.getElementById("wish-grid");
             if(grid) grid.innerHTML = html;
@@ -567,13 +529,51 @@ const firebaseConfig = {
     }
 
     window.openToolModal = () => document.getElementById("modal-tool").style.display = "flex";
+    
+    // ★★★ 關鍵技術：圖片自動壓縮 ★★★
+    function compressImage(file, maxWidth, quality) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    let w = img.width, h = img.height;
+                    if (w > maxWidth) { h *= maxWidth / w; w = maxWidth; }
+                    canvas.width = w; canvas.height = h;
+                    ctx.drawImage(img, 0, 0, w, h);
+                    canvas.toBlob((blob) => { resolve(blob); }, 'image/jpeg', quality);
+                };
+            };
+        });
+    }
+
     window.saveToolItem = async () => {
-        const name = document.getElementById("tool-name").value; const file = document.getElementById("tool-file").files[0];
+        const name = document.getElementById("tool-name").value; 
+        const file = document.getElementById("tool-file").files[0];
         if(!file) return alert("請選圖片");
-        const sRef = ref(storage, 'tools/'+Date.now()+'_'+file.name); await uploadBytes(sRef, file); const imgUrl = await getDownloadURL(sRef);
-        await addDoc(collection(db, "wishlist"), { name: name || "未命名", type: currentTool, img: imgUrl, timestamp: new Date() });
+        
+        const btn = document.querySelector("#modal-tool .btn-primary");
+        const loading = document.getElementById("tool-loading");
+        btn.style.display = "none"; loading.style.display = "block";
+
+        // 執行壓縮 (寬度 1200px, 品質 0.7) -> 檔案大幅縮小
+        const compressedFile = await compressImage(file, 1200, 0.7);
+        
+        const sRef = ref(storage, 'tools/'+Date.now()+'_'+file.name); 
+        await uploadBytes(sRef, compressedFile); 
+        const imgUrl = await getDownloadURL(sRef);
+        
+        await addDoc(collection(db, "wishlist"), { name: name || "照片", type: currentTool, img: imgUrl, timestamp: new Date() });
+        
         document.getElementById("modal-tool").style.display = "none";
+        btn.style.display = "block"; loading.style.display = "none";
     };
+    
+    window.openLightbox = (url) => { document.getElementById("lightbox-img").src = url; document.getElementById("modal-lightbox").style.display = "flex"; };
     window.delWish = async(id) => { if(confirm("刪除？")) await deleteDoc(doc(db, "wishlist", id)); };
 
     // --- Helpers ---
