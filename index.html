@@ -14,13 +14,13 @@
         header { background: var(--primary); color: var(--white); padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
         .icon-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.5); font-size: 1.5rem; cursor: pointer; color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
 
-        /* Floating Buttons */
+        /* Floating Buttons (FAB) */
         .fab-group { position: fixed; bottom: 90px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 99; }
         .fab-btn { width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; cursor: pointer; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s; }
         .fab-btn:active { transform: scale(0.9); }
         
         #btn-lock { background: white; color: #555; border: 2px solid #ccc; }
-        #btn-lock.unlocked { background: #FFEBEE; color: #D32F2F; border-color: #D32F2F; }
+        #btn-lock.unlocked { background: #FFEBEE; color: #D32F2F; border-color: #D32F2F; } /* 解鎖時變紅色 */
         
         #btn-add { background: var(--primary); color: white; display: none; } /* 預設隱藏 */
         #btn-top { background: white; color: var(--primary); display: none; border: 2px solid var(--primary); }
@@ -37,7 +37,7 @@
         .day-divider { margin: 25px 0 10px 0; font-weight: bold; color: #2196F3; border-bottom: 2px dashed #ccc; padding-bottom: 5px; font-size: 1.1rem; }
 
         .card { background: var(--white); border-radius: 16px; margin-bottom: 15px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 6px solid #ccc; transition: 0.2s; }
-        .card.editable { cursor: pointer; } /* 只有解鎖時變手指 */
+        .card.editable { cursor: pointer; } /* 解鎖後才有手型 */
         .card.editable:active { transform: scale(0.98); background: #fff0f5; }
         .card.food { border-left-color: var(--accent-food); }
         .card.spot { border-left-color: var(--accent-spot); }
@@ -424,4 +424,71 @@ const firebaseConfig = {
                 ${d.img ? `<img src="${d.img}" class="card-img">` : ''}
                 <div class="btn-group">
                     <a href="https://www.google.com/maps/search/?api=1&query=${d.loc}+福岡" target="_blank" onclick="event.stopPropagation()" class="action-btn btn-map">📍 導航</a>
-                    ${d.link ? `<a href="${d.link}" target="_blank" onclick="event.stopPropagation()" class="action-btn btn-
+                    ${d.link ? `<a href="${d.link}" target="_blank" onclick="event.stopPropagation()" class="action-btn btn-link">🔗 攻略</a>` : ''}
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+        window.filterDay('Day 1', document.querySelector('.day-btn'));
+        window.toggleLock(); // 重新整理後保持鎖定狀態
+        window.toggleLock(); // 觸發一次狀態更新
+    });
+
+    window.cardClick = (id, day, time, type, title, desc, img, loc, link) => {
+        if(isLocked) return; // 鎖定時點擊無效
+        window.openEditModal(id, day, time, type, title, desc, img, loc, link);
+    };
+
+    window.filterDay = (dayStr, btn) => {
+        document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+        if(btn) btn.classList.add('active');
+        document.querySelectorAll('.card, .day-divider').forEach(el => {
+            if (el.dataset.day && el.dataset.day.includes(dayStr)) el.style.display = 'block'; else el.style.display = 'none';
+        });
+        window.updateWeather(dayStr);
+    };
+
+    window.openEditModal = (id, day, time, type, title, desc, img, loc, link) => {
+        document.getElementById("modal").style.display = "flex";
+        if(id) {
+            document.getElementById("modal-title").innerText="✏️ 編輯行程";
+            document.getElementById("edit-id").value=id; document.getElementById("edit-day").value=day; document.getElementById("edit-time").value=time; document.getElementById("edit-type").value=type;
+            document.getElementById("edit-title").value=title; document.getElementById("edit-desc").value=desc; document.getElementById("edit-img").value=img; document.getElementById("edit-loc").value=loc; document.getElementById("edit-link").value=link||"";
+            document.getElementById("btn-del-sch").style.display="block";
+        } else {
+            document.getElementById("modal-title").innerText="➕ 新增行程";
+            document.getElementById("edit-id").value=""; document.getElementById("edit-time").value="10:00"; document.getElementById("edit-title").value=""; document.getElementById("edit-desc").value=""; document.getElementById("edit-img").value=""; document.getElementById("edit-loc").value=""; document.getElementById("edit-link").value="";
+            document.getElementById("btn-del-sch").style.display="none";
+        }
+    };
+
+    window.saveSchedule = async () => {
+        const id = document.getElementById("edit-id").value;
+        const data = { day: document.getElementById("edit-day").value, time: document.getElementById("edit-time").value, type: document.getElementById("edit-type").value, title: document.getElementById("edit-title").value, desc: document.getElementById("edit-desc").value, img: document.getElementById("edit-img").value, loc: document.getElementById("edit-loc").value, link: document.getElementById("edit-link").value };
+        if(id) await updateDoc(doc(db, "schedule", id), data); else await addDoc(collection(db, "schedule"), data);
+        window.closeModal();
+    };
+
+    window.resetData = async () => {
+        if(!confirm("確定要刪除現有行程，重新載入【導遊精選版】預設值嗎？")) return;
+        const q = query(collection(db, "schedule")); const snapshot = await getDocs(q); const batch = writeBatch(db);
+        snapshot.forEach(doc => batch.delete(doc.ref)); await batch.commit();
+        for(let item of initialSchedule) await addDoc(collection(db, "schedule"), item);
+        alert("導遊資料載入完成！請回行程頁查看。");
+    };
+
+    window.deleteSchedule = async () => { const id = document.getElementById("edit-id").value; if(id && confirm("確定刪除？")) { await deleteDoc(doc(db, "schedule", id)); window.closeModal(); } };
+    window.closeModal = () => document.getElementById("modal").style.display = "none";
+    window.previewImage = (input) => { if(input.files[0]){ let r = new FileReader(); r.onload=e=>{document.getElementById("img-preview").src=e.target.result; document.getElementById("img-preview").style.display="block";}; r.readAsDataURL(input.files[0]); } };
+    window.calcRate = () => { const v = document.getElementById("exp-amt").value; const c = document.getElementById("exp-curr").value; document.getElementById("rate-calc").innerText = c==="JPY" ? `約台幣 ${Math.round(v*RATE)}` : "台幣計價"; };
+    window.delExp = async(id) => { if(confirm("刪除?")) await deleteDoc(doc(db,"expenses",id)); };
+    
+    window.updateWeather = (day) => { const t = document.getElementById("w-tips"), l = document.getElementById("w-loc"), tm = document.getElementById("w-temp"); if(day.includes("Day 1")) { l.innerText="福岡市"; tm.innerText="10°C"; t.innerText="🧥 微涼，帶薄外套"; } else if(day.includes("Day 2")) { l.innerText="由布院"; tm.innerText="8°C"; t.innerText="❄️ 山區冷，穿發熱衣"; } else { l.innerText="福岡市"; tm.innerText="11°C"; t.innerText="⛅ 舒適，洋蔥式穿搭"; } };
+    
+    window.scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.onscroll = () => { const btn = document.getElementById("top-btn"); if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) btn.style.display = "flex"; else btn.style.display = "none"; };
+    
+    window.switchPage = (id, btn) => { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); };
+</script>
+</body>
+</html>
