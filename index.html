@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>福岡好好玩 V28 🌸</title>
+    <title>福岡好好玩 V29 🌸</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -69,18 +69,6 @@
         .cb-icon { font-size: 1.2rem; margin-right: 15px; color: #ccc; width: 24px; text-align: center;}
         .checklist-item.checked .cb-icon { color: var(--accent-spot); content: "✔"; }
 
-        /* 2. 日語通樣式 */
-        .jp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .jp-card {
-            background: white; padding: 15px; border-radius: 16px; text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-bottom: 4px solid var(--primary);
-            cursor: pointer; position: relative;
-        }
-        .jp-card:active { transform: translateY(2px); border-bottom: 0; margin-bottom: 4px; background: #FFF0F5; }
-        .jp-icon { font-size: 1.5rem; display: block; margin-bottom: 5px; }
-        .jp-zh { font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; color: #333; }
-        .jp-txt { font-size: 0.9rem; color: #888; }
-
         /* 3. 伴手禮/優惠券樣式 */
         .wish-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
         .wish-item { position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; }
@@ -107,14 +95,29 @@
         .split-owe { color: #e74c3c; font-weight: bold; }
         .split-get { color: #27ae60; font-weight: bold; }
 
-        /* --- 行程樣式 --- */
+        /* --- 行程樣式 (修復版) --- */
         .day-nav { display: flex; overflow-x: auto; white-space: nowrap; background: white; padding: 12px 20px; position: sticky; top: 60px; z-index: 98; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin: 0 -20px 20px -20px; }
         .day-btn { background: #F1F2F6; border: none; padding: 8px 18px; margin: 0 4px; border-radius: 20px; color: #636E72; font-size: 0.95rem; cursor: pointer; }
         .day-btn.active { background: var(--primary); color: white; font-weight: bold; }
+        .weather-banner { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); border-radius: 15px; padding: 15px; display: flex; align-items: center; justify-content: space-between; color: #1565C0; margin-bottom: 20px; }
         
+        .day-divider { margin: 25px 0 10px 0; font-weight: bold; color: #2196F3; border-bottom: 2px dashed #ccc; padding-bottom: 5px; font-size: 1.1rem; }
+
+        /* 卡片修復 */
         .card { background: white; border-radius: 16px; margin-bottom: 18px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 5px solid #ccc; cursor: pointer; }
         .card.food { border-left-color: var(--accent-food); } .card.spot { border-left-color: var(--accent-spot); } .card.trans { border-left-color: var(--accent-trans); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .card-title { font-size: 1.25rem; font-weight: 700; margin: 0 0 8px 0; color: #2D3436; line-height: 1.3; }
+        .time-badge { background: #F1F2F6; padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; color: #2D3436; }
+        .card-desc { font-size: 1rem; color: #636E72; line-height: 1.6; white-space: pre-line; margin-bottom: 12px; }
         .card-img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-top: 10px; display:block; background:#eee;}
+
+        /* 按鈕群組修復 */
+        .btn-group { display: flex; gap: 12px; margin-top: 15px; }
+        .action-btn { flex: 1; padding: 10px; border-radius: 10px; text-align: center; text-decoration: none; font-size: 0.95rem; font-weight: 700; display: block; transition: transform 0.1s; }
+        .action-btn:active { transform: scale(0.95); }
+        .btn-map { background: #E8F5E9; color: #27ae60; border: 1px solid #C8E6C9; }
+        .btn-link { background: #E3F2FD; color: #0984e3; border: 1px solid #BBDEFB; }
         
         /* FAB */
         #add-fab { position: fixed; bottom: 100px; right: 20px; background: var(--primary); color: white; width: 56px; height: 56px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center; font-size: 2rem; z-index: 99; cursor: pointer; border: none; display:none; }
@@ -130,6 +133,11 @@
         /* Modal */
         #modal, #modal-tool { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
         .modal-box { background: white; width: 85%; max-width: 400px; padding: 25px; border-radius: 20px; max-height: 85vh; overflow-y: auto; }
+        
+        /* Highlights */
+        .hl-food { background: #fff3cd; color: #856404; padding: 0 4px; border-radius: 4px; }
+        .hl-buy { background: #e2e3f5; color: #383d41; padding: 0 4px; border-radius: 4px; }
+        .hl-res { background: #f8d7da; color: #721c24; padding: 0 4px; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -176,20 +184,24 @@
         </div>
 
         <div class="input-box">
-            <h3 style="margin-top:0; text-align:center;">➕ 新增消費</h3>
+            <h3 style="margin-top:0; text-align:center; color:var(--text-main);">➕ 新增消費</h3>
             <div style="margin-bottom:15px; text-align:center;">
-                <label style="font-weight:bold; color:var(--primary);">付款人</label>
+                <label style="font-weight:bold; color:var(--primary); font-size:1.1rem;">誰付的錢？</label><br>
                 <select id="exp-payer" style="width:60%; margin-top:5px; text-align:center; font-weight:bold;">
-                    <option value="我">我</option><option value="芬">芬</option><option value="珍">珍</option><option value="公費">💰 公費 (從公款扣)</option>
+                    <option value="我">我</option>
+                    <option value="芬">芬</option>
+                    <option value="珍">珍</option>
+                    <option value="公費">💰 公費 (從公款扣)</option>
                 </select>
             </div>
+
             <input type="text" id="exp-name" placeholder="品項名稱 (如: 拉麵)">
             <div style="display:flex; gap:10px;">
                 <select id="exp-cat"><option value="餐飲">餐飲</option><option value="交通">交通</option><option value="購物">購物</option><option value="其他">其他</option><option value="繳公費">繳公費</option></select>
                 <select id="exp-pay"><option value="現金">現金</option><option value="刷卡">刷卡</option></select>
             </div>
             <div style="display:flex; gap:10px;">
-                <input type="number" id="exp-amt" placeholder="總金額" style="font-weight:bold;">
+                <input type="number" id="exp-amt" placeholder="總金額" style="font-weight:bold; font-size:1.1rem;">
                 <select id="exp-curr" style="width:90px;" onchange="window.calcRate()"><option value="JPY">JPY</option><option value="TWD">TWD</option></select>
             </div>
             <div id="rate-calc" style="text-align:right; color:#888; font-size:0.9rem; margin-bottom:15px;">約台幣 0 元</div>
@@ -199,11 +211,11 @@
             </label>
             <img id="img-preview" style="width:100%; max-height:150px; object-fit:contain; display:none; margin-top:10px; border-radius:10px;">
             
-            <button class="btn-primary" id="btn-save-exp">記上一筆</button>
+            <button class="btn-primary" id="btn-save-exp" style="margin-top:15px;">記上一筆</button>
             <button onclick="window.exportExcel()" style="width:100%; background:#27ae60; color:white; border:none; padding:10px; border-radius:20px; font-weight:bold; margin-top:10px;">📥 匯出 Excel (CSV)</button>
         </div>
         
-        <h3 style="padding-left:15px; margin-bottom:15px;">📋 消費列表</h3>
+        <h3 style="padding-left:15px; margin-bottom:15px; color:#2D3436;">📋 消費列表</h3>
         <div id="expense-list" style="padding-bottom:20px; padding: 0 15px;"></div>
         
         <div class="info-card" style="background:#E3F2FD;">
@@ -211,7 +223,7 @@
             <div id="prepaid-list"></div>
         </div>
 
-        <button class="btn-outline" style="background:#607D8B; color:white; border:none;" onclick="window.toggleSplit()">📊 查看分帳結算 (3人)</button>
+        <button class="btn-outline" style="width:90%; margin:20px auto; background:#607D8B; color:white; border:none;" onclick="window.toggleSplit()">📊 查看分帳結算 (3人)</button>
         <div id="split-section" style="padding:0 15px;">
             <div class="split-dashboard">
                 <div class="split-title">分帳結算 (多退少補)</div>
@@ -221,12 +233,11 @@
         </div>
     </div>
 
-    <!-- 3. 工具頁 (全新功能) -->
+    <!-- 3. 工具頁 (移除日語) -->
     <div id="p-tools" class="page">
         <h2 style="text-align:center; color:var(--primary);">🧰 旅遊工具箱</h2>
         <div class="tools-grid">
             <div class="tool-card" onclick="window.openSubPage('check')"><div class="tool-icon">🧳</div><div class="tool-name">行李清單</div></div>
-            <div class="tool-card" onclick="window.openSubPage('jp')"><div class="tool-icon">🗣️</div><div class="tool-name">手指日語</div></div>
             <div class="tool-card" onclick="window.openSubPage('wish')"><div class="tool-icon">🎁</div><div class="tool-name">必買清單</div></div>
             <div class="tool-card" onclick="window.openSubPage('coupon')"><div class="tool-icon">🔖</div><div class="tool-name">優惠券夾</div></div>
         </div>
@@ -239,6 +250,14 @@
             <div><b>去程 (IT240)</b>: 1/13 06:45 TPE ➔ 10:00 FUK</div>
             <div style="margin-top:10px;"><b>回程 (IT241)</b>: 1/17 10:55 FUK ➔ 12:40 TPE</div>
         </div>
+        <div class="info-card">
+            <h3>🏨 住宿資訊</h3>
+            <div><b>Day 1: 由布院山水館</b></div>
+            <div><a href="https://maps.app.goo.gl/3" target="_blank" style="color:#2196F3; font-weight:bold;">📍 開啟地圖</a></div>
+            <hr style="border:0; border-top:1px dashed #eee; margin:15px 0;">
+            <div><b>Day 2-4: 三井花園飯店福岡中洲</b></div>
+            <div><a href="https://maps.app.goo.gl/3" target="_blank" style="color:#2196F3; font-weight:bold;">📍 開啟地圖</a></div>
+        </div>
         <div class="info-card" style="border-left:5px solid #ff7675; background:#fff5f5;">
             <h3 style="color:#d63031;">🆘 緊急聯絡</h3>
             <div style="color:#d63031; font-weight:800; font-size:1.4rem;">080-1004-0243</div>
@@ -248,7 +267,6 @@
         </div>
     </div>
 
-    <!-- 導航 -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="window.switchPage('schedule', this)"><span class="nav-icon">📅</span><span class="nav-label">行程</span></div>
         <div class="nav-item" onclick="window.switchPage('money', this)"><span class="nav-icon">💴</span><span class="nav-label">記帳</span></div>
@@ -276,12 +294,14 @@
         <label>分類</label><select id="edit-type"><option value="spot">景點 (綠)</option><option value="food">美食 (橘)</option><option value="trans">交通 (藍)</option></select>
         <label>標題</label><input type="text" id="edit-title">
         <label>說明</label><textarea id="edit-desc" rows="4"></textarea>
-        <label>圖片</label><input type="text" id="edit-img">
-        <label>連結</label><input type="text" id="edit-link">
-        <label>地點</label><input type="text" id="edit-loc">
-        <button onclick="window.saveSchedule()" class="btn-primary">儲存</button>
-        <button onclick="window.deleteSchedule()" style="width:100%; color:red; border:none; background:none; margin-top:10px;">刪除</button>
-        <button onclick="window.closeModal()" style="width:100%; color:#888; border:none; background:none; margin-top:10px;">取消</button>
+        <label>圖片連結 (選填)</label><input type="text" id="edit-img" placeholder="https://...">
+        <label>相關連結 (選填)</label><input type="text" id="edit-link" placeholder="https://...">
+        <label>Google Map 地點</label><input type="text" id="edit-loc">
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button onclick="window.saveSchedule()" class="btn-primary" style="flex:1;">儲存</button>
+            <button onclick="window.closeModal()" style="flex:1; background:#dfe6e9; color:#636E72; border:none; border-radius:30px; font-weight:bold;">取消</button>
+        </div>
+        <button id="btn-del-sch" onclick="window.deleteSchedule()" style="width:100%; background:white; border:2px solid #ff7675; color:#ff7675; padding:10px; margin-top:15px; border-radius:30px; font-weight:bold;">刪除此行程</button>
     </div>
 </div>
 
@@ -384,14 +404,15 @@ const firebaseConfig = {
             else if (payer === "公費") { tripTotalCost += twd; }
             else { tripTotalCost += twd; splitMap[payer] = (splitMap[payer]||0) + twd; }
 
-            html += `<div class="expense-item"><div><div style="font-weight:700;">${d.item}</div><div style="font-size:0.8rem; color:#888;"><span class="exp-tag ${payer==='公費'?'public':''}">${cat}</span> 👤 ${payer}</div>${d.img?`<a href="${d.img}" target="_blank" style="font-size:0.8rem; color:#2196F3; display:block; margin-top:5px;">📄 查看收據</a>`:''}</div><div style="text-align:right;"><div style="color:#e17055; font-weight:800;">$${twd.toLocaleString()}</div><button onclick="window.delExp('${doc.id}')" style="color:red; border:none; background:none; font-size:0.85rem; margin-top:5px;">刪除</button></div></div>`;
+            let badgeClass = payer === "公費" ? "exp-public-badge" : "exp-payer-badge";
+            html += `<div class="expense-item"><div><div style="font-weight:700; color:#2D3436; font-size:1.05rem;">${d.item||"未命名"}</div><div style="font-size:0.85rem; color:#636E72; margin-top:3px;"><span class="exp-tag ${payer==='公費'?'public':''}">${cat}</span> <span>👤 ${payer}</span></div>${d.img?`<a href="${d.img}" target="_blank" style="font-size:0.85rem; color:#2196F3; display:block; margin-top:5px; font-weight:500;">📄 查看收據</a>`:''}</div><div style="text-align:right;"><div style="color:#e17055; font-weight:800; font-size:1.1rem;">$${twd.toLocaleString()}</div>${curr==='JPY'?`<div style="font-size:0.8rem; color:#b2bec3;">¥${amt.toLocaleString()}</div>`:''}<button onclick="window.delExp('${doc.id}')" style="color:#d63031; border:none; background:none; font-size:0.85rem; margin-top:5px; cursor:pointer;">刪除</button></div></div>`;
         });
         
         list.innerHTML = html;
         document.getElementById("total-display").innerText = "NT$ " + (prepaidTotal + tripTotalCost).toLocaleString();
         
         let avg = Math.round(tripTotalCost / PEOPLE_COUNT);
-        let splitHtml = `<div style="text-align:center; margin-bottom:15px; font-weight:bold;">總支出: $${tripTotalCost.toLocaleString()} <br> 平均每人: $${avg.toLocaleString()}</div>`;
+        let splitHtml = `<div style="text-align:center; margin-bottom:15px; font-weight:bold; color:#2D3436; background:white; padding:10px; border-radius:10px;">總支出: $${tripTotalCost.toLocaleString()} <br> 平均每人: $${avg.toLocaleString()}</div>`;
         ["我", "芬", "珍"].forEach(p => {
             let paid = splitMap[p] || 0; let balance = paid - avg;
             let color = balance >= 0 ? "split-get" : "split-owe";
@@ -412,17 +433,17 @@ const firebaseConfig = {
 
     document.getElementById("btn-save-exp").addEventListener("click", async () => {
         const name = document.getElementById("exp-name").value; const amt = parseFloat(document.getElementById("exp-amt").value); const file = document.getElementById("exp-img-file").files[0];
-        if(!name || !amt) return alert("請輸入完整");
+        const payer = document.getElementById("exp-payer").value;
+        if(!name || !amt) return alert("請輸入完整資料");
         let imgUrl = "";
         if(file) { const sRef = ref(storage, 'receipts/'+Date.now()+'_'+file.name); await uploadBytes(sRef, file); imgUrl = await getDownloadURL(sRef); }
-        await addDoc(collection(db, "expenses"), { item: name, category: document.getElementById("exp-cat").value, payment: document.getElementById("exp-pay").value, currency: document.getElementById("exp-curr").value, amount: amt, payer: document.getElementById("exp-payer").value, img: imgUrl, timestamp: new Date() });
-        alert("記帳成功"); document.getElementById("exp-name").value=""; document.getElementById("exp-amt").value="";
+        await addDoc(collection(db, "expenses"), { item: name, category: document.getElementById("exp-cat").value, payment: document.getElementById("exp-pay").value, currency: document.getElementById("exp-curr").value, amount: amt, payer: payer, img: imgUrl, timestamp: new Date() });
+        document.getElementById("exp-name").value=""; document.getElementById("exp-amt").value=""; document.getElementById("img-preview").style.display="none"; alert("記帳成功");
     });
 
     // --- 3. 工具頁邏輯 ---
     let currentTool = "";
     const checkItems = ["護照", "日幣", "信用卡", "SIM卡/Wifi機", "充電器", "行動電源", "常備藥", "牙刷牙膏", "換洗衣物", "好走的鞋"];
-    const jpItems = [ {zh:"謝謝", jp:"Arigatou", txt:"ありがとう"}, {zh:"不好意思", jp:"Sumimasen", txt:"すみません"}, {zh:"多少錢?", jp:"Ikura?", txt:"いくらですか"}, {zh:"廁所", jp:"Toire", txt:"トイレはどこ"}, {zh:"結帳", jp:"Okaikei", txt:"お会計"}, {zh:"水", jp:"Mizu", txt:"水 (みず)"}, {zh:"不要辣", jp:"Karaku nai", txt:"辛くない"}, {zh:"這個", jp:"Kore", txt:"これ"} ];
 
     window.openSubPage = (tool) => {
         document.getElementById("sub-page-container").style.display = "flex";
@@ -436,14 +457,9 @@ const firebaseConfig = {
             let html = "";
             checkItems.forEach(item => {
                 let isChecked = saved.includes(item) ? "checked" : "";
-                html += `<div class="checklist-item ${isChecked}" onclick="window.toggleCheck(this, '${item}')"><div class="cb-icon">⭕</div><div class="cb-text">${item}</div></div>`;
+                html += `<div class="checklist-item ${isChecked}" onclick="window.toggleCheck(this, '${item}')"><div class="cb-icon">✔</div><div class="cb-text">${item}</div></div>`;
             });
             content.innerHTML = html;
-        } else if (tool === 'jp') {
-            title.innerText = "🗣️ 手指日語";
-            let html = "<div class='jp-grid'>";
-            jpItems.forEach(i => { html += `<div class="jp-card" onclick="window.speak('${i.txt}')"><div class="jp-icon">🔊</div><div class="jp-zh">${i.zh}</div><div class="jp-txt">${i.txt}</div></div>`; });
-            content.innerHTML = html + "</div>";
         } else if (tool === 'wish' || tool === 'coupon') {
             title.innerText = tool==='wish' ? "🎁 必買清單" : "🔖 優惠券";
             loadWishlist(tool);
@@ -457,7 +473,6 @@ const firebaseConfig = {
         if(el.classList.contains("checked")) saved.push(item); else saved = saved.filter(i => i !== item);
         localStorage.setItem("checklist", JSON.stringify(saved));
     };
-    window.speak = (text) => { const u = new SpeechSynthesisUtterance(text); u.lang = 'ja-JP'; speechSynthesis.speak(u); };
 
     function loadWishlist(type) {
         const content = document.getElementById("sub-content");
