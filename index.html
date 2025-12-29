@@ -29,7 +29,7 @@
         }
         .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: white; }
 
-        /* FAB */
+        /* FAB (新增按鈕) */
         #add-fab {
             position: fixed; bottom: 120px; right: 20px;
             background: var(--primary); color: white;
@@ -52,6 +52,7 @@
         
         .day-divider { margin: 25px 0 10px 0; font-weight: bold; color: #2196F3; border-bottom: 2px dashed #ccc; padding-bottom: 5px; scroll-margin-top: 130px; font-size: 1.1rem; }
 
+        /* 行程卡片 */
         .card { background: var(--white); border-radius: 16px; margin-bottom: 15px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 6px solid #ccc; cursor: pointer; }
         .card:active { transform: scale(0.98); background: #fff0f5; }
         .card.food { border-left-color: var(--accent-food); }
@@ -74,7 +75,7 @@
         .hl-res { background: #FFEBEE; color: #C62828; padding: 2px 4px; border-radius: 4px; font-weight: bold; }
         .hl-star { background: #FFF9C4; color: #F57F17; padding: 2px 4px; border-radius: 4px; font-weight: bold; }
 
-        /* Expense & Info */
+        /* 記帳頁優化 */
         .info-card { background: var(--white); padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .prepaid-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.95rem; color: #555; }
         .prepaid-row:last-child { border-bottom: none; }
@@ -82,7 +83,7 @@
         .input-box { background: var(--white); padding: 20px 15px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #FFC6C7; }
         input, select, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1rem;}
         
-        /* 按鈕優化: 縮小置中 */
+        /* ★★★ 按鈕樣式優化: 縮小置中 ★★★ */
         .btn-camera { 
             background: #E0F7FA; color: #006064; border: 1px dashed #00ACC1; 
             width: 85%; padding: 10px; border-radius: 25px; cursor: pointer; 
@@ -102,7 +103,7 @@
         .modal-box { background: white; width: 90%; max-width: 400px; padding: 20px; border-radius: 15px; max-height: 90vh; overflow-y: auto; }
         .modal-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; text-align: center; }
         
-        /* AI 按鈕特效 */
+        /* AI 按鈕 */
         .btn-ai {
             background: linear-gradient(90deg, #6200EA, #B388FF); color: white;
             border: none; padding: 8px 15px; border-radius: 20px;
@@ -151,7 +152,7 @@
         </div>
         <div class="info-card" style="text-align:center; border:2px solid #FFC6C7;">
             <div style="color:#666;">總花費 (已付 + 新增)</div>
-            <div id="total-display" style="font-size:2rem; font-weight:bold; color:#E91E63;">計算中...</div>
+            <div id="total-display" style="font-size:2rem; font-weight:bold; color:#E91E63;">NT$ 50,851</div>
         </div>
         <div class="input-box">
             <h3 style="margin-top:0; text-align:center;">➕ 新增消費</h3>
@@ -300,7 +301,7 @@ const firebaseConfig = {
         { day: "Day 4", time: "10:00", title: "唐戶市場", type: "food", loc: "唐戶市場", desc: "【必吃】週五限定「馬關街」壽司自助餐！\n河豚生魚片必試，新鮮又便宜。", img: "https://lh5.googleusercontent.com/p/AF1QipNqR9t5C519789370603789427497127137" }
     ];
 
-    // --- 記帳 & 行程邏輯 (防呆修復版) ---
+    // --- 記帳 & 行程邏輯 (★V18 防呆修復版★) ---
     const prepaidList = [ {name:"機票 (虎航)", amt:41490}, {name:"Klook 一日遊", amt:4239}, {name:"JR 由布院之森", amt:3862}, {name:"車上便當", amt:1260} ];
     let prepaidTotal = 0;
     function initPrepaid() { let h="", t=0; prepaidList.forEach(p=>{t+=p.amt; h+=`<div class="prepaid-row"><span>${p.name}</span><b>$${p.amt.toLocaleString()}</b></div>`}); document.getElementById("prepaid-list").innerHTML=h; prepaidTotal=t; }
@@ -315,8 +316,10 @@ const firebaseConfig = {
         snapshot.forEach((doc) => {
             const d = doc.data();
             // ★★★ V18 關鍵修正：確保金額是數字且不為 null ★★★
+            // 這行是救命丹，只要金額是空的，自動當 0，程式就不會死了
             let amt = Number(d.amount) || 0; 
             let curr = d.currency || "TWD";
+            
             let twd = curr === "JPY" ? Math.round(amt * RATE) : amt;
             dynTotal += twd;
             
@@ -336,6 +339,18 @@ const firebaseConfig = {
         });
         list.innerHTML = html || "<div style='text-align:center; color:#999;'>尚無新增消費</div>";
         document.getElementById("total-display").innerText = "NT$ " + (prepaidTotal + dynTotal).toLocaleString();
+    });
+
+    document.getElementById("btn-save-exp").addEventListener("click", async () => {
+        const btn = document.getElementById("btn-save-exp"); btn.innerText="⏳"; btn.disabled=true;
+        try {
+            const name = document.getElementById("exp-name").value; const amt = parseFloat(document.getElementById("exp-amt").value); const file = document.getElementById("exp-img-file").files[0];
+            if(!name || !amt) throw new Error("請輸入完整資料");
+            let imgUrl = "";
+            if(file) { const sRef = ref(storage, 'receipts/'+Date.now()+'_'+file.name); await uploadBytes(sRef, file); imgUrl = await getDownloadURL(sRef); }
+            await addDoc(collection(db, "expenses"), { item: name, category: document.getElementById("exp-cat").value, payment: document.getElementById("exp-pay").value, currency: document.getElementById("exp-curr").value, amount: amt, img: imgUrl, timestamp: new Date() });
+            document.getElementById("exp-name").value=""; document.getElementById("exp-amt").value=""; document.getElementById("img-preview").style.display="none"; alert("記帳成功");
+        } catch(e){alert(e.message)} finally { btn.innerText="記帳"; btn.disabled=false; }
     });
 
     // 螢光筆
@@ -372,7 +387,7 @@ const firebaseConfig = {
         container.innerHTML = html;
     });
 
-    // 將函數綁定到 window (解決 switchPage is not defined)
+    // 綁定到 Window 解決按鈕無反應問題
     window.openEditModal = (id, day, time, type, title, desc, img, loc, link) => {
         document.getElementById("modal").style.display = "flex";
         if(id) {
@@ -407,27 +422,13 @@ const firebaseConfig = {
 
     window.deleteSchedule = async () => { const id = document.getElementById("edit-id").value; if(id && confirm("確定刪除？")) { await deleteDoc(doc(db, "schedule", id)); window.closeModal(); } };
     window.closeModal = () => document.getElementById("modal").style.display = "none";
-    
-    // 記帳與其他 helpers
     window.previewImage = (input) => { if(input.files[0]){ let r = new FileReader(); r.onload=e=>{document.getElementById("img-preview").src=e.target.result; document.getElementById("img-preview").style.display="block";}; r.readAsDataURL(input.files[0]); } };
     window.calcRate = () => { const v = document.getElementById("exp-amt").value; const c = document.getElementById("exp-curr").value; document.getElementById("rate-calc").innerText = c==="JPY" ? `約台幣 ${Math.round(v*RATE)}` : "台幣計價"; };
     window.delExp = async(id) => { if(confirm("刪除?")) await deleteDoc(doc(db,"expenses",id)); };
     
-    window.updateWeather = (day) => { 
-        const t = document.getElementById("w-tips"), l = document.getElementById("w-loc"), tm = document.getElementById("w-temp"); 
-        if(day.includes("Day 1")) { l.innerText="福岡市"; tm.innerText="10°C"; t.innerText="🧥 微涼，帶薄外套"; } 
-        else if(day.includes("Day 2")) { l.innerText="由布院"; tm.innerText="8°C"; t.innerText="❄️ 山區冷，穿發熱衣"; } 
-        else if(day.includes("Day 4")) { l.innerText="門司港"; tm.innerText="9°C"; t.innerText="💨 海風大，戴帽子"; }
-        else { l.innerText="福岡市"; tm.innerText="11°C"; t.innerText="⛅ 舒適，洋蔥式穿搭"; } 
-    };
-    
-    window.scrollToDay = (id, btn) => { 
-        document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active')); 
-        btn.classList.add('active'); 
-        const el = document.getElementById(id.replace(' ','')); 
-        if(el) el.scrollIntoView({behavior:'smooth', block:'start'}); 
-        window.updateWeather(id); 
-    };
-    
-    window.switchPage = (id, btn) => { 
-        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    window.updateWeather = (day) => { const t = document.getElementById("w-tips"), l = document.getElementById("w-loc"), tm = document.getElementById("w-temp"); if(day.includes("Day 1")) { l.innerText="福岡市"; tm.innerText="10°C"; t.innerText="🧥 微涼，帶薄外套"; } else if(day.includes("Day 2")) { l.innerText="由布院"; tm.innerText="8°C"; t.innerText="❄️ 山區冷，穿發熱衣"; } else { l.innerText="福岡市"; tm.innerText="11°C"; t.innerText="⛅ 舒適，洋蔥式穿搭"; } };
+    window.scrollToDay = (id, btn) => { document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); const el = document.getElementById(id.replace(' ','')); if(el) el.scrollIntoView({behavior:'smooth', block:'start'}); updateWeather(id); };
+    window.switchPage = (id, btn) => { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); };
+</script>
+</body>
+</html>
