@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>福岡好好玩 V30 🌸</title>
+    <title>福岡好好玩 V31 🌸</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -30,80 +30,112 @@
         h1 { margin: 0; font-size: 1.4rem; font-weight: 700; }
         .icon-btn { background: rgba(255,255,255,0.25); border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; }
 
+        /* --- 首頁輪播 (Carousel) --- */
+        .carousel-container {
+            position: relative; width: 100%; height: 220px; overflow: hidden;
+            background: #eee; margin-bottom: 10px;
+        }
+        .carousel-track {
+            display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+            width: 100%; height: 100%;
+            -webkit-overflow-scrolling: touch; /* 平滑捲動 */
+        }
+        .carousel-track::-webkit-scrollbar { display: none; }
+        .carousel-slide {
+            flex: 0 0 100%; width: 100%; height: 100%; scroll-snap-align: center;
+            position: relative;
+        }
+        .carousel-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* 輪播上的按鈕 */
+        .carousel-btn {
+            position: absolute; bottom: 10px; right: 10px;
+            background: rgba(0,0,0,0.5); color: white; border: none;
+            padding: 5px 10px; border-radius: 20px; font-size: 0.8rem;
+            cursor: pointer; backdrop-filter: blur(4px); display: flex; align-items: center; gap: 5px;
+        }
+        .carousel-del {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(255,0,0,0.7); color: white; border: none;
+            width: 30px; height: 30px; border-radius: 50%; font-size: 1rem;
+            cursor: pointer; display: none; /* 預設隱藏刪除鈕 */
+        }
+        .carousel-slide:hover .carousel-del { display: flex; justify-content: center; align-items: center; }
+
+        /* Google 相簿按鈕 */
+        .album-link-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: white; border: 2px solid #4285F4; color: #4285F4;
+            margin: 10px 15px; padding: 10px; border-radius: 12px;
+            font-weight: bold; text-decoration: none; font-size: 0.95rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.1s;
+        }
+        .album-link-btn:active { background: #E8F0FE; transform: scale(0.98); }
+
         /* Page System */
         .page { display: none; padding: 20px; animation: fadeIn 0.3s; }
+        #p-schedule { padding: 0; } /* 行程頁特殊處理 */
+        #schedule-content-pad { padding: 0 15px 20px 15px; } /* 行程內容內縮 */
+
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: 0; } }
 
-        /* --- 工具頁 (Tools) 樣式 --- */
+        /* Tools Grid */
         .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
         .tool-card {
             background: white; border-radius: 16px; padding: 20px; text-align: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid #eee; cursor: pointer;
             transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 110px; position: relative;
+            height: 110px;
         }
         .tool-card:active { transform: scale(0.95); background: #FFF0F5; border-color: var(--primary); }
         .tool-icon { font-size: 2.5rem; margin-bottom: 8px; }
         .tool-name { font-weight: bold; color: #555; }
-        .tool-edit-btn { position: absolute; top: 5px; right: 5px; font-size: 0.8rem; color: #ccc; background: none; border: none; padding: 5px; }
 
-        /* 子工具頁面 */
-        .sub-page {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color);
-            z-index: 200; display: none; flex-direction: column; overflow-y: auto;
-        }
-        .sub-header {
-            background: white; padding: 15px; display: flex; align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 201;
-        }
+        /* Sub Page */
+        .sub-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 200; display: none; flex-direction: column; overflow-y: auto; }
+        .sub-header { background: white; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 201; }
         .back-btn { font-size: 1.5rem; background: none; border: none; margin-right: 15px; cursor: pointer; padding: 5px; }
         .sub-content { padding: 20px; padding-bottom: 100px; }
 
-        /* 行李清單 */
-        .checklist-item {
-            background: white; padding: 15px; margin-bottom: 10px; border-radius: 12px;
-            display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer;
-        }
+        /* Checklist */
+        .checklist-item { background: white; padding: 15px; margin-bottom: 10px; border-radius: 12px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; }
         .checklist-item.checked { opacity: 0.5; background: #f0f0f0; }
         .checklist-item.checked .cb-text { text-decoration: line-through; }
         .cb-icon { font-size: 1.2rem; margin-right: 15px; color: #ccc; width: 24px; text-align: center;}
         .checklist-item.checked .cb-icon { color: var(--accent-spot); content: "✔"; }
 
-        /* 伴手禮/優惠券 */
+        /* Wishlist */
         .wish-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
         .wish-item { position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; }
         .wish-img { width: 100%; height: 160px; object-fit: cover; display: block; }
         .wish-title { padding: 8px; font-size: 0.9rem; text-align: center; font-weight: bold; color: #555; }
         .wish-del { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; line-height: 24px; font-size: 0.8rem; cursor: pointer; }
 
-        /* 記帳本 */
+        /* Expense */
         .info-card { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .input-box { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 2px solid var(--primary); }
         input, select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #dfe6e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box; }
-        
         .btn-primary { background: var(--primary); color: white; border: none; width: 85%; padding: 12px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; display: block; margin: 10px auto; box-shadow: 0 4px 10px rgba(255, 139, 167, 0.4); cursor: pointer; }
         .btn-outline { background: white; border: 2px solid #dfe6e9; color: #636E72; width: 85%; padding: 10px; border-radius: 30px; font-size: 1rem; font-weight: bold; cursor: pointer; margin: 10px auto; text-align: center; display: block;}
-        
         .expense-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #FF9800; }
         .exp-tag { font-size: 0.75rem; padding: 3px 8px; border-radius: 6px; margin-right: 5px; background: #eee; }
         .exp-tag.public { background: #E0F2F1; color: #00695C; }
 
-        /* 分帳看板 */
+        /* Split Board */
         #split-section { display: none; }
         .split-dashboard { background: #FFF8E1; border: 2px solid #FFE082; border-radius: 16px; padding: 15px; margin-bottom: 25px; }
         .split-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem; border-bottom: 1px dashed #ccc; padding-bottom: 5px; }
         .split-owe { color: #e74c3c; font-weight: bold; }
         .split-get { color: #27ae60; font-weight: bold; }
 
-        /* 行程卡片 */
-        .day-nav { display: flex; overflow-x: auto; white-space: nowrap; background: white; padding: 12px 20px; position: sticky; top: 60px; z-index: 98; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin: 0 -20px 20px -20px; }
+        /* Schedule Card */
+        .day-nav { display: flex; overflow-x: auto; white-space: nowrap; background: white; padding: 12px 20px; position: sticky; top: 60px; z-index: 98; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin: 0 -15px 20px -15px; }
         .day-btn { background: #F1F2F6; border: none; padding: 8px 18px; margin: 0 4px; border-radius: 20px; color: #636E72; font-size: 0.95rem; cursor: pointer; }
         .day-btn.active { background: var(--primary); color: white; font-weight: bold; }
         .weather-banner { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); border-radius: 15px; padding: 15px; display: flex; align-items: center; justify-content: space-between; color: #1565C0; margin-bottom: 20px; }
-        
         .day-divider { margin: 25px 0 10px 0; font-weight: bold; color: #2196F3; border-bottom: 2px dashed #ccc; padding-bottom: 5px; font-size: 1.1rem; }
-
+        
         .card { background: white; border-radius: 16px; margin-bottom: 18px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 5px solid #ccc; cursor: pointer; }
         .card.food { border-left-color: var(--accent-food); } .card.spot { border-left-color: var(--accent-spot); } .card.trans { border-left-color: var(--accent-trans); }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -112,7 +144,6 @@
         .card-desc { font-size: 1rem; color: #636E72; line-height: 1.6; white-space: pre-line; margin-bottom: 12px; }
         .card-img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-top: 10px; display:block; background:#eee;}
 
-        /* 按鈕群組 */
         .btn-group { display: flex; gap: 12px; margin-top: 15px; }
         .action-btn { flex: 1; padding: 10px; border-radius: 10px; text-align: center; text-decoration: none; font-size: 0.95rem; font-weight: 700; display: block; transition: transform 0.1s; }
         .action-btn:active { transform: scale(0.95); }
@@ -131,10 +162,8 @@
         .nav-icon { font-size: 1.6rem; display: block; margin-bottom: 4px; }
 
         /* Modal */
-        #modal, #modal-tool, #modal-link { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
+        #modal, #modal-tool { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
         .modal-box { background: white; width: 85%; max-width: 400px; padding: 25px; border-radius: 20px; max-height: 85vh; overflow-y: auto; }
-        
-        /* Highlights */
         .hl-food { background: #fff3cd; color: #856404; padding: 0 4px; border-radius: 4px; }
         .hl-buy { background: #e2e3f5; color: #383d41; padding: 0 4px; border-radius: 4px; }
         .hl-res { background: #f8d7da; color: #721c24; padding: 0 4px; border-radius: 4px; }
@@ -151,29 +180,48 @@
     
     <!-- 1. 行程頁 -->
     <div id="p-schedule" class="page active">
-        <button id="add-fab" onclick="window.openEditModal(null)">+</button>
-        <button id="btn-lock" onclick="window.toggleLock()">🔒</button>
-
-        <div class="day-nav">
-            <button class="day-btn active" onclick="window.filterDay('Day 1', this)">Day 1</button>
-            <button class="day-btn" onclick="window.filterDay('Day 2', this)">Day 2</button>
-            <button class="day-btn" onclick="window.filterDay('Day 3', this)">Day 3</button>
-            <button class="day-btn" onclick="window.filterDay('Day 4', this)">Day 4</button>
-            <button class="day-btn" onclick="window.filterDay('Day 5', this)">Day 5</button>
-        </div>
-
-        <div class="weather-banner">
-            <div>
-                <div style="font-size:1.8rem; font-weight:bold;" id="w-temp">--°C</div>
-                <div id="w-loc" style="font-weight:500; opacity:0.9">氣象連線中...</div>
+        <!-- 輪播 (Carousel) -->
+        <div class="carousel-container">
+            <div id="carousel-track" class="carousel-track">
+                <!-- 預設封面圖 -->
+                <div class="carousel-slide"><img src="https://ginalitw.github.io/fukuoka-app/images/0104.jpg" class="carousel-img"></div>
             </div>
-            <div style="text-align:right;">
-                <div id="w-icon" style="font-size:2.8rem;">☁️</div>
-                <div style="font-size:0.95rem; font-weight:500;" id="w-tips">穿搭建議</div>
-            </div>
+            <label class="carousel-btn">
+                📷 上傳封面
+                <input type="file" accept="image/*" style="display:none;" onchange="window.uploadBanner(this)">
+            </label>
         </div>
+        
+        <!-- Google 相簿按鈕 -->
+        <a href="https://photos.app.goo.gl/ukaRg1J12MkCrYsw5" target="_blank" class="album-link-btn">
+            📂 開啟 Google 完整相簿 (共用)
+        </a>
 
-        <div id="schedule-container" style="padding:0 15px; margin-top:20px;"></div>
+        <div id="schedule-content-pad">
+            <button id="add-fab" onclick="window.openEditModal(null)">+</button>
+            <button id="btn-lock" onclick="window.toggleLock()">🔒</button>
+
+            <div class="day-nav">
+                <button class="day-btn active" onclick="window.filterDay('Day 1', this)">Day 1</button>
+                <button class="day-btn" onclick="window.filterDay('Day 2', this)">Day 2</button>
+                <button class="day-btn" onclick="window.filterDay('Day 3', this)">Day 3</button>
+                <button class="day-btn" onclick="window.filterDay('Day 4', this)">Day 4</button>
+                <button class="day-btn" onclick="window.filterDay('Day 5', this)">Day 5</button>
+            </div>
+
+            <div class="weather-banner">
+                <div>
+                    <div style="font-size:1.8rem; font-weight:bold;" id="w-temp">--°C</div>
+                    <div id="w-loc" style="font-weight:500; opacity:0.9">氣象連線中...</div>
+                </div>
+                <div style="text-align:right;">
+                    <div id="w-icon" style="font-size:2.8rem;">☁️</div>
+                    <div style="font-size:0.95rem; font-weight:500;" id="w-tips">穿搭建議</div>
+                </div>
+            </div>
+
+            <div id="schedule-container" style="margin-top:20px;"></div>
+        </div>
     </div>
 
     <!-- 2. 記帳頁 -->
@@ -233,16 +281,13 @@
         </div>
     </div>
 
-    <!-- 3. 工具頁 (移除日語，新增相簿) -->
+    <!-- 3. 工具頁 (移除日語) -->
     <div id="p-tools" class="page">
         <h2 style="text-align:center; color:var(--primary);">🧰 旅遊工具箱</h2>
         <div class="tools-grid">
             <div class="tool-card" onclick="window.openSubPage('check')"><div class="tool-icon">🧳</div><div class="tool-name">行李清單</div></div>
             <div class="tool-card" onclick="window.openSubPage('wish')"><div class="tool-icon">🎁</div><div class="tool-name">必買清單</div></div>
             <div class="tool-card" onclick="window.openSubPage('coupon')"><div class="tool-icon">🔖</div><div class="tool-name">優惠券夾</div></div>
-            <div class="tool-card" onclick="window.openAlbumModal()">
-                <div class="tool-icon">📷</div><div class="tool-name">Google 相簿</div>
-            </div>
         </div>
     </div>
 
@@ -270,6 +315,7 @@
         </div>
     </div>
 
+    <!-- 導航 -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="window.switchPage('schedule', this)"><span class="nav-icon">📅</span><span class="nav-label">行程</span></div>
         <div class="nav-item" onclick="window.switchPage('money', this)"><span class="nav-icon">💴</span><span class="nav-label">記帳</span></div>
@@ -322,20 +368,9 @@
     </div>
 </div>
 
-<!-- Album Link Modal -->
-<div id="modal-link">
-    <div class="modal-box">
-        <h3>📷 設定 Google 相簿</h3>
-        <p style="color:#666; font-size:0.9rem;">請建立一個「共用相簿」，並將連結貼在下方：</p>
-        <input type="text" id="album-link-input" placeholder="https://photos.app.goo.gl/...">
-        <button onclick="window.saveAlbumLink()" class="btn-primary">儲存並前往</button>
-        <button onclick="document.getElementById('modal-link').style.display='none'" style="width:100%; color:#888; border:none; background:none; margin-top:10px;">取消</button>
-    </div>
-</div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, getDocs, writeBatch, setDoc, getDoc } 
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, getDocs, writeBatch } 
     from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } 
     from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
@@ -359,7 +394,33 @@ const firebaseConfig = {
 
     window.openTranslate = () => { window.location.href = "googletranslate://"; setTimeout(() => { window.open("https://translate.google.com/?sl=ja&tl=zh-TW", "_blank"); }, 500); };
 
-    // --- 1. 行程邏輯 ---
+    // --- 1. 首頁輪播 ---
+    const qBan = query(collection(db, "banners"), orderBy("timestamp", "desc"));
+    onSnapshot(qBan, (snapshot) => {
+        const track = document.getElementById("carousel-track");
+        if(snapshot.empty) return;
+        let html = "";
+        snapshot.forEach(doc => {
+            const d = doc.data();
+            html += `<div class="carousel-slide"><img src="${d.img}" class="carousel-img"><button class="carousel-del" onclick="window.delBanner('${doc.id}')">✕</button></div>`;
+        });
+        track.innerHTML = html;
+    });
+
+    window.uploadBanner = async (input) => {
+        if(input.files[0]) {
+            if(!confirm("確定上傳這張當封面？")) return;
+            const file = input.files[0];
+            const sRef = ref(storage, 'banners/'+Date.now()+'_'+file.name);
+            await uploadBytes(sRef, file);
+            const imgUrl = await getDownloadURL(sRef);
+            await addDoc(collection(db, "banners"), { img: imgUrl, timestamp: new Date() });
+            alert("上傳成功！");
+        }
+    };
+    window.delBanner = async (id) => { if(confirm("刪除這張封面？")) await deleteDoc(doc(db, "banners", id)); };
+
+    // --- 2. 行程邏輯 ---
     const qSch = query(collection(db, "schedule"), orderBy("day"), orderBy("time"));
     onSnapshot(qSch, (snapshot) => {
         const container = document.getElementById("schedule-container");
@@ -393,7 +454,7 @@ const firebaseConfig = {
     window.cardClick = (id,day,time,type,title,desc,img,loc,link) => { if(!isLocked) window.openEditModal(id,day,time,type,title,desc,img,loc,link); };
     window.filterDay = (dayStr, btn) => { document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); document.querySelectorAll('.card, .day-divider').forEach(el => { if(el.dataset.day && el.dataset.day.includes(dayStr)) el.style.display='block'; else el.style.display='none'; }); window.updateWeather(dayStr); };
 
-    // --- 2. 記帳邏輯 ---
+    // --- 3. 記帳邏輯 ---
     let allExpenses = [];
     const prepaidList = [ {name:"機票", amt:41490}, {name:"Klook", amt:4239}, {name:"JR", amt:3862}, {name:"便當", amt:1260} ];
     let prepaidTotal = 0;
@@ -457,7 +518,7 @@ const firebaseConfig = {
         document.getElementById("exp-name").value=""; document.getElementById("exp-amt").value=""; document.getElementById("img-preview").style.display="none"; alert("記帳成功");
     });
 
-    // --- 3. 工具頁邏輯 ---
+    // --- 4. 工具頁邏輯 ---
     let currentTool = "";
     const checkItems = ["護照", "日幣", "信用卡", "SIM卡/Wifi機", "充電器", "行動電源", "常備藥", "牙刷牙膏", "換洗衣物", "好走的鞋"];
 
@@ -479,25 +540,6 @@ const firebaseConfig = {
         } else if (tool === 'wish' || tool === 'coupon') {
             title.innerText = tool==='wish' ? "🎁 必買清單" : "🔖 優惠券";
             loadWishlist(tool);
-        }
-    };
-    
-    // --- Google 相簿功能 ---
-    window.openAlbumModal = async () => {
-        const docRef = doc(db, "settings", "album");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists() && docSnap.data().link) {
-            window.location.href = docSnap.data().link; // 有連結直接開
-        } else {
-            document.getElementById("modal-link").style.display = "flex"; // 沒連結跳視窗
-        }
-    };
-    
-    window.saveAlbumLink = async () => {
-        const link = document.getElementById("album-link-input").value;
-        if(link) {
-            await setDoc(doc(db, "settings", "album"), { link: link });
-            window.location.href = link;
         }
     };
 
@@ -542,6 +584,7 @@ const firebaseConfig = {
     window.delExp = async(id) => { if(confirm("刪除?")) await deleteDoc(doc(db,"expenses",id)); };
     window.calcRate = () => { const v=document.getElementById("exp-amt").value; const c=document.getElementById("exp-curr").value; document.getElementById("rate-calc").innerText = c==="JPY" ? `約台幣 ${Math.round(v*RATE)}` : "台幣計價"; };
     window.previewImage = (input) => { if(input.files[0]){ let r=new FileReader(); r.onload=e=>{document.getElementById("img-preview").src=e.target.result; document.getElementById("img-preview").style.display="block";}; r.readAsDataURL(input.files[0]); } };
+    window.scrollToTop = () => window.scrollTo({top:0, behavior:'smooth'});
     window.switchPage = (id, btn) => { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); };
     window.updateWeather = (day) => { const t = document.getElementById("w-tips"), l = document.getElementById("w-loc"), tm = document.getElementById("w-temp"); if(day.includes("Day 1")) { l.innerText="福岡市"; tm.innerText="10°C"; t.innerText="🧥 微涼，帶薄外套"; } else if(day.includes("Day 2")) { l.innerText="由布院"; tm.innerText="8°C"; t.innerText="❄️ 山區冷，穿發熱衣"; } else { l.innerText="福岡市"; tm.innerText="11°C"; t.innerText="⛅ 舒適，洋蔥式穿搭"; } };
     
