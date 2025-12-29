@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>福岡好好玩 V29 🌸</title>
+    <title>福岡好好玩 V30 🌸</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -41,13 +41,14 @@
             background: white; border-radius: 16px; padding: 20px; text-align: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid #eee; cursor: pointer;
             transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 110px;
+            height: 110px; position: relative;
         }
         .tool-card:active { transform: scale(0.95); background: #FFF0F5; border-color: var(--primary); }
         .tool-icon { font-size: 2.5rem; margin-bottom: 8px; }
         .tool-name { font-weight: bold; color: #555; }
+        .tool-edit-btn { position: absolute; top: 5px; right: 5px; font-size: 0.8rem; color: #ccc; background: none; border: none; padding: 5px; }
 
-        /* 子工具頁面 (全螢幕覆蓋) */
+        /* 子工具頁面 */
         .sub-page {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color);
             z-index: 200; display: none; flex-direction: column; overflow-y: auto;
@@ -59,7 +60,7 @@
         .back-btn { font-size: 1.5rem; background: none; border: none; margin-right: 15px; cursor: pointer; padding: 5px; }
         .sub-content { padding: 20px; padding-bottom: 100px; }
 
-        /* 1. 行李清單樣式 */
+        /* 行李清單 */
         .checklist-item {
             background: white; padding: 15px; margin-bottom: 10px; border-radius: 12px;
             display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer;
@@ -69,14 +70,14 @@
         .cb-icon { font-size: 1.2rem; margin-right: 15px; color: #ccc; width: 24px; text-align: center;}
         .checklist-item.checked .cb-icon { color: var(--accent-spot); content: "✔"; }
 
-        /* 3. 伴手禮/優惠券樣式 */
+        /* 伴手禮/優惠券 */
         .wish-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
         .wish-item { position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; }
         .wish-img { width: 100%; height: 160px; object-fit: cover; display: block; }
         .wish-title { padding: 8px; font-size: 0.9rem; text-align: center; font-weight: bold; color: #555; }
         .wish-del { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; line-height: 24px; font-size: 0.8rem; cursor: pointer; }
 
-        /* --- 記帳本樣式 --- */
+        /* 記帳本 */
         .info-card { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .input-box { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 2px solid var(--primary); }
         input, select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #dfe6e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box; }
@@ -95,7 +96,7 @@
         .split-owe { color: #e74c3c; font-weight: bold; }
         .split-get { color: #27ae60; font-weight: bold; }
 
-        /* --- 行程樣式 (修復版) --- */
+        /* 行程卡片 */
         .day-nav { display: flex; overflow-x: auto; white-space: nowrap; background: white; padding: 12px 20px; position: sticky; top: 60px; z-index: 98; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin: 0 -20px 20px -20px; }
         .day-btn { background: #F1F2F6; border: none; padding: 8px 18px; margin: 0 4px; border-radius: 20px; color: #636E72; font-size: 0.95rem; cursor: pointer; }
         .day-btn.active { background: var(--primary); color: white; font-weight: bold; }
@@ -103,7 +104,6 @@
         
         .day-divider { margin: 25px 0 10px 0; font-weight: bold; color: #2196F3; border-bottom: 2px dashed #ccc; padding-bottom: 5px; font-size: 1.1rem; }
 
-        /* 卡片修復 */
         .card { background: white; border-radius: 16px; margin-bottom: 18px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 5px solid #ccc; cursor: pointer; }
         .card.food { border-left-color: var(--accent-food); } .card.spot { border-left-color: var(--accent-spot); } .card.trans { border-left-color: var(--accent-trans); }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -112,7 +112,7 @@
         .card-desc { font-size: 1rem; color: #636E72; line-height: 1.6; white-space: pre-line; margin-bottom: 12px; }
         .card-img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-top: 10px; display:block; background:#eee;}
 
-        /* 按鈕群組修復 */
+        /* 按鈕群組 */
         .btn-group { display: flex; gap: 12px; margin-top: 15px; }
         .action-btn { flex: 1; padding: 10px; border-radius: 10px; text-align: center; text-decoration: none; font-size: 0.95rem; font-weight: 700; display: block; transition: transform 0.1s; }
         .action-btn:active { transform: scale(0.95); }
@@ -131,7 +131,7 @@
         .nav-icon { font-size: 1.6rem; display: block; margin-bottom: 4px; }
 
         /* Modal */
-        #modal, #modal-tool { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
+        #modal, #modal-tool, #modal-link { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
         .modal-box { background: white; width: 85%; max-width: 400px; padding: 25px; border-radius: 20px; max-height: 85vh; overflow-y: auto; }
         
         /* Highlights */
@@ -201,7 +201,7 @@
                 <select id="exp-pay"><option value="現金">現金</option><option value="刷卡">刷卡</option></select>
             </div>
             <div style="display:flex; gap:10px;">
-                <input type="number" id="exp-amt" placeholder="總金額" style="font-weight:bold; font-size:1.1rem;">
+                <input type="number" id="exp-amt" placeholder="總金額" style="font-weight:bold;">
                 <select id="exp-curr" style="width:90px;" onchange="window.calcRate()"><option value="JPY">JPY</option><option value="TWD">TWD</option></select>
             </div>
             <div id="rate-calc" style="text-align:right; color:#888; font-size:0.9rem; margin-bottom:15px;">約台幣 0 元</div>
@@ -233,13 +233,16 @@
         </div>
     </div>
 
-    <!-- 3. 工具頁 (移除日語) -->
+    <!-- 3. 工具頁 (移除日語，新增相簿) -->
     <div id="p-tools" class="page">
         <h2 style="text-align:center; color:var(--primary);">🧰 旅遊工具箱</h2>
         <div class="tools-grid">
             <div class="tool-card" onclick="window.openSubPage('check')"><div class="tool-icon">🧳</div><div class="tool-name">行李清單</div></div>
             <div class="tool-card" onclick="window.openSubPage('wish')"><div class="tool-icon">🎁</div><div class="tool-name">必買清單</div></div>
             <div class="tool-card" onclick="window.openSubPage('coupon')"><div class="tool-icon">🔖</div><div class="tool-name">優惠券夾</div></div>
+            <div class="tool-card" onclick="window.openAlbumModal()">
+                <div class="tool-icon">📷</div><div class="tool-name">Google 相簿</div>
+            </div>
         </div>
     </div>
 
@@ -289,11 +292,14 @@
     <div class="modal-box">
         <div class="modal-header" id="modal-title">編輯行程</div>
         <input type="hidden" id="edit-id">
-        <label>日期</label><select id="edit-day"><option value="Day 1">Day 1 (1/13)</option><option value="Day 2">Day 2 (1/14)</option><option value="Day 3">Day 3 (1/15)</option><option value="Day 4">Day 4 (1/16)</option><option value="Day 5">Day 5 (1/17)</option></select>
+        <label>日期</label>
+        <select id="edit-day"><option value="Day 1">Day 1 (1/13)</option><option value="Day 2">Day 2 (1/14)</option><option value="Day 3">Day 3 (1/15)</option><option value="Day 4">Day 4 (1/16)</option><option value="Day 5">Day 5 (1/17)</option></select>
         <label>時間</label><input type="time" id="edit-time">
-        <label>分類</label><select id="edit-type"><option value="spot">景點 (綠)</option><option value="food">美食 (橘)</option><option value="trans">交通 (藍)</option></select>
+        <label>分類</label>
+        <select id="edit-type"><option value="spot">景點 (綠)</option><option value="food">美食 (橘)</option><option value="trans">交通 (藍)</option></select>
         <label>標題</label><input type="text" id="edit-title">
-        <label>說明</label><textarea id="edit-desc" rows="4"></textarea>
+        <label>詳細說明</label>
+        <textarea id="edit-desc" rows="5" placeholder="導遊小撇步：輸入「必吃、必買、預約」會自動亮顯喔！"></textarea>
         <label>圖片連結 (選填)</label><input type="text" id="edit-img" placeholder="https://...">
         <label>相關連結 (選填)</label><input type="text" id="edit-link" placeholder="https://...">
         <label>Google Map 地點</label><input type="text" id="edit-loc">
@@ -316,9 +322,20 @@
     </div>
 </div>
 
+<!-- Album Link Modal -->
+<div id="modal-link">
+    <div class="modal-box">
+        <h3>📷 設定 Google 相簿</h3>
+        <p style="color:#666; font-size:0.9rem;">請建立一個「共用相簿」，並將連結貼在下方：</p>
+        <input type="text" id="album-link-input" placeholder="https://photos.app.goo.gl/...">
+        <button onclick="window.saveAlbumLink()" class="btn-primary">儲存並前往</button>
+        <button onclick="document.getElementById('modal-link').style.display='none'" style="width:100%; color:#888; border:none; background:none; margin-top:10px;">取消</button>
+    </div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, getDocs, writeBatch } 
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, getDocs, writeBatch, setDoc, getDoc } 
     from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } 
     from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
@@ -352,7 +369,6 @@ const firebaseConfig = {
             const d = doc.data();
             if(d.day !== currentDay) { currentDay=d.day; html+=`<div class="day-divider" data-day="${d.day}">${d.day}</div>`; }
             
-            // 螢光筆
             let desc = (d.desc||"").replace(/(必吃.*?)(?=\s|$|，|。)/g, '<span class="hl-food">$1</span>')
                                   .replace(/(必買.*?)(?=\s|$|，|。)/g, '<span class="hl-buy">$1</span>')
                                   .replace(/(預約.*?)(?=\s|$|，|。)/g, '<span class="hl-res">$1</span>');
@@ -377,7 +393,7 @@ const firebaseConfig = {
     window.cardClick = (id,day,time,type,title,desc,img,loc,link) => { if(!isLocked) window.openEditModal(id,day,time,type,title,desc,img,loc,link); };
     window.filterDay = (dayStr, btn) => { document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); document.querySelectorAll('.card, .day-divider').forEach(el => { if(el.dataset.day && el.dataset.day.includes(dayStr)) el.style.display='block'; else el.style.display='none'; }); window.updateWeather(dayStr); };
 
-    // --- 2. 記帳邏輯 (含 Excel 匯出) ---
+    // --- 2. 記帳邏輯 ---
     let allExpenses = [];
     const prepaidList = [ {name:"機票", amt:41490}, {name:"Klook", amt:4239}, {name:"JR", amt:3862}, {name:"便當", amt:1260} ];
     let prepaidTotal = 0;
@@ -465,6 +481,25 @@ const firebaseConfig = {
             loadWishlist(tool);
         }
     };
+    
+    // --- Google 相簿功能 ---
+    window.openAlbumModal = async () => {
+        const docRef = doc(db, "settings", "album");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists() && docSnap.data().link) {
+            window.location.href = docSnap.data().link; // 有連結直接開
+        } else {
+            document.getElementById("modal-link").style.display = "flex"; // 沒連結跳視窗
+        }
+    };
+    
+    window.saveAlbumLink = async () => {
+        const link = document.getElementById("album-link-input").value;
+        if(link) {
+            await setDoc(doc(db, "settings", "album"), { link: link });
+            window.location.href = link;
+        }
+    };
 
     window.closeSubPage = () => document.getElementById("sub-page-container").style.display = "none";
     window.toggleCheck = (el, item) => {
@@ -507,7 +542,6 @@ const firebaseConfig = {
     window.delExp = async(id) => { if(confirm("刪除?")) await deleteDoc(doc(db,"expenses",id)); };
     window.calcRate = () => { const v=document.getElementById("exp-amt").value; const c=document.getElementById("exp-curr").value; document.getElementById("rate-calc").innerText = c==="JPY" ? `約台幣 ${Math.round(v*RATE)}` : "台幣計價"; };
     window.previewImage = (input) => { if(input.files[0]){ let r=new FileReader(); r.onload=e=>{document.getElementById("img-preview").src=e.target.result; document.getElementById("img-preview").style.display="block";}; r.readAsDataURL(input.files[0]); } };
-    window.scrollToTop = () => window.scrollTo({top:0, behavior:'smooth'});
     window.switchPage = (id, btn) => { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); };
     window.updateWeather = (day) => { const t = document.getElementById("w-tips"), l = document.getElementById("w-loc"), tm = document.getElementById("w-temp"); if(day.includes("Day 1")) { l.innerText="福岡市"; tm.innerText="10°C"; t.innerText="🧥 微涼，帶薄外套"; } else if(day.includes("Day 2")) { l.innerText="由布院"; tm.innerText="8°C"; t.innerText="❄️ 山區冷，穿發熱衣"; } else { l.innerText="福岡市"; tm.innerText="11°C"; t.innerText="⛅ 舒適，洋蔥式穿搭"; } };
     
