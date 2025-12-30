@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>福岡好好玩 V41 🌸</title>
+    <title>福岡好好玩 V42 🌸</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -27,9 +27,7 @@
             padding: 15px 20px; text-align: center; position: sticky; top: 0; z-index: 100;
             box-shadow: 0 2px 10px rgba(255, 139, 167, 0.3); display: flex; justify-content: space-between; align-items: center;
         }
-        h1 { margin: 0; font-size: 1.4rem; font-weight: 700; flex-grow: 1; text-align: center; } /* 標題置中 */
-        
-        /* 頂部按鈕樣式 */
+        h1 { margin: 0; font-size: 1.4rem; font-weight: 700; flex-grow: 1; text-align: center; } 
         .icon-btn { 
             background: rgba(255,255,255,0.25); border: none; width: 40px; height: 40px; border-radius: 50%; 
             font-size: 1.2rem; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; 
@@ -44,17 +42,12 @@
 
         /* FAB Group */
         .fab-group { position: fixed; bottom: 100px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 99; align-items: flex-end; }
-        
-        /* 新增按鈕 (預設隱藏，解鎖後顯示) */
         #add-fab { 
             background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: none; /* 預設隱藏 */
-            justify-content: center; align-items: center; font-size: 2.2rem; cursor: pointer; border: none; 
-            transition: transform 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: none; justify-content: center; align-items: center; 
+            font-size: 2.2rem; cursor: pointer; border: none; transition: transform 0.2s;
         }
         #add-fab:active { transform: scale(0.95); }
-
-        /* 鎖定按鈕 */
         #btn-lock { 
             width: 45px; height: 45px; border-radius: 50%; background: white; border: 2px solid #ccc; 
             font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; 
@@ -75,10 +68,6 @@
             transition: transform 0.1s; 
         }
         .card.food { border-left-color: var(--accent-food); } .card.spot { border-left-color: var(--accent-spot); } .card.trans { border-left-color: var(--accent-trans); }
-        
-        /* 鎖定時游標 */
-        .card { cursor: default; }
-        /* 解鎖時游標 */
         .card.editable { cursor: pointer; }
         .card.editable:active { transform: scale(0.98); background: #fff0f5; }
 
@@ -134,6 +123,45 @@
         .nav-item.active { color: var(--primary); font-weight: 700; }
         .nav-icon { font-size: 1.8rem; display: block; margin-bottom: 4px; }
         .nav-label { font-size: 0.9rem; }
+
+        /* Tools Styles (修復版) */
+        .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .tool-card { background: white; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid #eee; cursor: pointer; height: 110px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .tool-icon { font-size: 2.5rem; margin-bottom: 8px; }
+        .tool-name { font-weight: bold; color: #555; }
+        
+        /* Sub Page Styles (修復版) */
+        .sub-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 200; display: none; flex-direction: column; overflow-y: auto; }
+        .sub-header { background: white; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 201; }
+        .back-btn { font-size: 1.8rem; background: none; border: none; margin-right: 15px; cursor: pointer; padding: 5px; }
+        .sub-content { padding: 20px; padding-bottom: 100px; }
+        
+        /* Wishlist/Foodlist */
+        .wish-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+        .wish-item { position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; padding-bottom: 5px; }
+        .wish-img { width: 100%; height: 150px; object-fit: cover; display: block; cursor: zoom-in; }
+        .wish-title { padding: 8px 5px 5px 5px; font-size: 0.9rem; text-align: center; font-weight: bold; color: #555; }
+        .wish-del { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; line-height: 24px; font-size: 0.8rem; cursor: pointer; z-index: 10; }
+        .tool-link-btn { display: block; background: #E3F2FD; color: #1565C0; text-align: center; text-decoration: none; padding: 8px; margin: 0 10px 10px 10px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; }
+        .tool-map-btn { display: block; background: #E8F5E9; color: #2E7D32; text-align: center; text-decoration: none; padding: 8px; margin: 0 10px 10px 10px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; }
+
+        /* Checklist */
+        .checklist-item { background: white; padding: 18px; margin-bottom: 12px; border-radius: 12px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; font-size: 1.1rem; }
+        .checklist-item.checked { opacity: 0.5; background: #f0f0f0; }
+        .checklist-item.checked .cb-text { text-decoration: line-through; }
+        .cb-icon { font-size: 1.4rem; margin-right: 15px; color: #ccc; width: 30px; text-align: center;}
+        .checklist-item.checked .cb-icon { color: var(--accent-spot); content: "✔"; }
+
+        /* Expense & Split (修復版) */
+        .expense-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #FF9800; }
+        .exp-tag { font-size: 0.75rem; padding: 3px 8px; border-radius: 6px; margin-right: 5px; background: #eee; }
+        .exp-tag.public { background: #E0F2F1; color: #00695C; }
+        
+        #split-section { display: none; margin-top: 15px; } /* 預設隱藏 */
+        .split-dashboard { background: #FFF8E1; border: 2px solid #FFE082; border-radius: 16px; padding: 15px; margin-bottom: 25px; }
+        .split-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem; border-bottom: 1px dashed #ccc; padding-bottom: 5px; }
+        .split-owe { color: #e74c3c; font-weight: bold; }
+        .split-get { color: #27ae60; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -163,7 +191,6 @@
 
         <div id="schedule-content-pad">
             <div class="fab-group">
-                <!-- 移除了原本的浮動 Top 按鈕，改到 Header -->
                 <button id="add-fab" onclick="window.openEditModal(null)">➕</button>
                 <button id="btn-lock" onclick="window.toggleLock()">🔒</button>
             </div>
@@ -503,8 +530,7 @@ const firebaseConfig = {
     };
     window.delBanner = async (id) => { if(confirm("刪除這張封面？")) await deleteDoc(doc(db, "banners", id)); };
 
-    // --- 2. 行程邏輯 (V40 完整版) ---
-    // ★★★ 關鍵：快取資料，確保點擊卡片時能撈到完整內容 ★★★
+    // --- 2. 行程邏輯 ---
     let scheduleMap = {};
 
     const qSch = query(collection(db, "schedule"), orderBy("day"), orderBy("time"));
@@ -517,7 +543,7 @@ const firebaseConfig = {
         
         snapshot.forEach((doc) => {
             const d = doc.data();
-            scheduleMap[doc.id] = d; // 存入快取
+            scheduleMap[doc.id] = d;
 
             if(d.day !== currentDay) { currentDay=d.day; html+=`<div class="day-divider" data-day="${d.day}">${d.day}</div>`; }
             
@@ -525,7 +551,6 @@ const firebaseConfig = {
                                   .replace(/(必買.*?)(?=\s|$|，|。)/g, '<span class="hl-buy">$1</span>')
                                   .replace(/(預約.*?)(?=\s|$|，|。)/g, '<span class="hl-res">$1</span>');
 
-            // ★ ID 傳遞修復 ★
             html += `<div class="card ${d.type}" data-day="${d.day}" data-id="${doc.id}" onclick="window.cardClick(this)">
                 <div class="card-header"><span class="time-badge">${d.time}</span></div>
                 <div class="card-title">${d.title}</div>
@@ -544,7 +569,6 @@ const firebaseConfig = {
     let isLocked = true;
     window.toggleLock = () => { isLocked=!isLocked; const b=document.getElementById("btn-lock"); const a=document.getElementById("add-fab"); if(isLocked){b.innerHTML="🔒";b.className="fab-btn";a.style.display="none"; document.querySelectorAll(".card").forEach(c=>c.classList.remove("editable"));}else{b.innerHTML="🔓";b.className="fab-btn unlocked";a.style.display="flex"; document.querySelectorAll(".card").forEach(c=>c.classList.add("editable"));} };
     
-    // ★ V41 鎖定判斷 ★
     window.cardClick = (el) => { 
         if(!isLocked) {
             const id = el.getAttribute('data-id');
@@ -741,7 +765,7 @@ const firebaseConfig = {
     window.delWish = async(id) => { if(confirm("刪除？")) await deleteDoc(doc(db, "wishlist", id)); };
 
     // --- Helpers ---
-    // ★★★ V37 改用 ID 查詢，解決符號導致資料空白的問題 ★★★
+    // ★★★ V37 修正：透過 ID 取快取資料，防止空白 ★★★
     window.openEditModal = (id) => {
         document.getElementById("modal").style.display="flex";
         if(id) {
@@ -818,52 +842,9 @@ const firebaseConfig = {
     window.switchPage = (id, btn) => { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); };
     window.updateWeather = (day) => { const t = document.getElementById("w-tips"), l = document.getElementById("w-loc"), tm = document.getElementById("w-temp"); if(day.includes("Day 1")) { l.innerText="福岡市"; tm.innerText="10°C"; t.innerText="🧥 微涼，帶薄外套"; } else if(day.includes("Day 2")) { l.innerText="由布院"; tm.innerText="8°C"; t.innerText="❄️ 山區冷，穿發熱衣"; } else { l.innerText="福岡市"; tm.innerText="11°C"; t.innerText="⛅ 舒適，洋蔥式穿搭"; } };
     
-    // 初始化 (V40 行程)
-    const fullSchedule = [
-        { day: "Day 1", time: "04:45", type: "trans", title: "桃園機場 T1", desc: "抵達櫃檯報到，準備出發！", loc: "桃園機場第一航廈" },
-        { day: "Day 1", time: "10:00", type: "trans", title: "抵達福岡", desc: "快速通關領行李。", loc: "福岡機場" },
-        { day: "Day 1", time: "11:00", type: "trans", title: "行李寄送 Cargo Pass", desc: "位置：國際線 1F。\n寄往：「Mitsui Garden Nakasu」，空手旅行！", link: "https://cargopass.jp", loc: "福岡機場 Cargo Pass" },
-        { day: "Day 1", time: "11:45", type: "food", title: "必吃「大山」牛雜鍋", desc: "【博多靈魂美食】\n牛腸軟嫩、味噌濃郁。位置在國內線3F。", img: "https://ginalitw.github.io/fukuoka-app/images/0101.png", loc: "博多もつ鍋おおやま 福岡空港" },
-        { day: "Day 1", time: "13:12", type: "trans", title: "高速巴士往由布院", desc: "國內線 2 號站牌上車。\n往「由布院」方向，車程約2小時。", img: "https://ginalitw.github.io/fukuoka-app/images/0102.jpg", link: "https://www.nishitetsu.jp/bus/highwaybus/rosen/yufuin/", loc: "福岡機場巴士站" },
-        { day: "Day 1", time: "15:00", type: "spot", title: "入住：由布院山水館", desc: "辦理入住，換上浴衣看山景。\n浴場開放：\n[2F朝霧之湯] 13:00~25:00\n[1F由布之湯] 05:00~09:30", img: "https://ginalitw.github.io/fukuoka-app/images/0103.jpg", link: "https://www.sansuikan.co.jp/", loc: "由布院山水館" },
-        { day: "Day 1", time: "18:00", type: "food", title: "海陸晚宴", desc: "和牛與松葉蟹自助餐（至 21:00）。" },
-        { day: "Day 1", time: "21:00", type: "spot", title: "睡前溫泉", desc: "朝霧之湯享受露天風呂。" },
-        { day: "Day 2", time: "07:30", type: "spot", title: "起床", desc: "在山間清新的空氣中醒來。" },
-        { day: "Day 2", time: "08:30", type: "food", title: "元氣早餐", desc: "飯店自助早餐(供應至 09:00)。" },
-        { day: "Day 2", time: "10:00", type: "trans", title: "Checkout", desc: "辦理退房，輕鬆散步。" },
-        { day: "Day 2", time: "10:30", type: "spot", title: "金鱗湖散策", desc: "晨霧夢幻美景，必拍倒影。\n名稱由來：儒家學者在日落時看到魚鱗閃爍。", img: "https://ginalitw.github.io/fukuoka-app/images/0104.jpg", loc: "金鱗湖" },
-        { day: "Day 2", time: "11:30", type: "spot", title: "花卉村 & 湯之坪", desc: "逛特色雜貨、SNOOPY茶屋。\n必吃：金賞可樂餅、半熟起司蛋糕、豐後牛釜飯。", link: "https://tw.wamazing.com/media/article/a-1062/", loc: "湯之坪街道" },
-        { day: "Day 2", time: "17:11", type: "trans", title: "由布院之森列車", desc: "【夢幻特急】\n綠色復古列車，車廂高雅。\nID: yERR3dOcBxJ7Efrg", img: "https://ginalitw.github.io/fukuoka-app/images/0105.jpg", youtube: "https://www.youtube.com/embed/MLBKTMaQluk", link: "https://www.jrkyushu.co.jp/chinese/train/yufuin_no_mori.html", loc: "由布院駅" },
-        { day: "Day 2", time: "18:00", type: "food", title: "鐵道晚宴", desc: "車上享用預約制便當。", img: "https://ginalitw.github.io/fukuoka-app/images/0106.jpg" },
-        { day: "Day 2", time: "20:00", type: "spot", title: "入住三井花園中洲", desc: "抵達飯店，領取行李。", loc: "三井花園飯店福岡中洲" },
-        { day: "Day 3", time: "08:30", type: "food", title: "飯店早餐", desc: "1F ONO no HANARE 自助餐。" },
-        { day: "Day 3", time: "10:00", type: "spot", title: "博多文化散策", desc: "參拜櫛田神社，逛川端通商店街。", loc: "櫛田神社" },
-        { day: "Day 3", time: "14:00", type: "spot", title: "天神大採買", desc: "岩田屋百貨、地下街。", loc: "天神地下街" },
-        { day: "Day 3", time: "19:30", type: "food", title: "晚餐：水炊雞", desc: "博多名物，雞湯濃郁。", loc: "博多華味鳥" },
-        { day: "Day 3", time: "21:00", type: "spot", title: "頂樓放鬆", desc: "13F 景觀大浴場。" },
-        { day: "Day 4", time: "06:45", type: "food", title: "飯店早餐", desc: "吃飽準備出發。" },
-        { day: "Day 4", time: "07:45", type: "trans", title: "出發集合", desc: "前往博多站筑紫口。" },
-        { day: "Day 4", time: "08:30", type: "trans", title: "Klook 一日遊", desc: "準時出發，車上補眠。", loc: "博多站筑紫口" },
-        { day: "Day 4", time: "10:00", type: "food", title: "唐戶市場", desc: "週五限定「馬關街」！\n壽司自助餐，河豚生魚片必試。", loc: "唐戶市場" },
-        { day: "Day 4", time: "13:30", type: "spot", title: "小倉城散策", desc: "參觀白色天守閣。", loc: "小倉城" },
-        { day: "Day 4", time: "16:20", type: "spot", title: "宮地嶽神社", desc: "參拜巨大注連繩，看光之参道。", loc: "宮地嶽神社" },
-        { day: "Day 4", time: "18:30", type: "food", title: "回博多站晚餐", desc: "補齊伴手禮（明太子）。", loc: "博多站" },
-        { day: "Day 5", time: "08:10", type: "trans", title: "直奔機場", desc: "搭乘計程車前往機場（約15分）。", loc: "福岡機場" },
-        { day: "Day 5", time: "08:30", type: "trans", title: "機場報到", desc: "辦理登機與免稅店採買。" },
-        { day: "Day 5", time: "10:55", type: "trans", title: "告別福岡", desc: "搭乘虎航 IT241 愉快返台。", loc: "福岡機場" }
-    ];
-
-    window.resetData = async () => { 
-        if(!confirm("確定重置行程？這會刪除所有舊資料並載入預設行程。")) return; 
-        const q = query(collection(db, "schedule")); 
-        const snapshot = await getDocs(q); 
-        const batch = writeBatch(db); 
-        snapshot.forEach(doc => batch.delete(doc.ref)); 
-        await batch.commit(); 
-        for(let item of fullSchedule) await addDoc(collection(db, "schedule"), item); 
-        alert("重置完成！請重新整理網頁。"); 
-        window.location.reload(); 
-    };
+    // 初始化
+    const initialSchedule = [{ day: "Day 1", time: "11:45", title: "大山牛雜鍋", type: "food", loc: "博多もつ鍋おおやま 福岡空港", desc: "【必吃】博多靈魂美食！牛腸軟嫩、味噌濃郁。", img: "https://ginalitw.github.io/fukuoka-app/images/0101.png" }];
+    window.resetData = async () => { if(!confirm("確定重置行程？")) return; const q = query(collection(db, "schedule")); const snapshot = await getDocs(q); const batch = writeBatch(db); snapshot.forEach(doc => batch.delete(doc.ref)); await batch.commit(); for(let item of initialSchedule) await addDoc(collection(db, "schedule"), item); alert("完成！"); };
 </script>
 </body>
 </html>
