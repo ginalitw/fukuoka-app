@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>福岡好好玩 V42 🌸</title>
+    <title>福岡好好玩 V43 🌸</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -27,64 +27,71 @@
             padding: 15px 20px; text-align: center; position: sticky; top: 0; z-index: 100;
             box-shadow: 0 2px 10px rgba(255, 139, 167, 0.3); display: flex; justify-content: space-between; align-items: center;
         }
-        h1 { margin: 0; font-size: 1.4rem; font-weight: 700; flex-grow: 1; text-align: center; } 
-        .icon-btn { 
-            background: rgba(255,255,255,0.25); border: none; width: 40px; height: 40px; border-radius: 50%; 
-            font-size: 1.2rem; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; 
-            transition: background 0.2s;
-        }
-        .icon-btn:active { background: rgba(255,255,255,0.4); }
+        h1 { margin: 0; font-size: 1.4rem; font-weight: 700; }
+        .icon-btn { background: rgba(255,255,255,0.25); border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+
+        /* 倒數計時 */
+        #countdown-bar { background: #FFF3E0; color: #E65100; text-align: center; padding: 10px; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #FFCC80; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
         /* Page */
         .page { display: none; padding: 20px; animation: fadeIn 0.3s; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: 0; } }
 
-        /* FAB Group */
-        .fab-group { position: fixed; bottom: 100px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 99; align-items: flex-end; }
-        #add-fab { 
-            background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: none; justify-content: center; align-items: center; 
-            font-size: 2.2rem; cursor: pointer; border: none; transition: transform 0.2s;
+        /* Tools Grid */
+        .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .tool-card {
+            background: white; border-radius: 16px; padding: 20px; text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid #eee; cursor: pointer;
+            transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 110px; position: relative;
         }
-        #add-fab:active { transform: scale(0.95); }
-        #btn-lock { 
-            width: 45px; height: 45px; border-radius: 50%; background: white; border: 2px solid #ccc; 
-            font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s;
-        }
-        #btn-lock.unlocked { border-color: red; color: red; background: #FFEBEE; }
+        .tool-card:active { transform: scale(0.95); background: #FFF0F5; border-color: var(--primary); }
+        .tool-icon { font-size: 2.5rem; margin-bottom: 8px; }
+        .tool-name { font-weight: bold; color: #555; }
 
-        /* Schedule Styles */
-        .day-nav { display: flex; overflow-x: auto; white-space: nowrap; background: white; padding: 12px 15px; position: sticky; top: 70px; z-index: 98; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin: 0 -20px 20px -20px; }
-        .day-btn { background: #F1F2F6; border: none; padding: 8px 18px; margin: 0 4px; border-radius: 20px; color: #636E72; font-size: 0.95rem; cursor: pointer; }
-        .day-btn.active { background: var(--primary); color: white; font-weight: bold; }
-        .weather-banner { background: linear-gradient(135deg, #81D4FA, #29B6F6); border-radius: 16px; padding: 18px; display: flex; align-items: center; justify-content: space-between; color: white; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(41, 182, 246, 0.3); }
-        .day-divider { margin: 30px 0 15px 0; font-weight: bold; color: #2196F3; border-bottom: 3px dashed #ccc; padding-bottom: 5px; font-size: 1.3rem; scroll-margin-top: 140px; }
+        /* Sub Page */
+        .sub-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 200; display: none; flex-direction: column; overflow-y: auto; }
+        .sub-header { background: white; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 201; }
+        .back-btn { font-size: 1.5rem; background: none; border: none; margin-right: 15px; cursor: pointer; padding: 5px; }
+        .sub-content { padding: 20px; padding-bottom: 100px; }
 
-        .card { 
-            background: white; border-radius: 16px; margin-bottom: 20px; padding: 20px; 
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08); border-left: 8px solid #ccc; 
-            transition: transform 0.1s; 
-        }
-        .card.food { border-left-color: var(--accent-food); } .card.spot { border-left-color: var(--accent-spot); } .card.trans { border-left-color: var(--accent-trans); }
-        .card.editable { cursor: pointer; }
-        .card.editable:active { transform: scale(0.98); background: #fff0f5; }
+        /* Checklist */
+        .checklist-item { background: white; padding: 15px; margin-bottom: 10px; border-radius: 12px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; }
+        .checklist-item.checked { opacity: 0.5; background: #f0f0f0; }
+        .checklist-item.checked .cb-text { text-decoration: line-through; }
+        .cb-icon { font-size: 1.2rem; margin-right: 15px; color: #ccc; width: 24px; text-align: center;}
+        .checklist-item.checked .cb-icon { color: var(--accent-spot); content: "✔"; }
 
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .card-title { font-size: 1.4rem; font-weight: 700; margin: 0 0 10px 0; color: #2D3436; line-height: 1.3; }
-        .time-badge { background: #F1F2F6; padding: 5px 12px; border-radius: 8px; font-weight: 700; font-size: 1rem; color: #2D3436; }
-        .card-desc { font-size: 1.1rem; color: #333; line-height: 1.8; white-space: pre-line; margin-bottom: 15px; }
-        .card-img { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; margin-top: 10px; display:block; background:#eee;}
+        /* Wishlist */
+        .wish-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+        .wish-item { position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; padding-bottom: 5px; }
+        .wish-img { width: 100%; height: 150px; object-fit: cover; display: block; cursor: zoom-in; }
+        .wish-info { padding: 10px; }
+        .wish-title { font-size: 1rem; font-weight: bold; color: #333; margin-bottom: 5px; }
+        .wish-note { font-size: 0.85rem; color: #666; margin-bottom: 8px; white-space: pre-line; }
+        .wish-del { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; line-height: 24px; font-size: 0.8rem; cursor: pointer; z-index: 10; }
+        .tool-actions { display: flex; gap: 5px; }
+        .tool-link-btn, .tool-map-btn { flex: 1; display: block; text-align: center; text-decoration: none; padding: 6px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; }
+        .tool-link-btn { background: #E3F2FD; color: #1565C0; }
+        .tool-map-btn { background: #E8F5E9; color: #2E7D32; }
 
-        .btn-group { display: flex; gap: 15px; margin-top: 18px; }
-        .action-btn { flex: 1; padding: 12px; border-radius: 12px; text-align: center; text-decoration: none; font-size: 1rem; font-weight: 700; display: block; transition: transform 0.1s; }
-        .btn-map { background: #E8F5E9; color: #27ae60; border: 1px solid #C8E6C9; }
-        .btn-link { background: #E3F2FD; color: #0984e3; border: 1px solid #BBDEFB; }
+        /* Expense */
+        .info-card { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .input-box { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 2px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input, select, textarea { width: 100%; padding: 15px; margin-bottom: 12px; border: 1px solid #dfe6e9; border-radius: 12px; font-size: 1.1rem; box-sizing: border-box; font-family: inherit; }
+        .btn-primary { background: var(--primary); color: white; border: none; width: 85%; padding: 15px; border-radius: 30px; font-size: 1.2rem; font-weight: bold; display: block; margin: 15px auto; box-shadow: 0 4px 10px rgba(255, 139, 167, 0.4); cursor: pointer; }
+        .btn-outline { background: white; border: 2px solid #dfe6e9; color: #636E72; width: 85%; padding: 10px; border-radius: 30px; font-size: 1rem; font-weight: bold; cursor: pointer; margin: 10px auto; text-align: center; display: block;}
+        .expense-item { background: white; padding: 18px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #FF9800; font-size: 1.1rem; }
+        .prepaid-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.95rem; color: #555; }
+        .prepaid-row:last-child { border-bottom: none; }
+        #split-section { display: none; }
+        .split-dashboard { background: #FFF8E1; border: 2px solid #FFE082; border-radius: 16px; padding: 20px; margin-bottom: 25px; }
+        .split-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1.1rem; border-bottom: 1px dashed #ccc; padding-bottom: 8px; }
+        .split-owe { color: #e74c3c; font-weight: bold; }
+        .split-get { color: #27ae60; font-weight: bold; }
 
-        /* Other Styles */
-        #p-schedule { padding: 0; } 
-        #schedule-content-pad { padding: 0 15px 20px 15px; }
+        /* Carousel */
         .carousel-container { position: relative; width: 100%; height: 240px; overflow: hidden; background: #eee; margin-bottom: 10px; }
         .carousel-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; width: 100%; height: 100%; -webkit-overflow-scrolling: touch; }
         .carousel-track::-webkit-scrollbar { display: none; }
@@ -93,29 +100,35 @@
         .carousel-btn { position: absolute; bottom: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; cursor: pointer; backdrop-filter: blur(4px); display: flex; align-items: center; gap: 5px; }
         .carousel-del { position: absolute; top: 10px; right: 10px; background: rgba(255,0,0,0.7); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: none; }
         .carousel-slide:hover .carousel-del { display: flex; justify-content: center; align-items: center; }
+
+        /* Album Link */
         .album-link-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: white; border: 2px solid #4285F4; color: #4285F4; margin: 15px 15px; padding: 12px; border-radius: 12px; font-weight: bold; text-decoration: none; font-size: 1.1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.1s; }
+        .album-link-btn:active { background: #E8F0FE; transform: scale(0.98); }
+
+        /* Schedule */
+        #p-schedule { padding: 0; } 
+        #schedule-content-pad { padding: 0 15px 20px 15px; }
+        .day-nav { display: flex; overflow-x: auto; white-space: nowrap; background: white; padding: 12px 15px; position: sticky; top: 0; z-index: 98; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .day-btn { background: #F1F2F6; border: none; padding: 8px 18px; margin-right: 8px; border-radius: 25px; color: #636E72; font-size: 1rem; cursor: pointer; }
+        .day-btn.active { background: var(--primary); color: white; font-weight: bold; }
+        .weather-banner { background: linear-gradient(135deg, #81D4FA, #29B6F6); border-radius: 16px; padding: 20px; display: flex; align-items: center; justify-content: space-between; color: white; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(41, 182, 246, 0.3); }
+        .day-divider { margin: 30px 0 15px 0; font-weight: bold; color: #2196F3; border-bottom: 3px dashed #ccc; padding-bottom: 5px; font-size: 1.3rem; }
+        .card { background: white; border-radius: 16px; margin-bottom: 20px; padding: 20px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); border-left: 8px solid #ccc; cursor: pointer; }
+        .card.food { border-left-color: var(--accent-food); } .card.spot { border-left-color: var(--accent-spot); } .card.trans { border-left-color: var(--accent-trans); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .card-title { font-size: 1.5rem; font-weight: 700; margin: 0 0 10px 0; color: #2D3436; line-height: 1.3; }
+        .time-badge { background: #F1F2F6; padding: 5px 12px; border-radius: 8px; font-weight: 700; font-size: 1.1rem; color: #2D3436; }
+        .card-desc { font-size: 1.15rem; color: #333; line-height: 1.8; white-space: pre-line; margin-bottom: 15px; }
+        .card-img { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; margin-top: 10px; display:block; background:#eee;}
+        .btn-group { display: flex; gap: 15px; margin-top: 18px; }
+        .action-btn { flex: 1; padding: 12px; border-radius: 12px; text-align: center; text-decoration: none; font-size: 1rem; font-weight: 700; display: block; transition: transform 0.1s; }
+        .btn-map { background: #E8F5E9; color: #27ae60; border: 1px solid #C8E6C9; }
+        .btn-link { background: #E3F2FD; color: #0984e3; border: 1px solid #BBDEFB; }
         
-        /* Modal & Form */
-        #modal, #modal-tool, #modal-lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
-        .modal-box { background: white; width: 85%; max-width: 400px; padding: 0; border-radius: 20px; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; }
-        .modal-header-bar { padding: 15px; border-bottom: 1px solid #eee; text-align: center; font-size: 1.2rem; font-weight: bold; background: #fafafa; }
-        .modal-body { padding: 20px; }
-        .modal-footer { padding: 15px; border-top: 1px solid #eee; background: #fafafa; display: flex; gap: 10px; flex-direction: column; }
-        .form-group { margin-bottom: 15px; }
-        .form-label { display: block; font-size: 0.95rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
-        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 5px; border: 1px solid #dfe6e9; border-radius: 8px; font-size: 1rem; box-sizing: border-box; font-family: inherit; }
-        .btn-primary { background: var(--primary); color: white; border: none; width: 100%; padding: 14px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
-        .btn-outline { background: white; border: 2px solid #dfe6e9; color: #636E72; width: 100%; padding: 12px; border-radius: 30px; font-size: 1rem; font-weight: bold; cursor: pointer; text-align: center; display: block;}
-        
-        #lightbox-img { max-width: 90%; max-height: 80vh; border-radius: 8px; }
-        #countdown-bar { background: #FFF3E0; color: #E65100; text-align: center; padding: 10px; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #FFCC80; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .rate-calc-box { background: white; border: 2px solid var(--primary); border-radius: 16px; padding: 15px; margin: 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .rate-input { width: 80px; padding: 8px; border: 1px solid #ddd; border-radius: 8px; font-size: 1.1rem; text-align: center; }
-        .rate-result { font-size: 1.2rem; font-weight: bold; color: #2D3436; }
-        .rate-setting { font-size: 0.8rem; color: #888; text-decoration: underline; cursor: pointer; }
-        .hl-food { background: #fff3cd; color: #856404; padding: 0 4px; border-radius: 4px; }
-        .hl-buy { background: #e2e3f5; color: #383d41; padding: 0 4px; border-radius: 4px; }
-        .hl-res { background: #f8d7da; color: #721c24; padding: 0 4px; border-radius: 4px; }
+        /* FAB */
+        #add-fab { position: fixed; bottom: 100px; right: 20px; background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center; font-size: 2.2rem; z-index: 99; cursor: pointer; border: none; display:none; }
+        #btn-lock { position: fixed; bottom: 180px; right: 20px; width: 50px; height: 50px; border-radius: 50%; background: white; border: 2px solid #ccc; z-index: 99; font-size: 1.4rem; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        #btn-lock.unlocked { border-color: red; color: red; background: #FFEBEE; }
 
         /* Nav Bar */
         .nav-bar { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: rgba(255,255,255,0.95); height: 80px; display: flex; border-top: 1px solid rgba(0,0,0,0.05); z-index: 100; }
@@ -124,52 +137,30 @@
         .nav-icon { font-size: 1.8rem; display: block; margin-bottom: 4px; }
         .nav-label { font-size: 0.9rem; }
 
-        /* Tools Styles (修復版) */
-        .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
-        .tool-card { background: white; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid #eee; cursor: pointer; height: 110px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .tool-icon { font-size: 2.5rem; margin-bottom: 8px; }
-        .tool-name { font-weight: bold; color: #555; }
-        
-        /* Sub Page Styles (修復版) */
-        .sub-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 200; display: none; flex-direction: column; overflow-y: auto; }
-        .sub-header { background: white; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 201; }
-        .back-btn { font-size: 1.8rem; background: none; border: none; margin-right: 15px; cursor: pointer; padding: 5px; }
-        .sub-content { padding: 20px; padding-bottom: 100px; }
-        
-        /* Wishlist/Foodlist */
-        .wish-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-        .wish-item { position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; padding-bottom: 5px; }
-        .wish-img { width: 100%; height: 150px; object-fit: cover; display: block; cursor: zoom-in; }
-        .wish-title { padding: 8px 5px 5px 5px; font-size: 0.9rem; text-align: center; font-weight: bold; color: #555; }
-        .wish-del { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; line-height: 24px; font-size: 0.8rem; cursor: pointer; z-index: 10; }
-        .tool-link-btn { display: block; background: #E3F2FD; color: #1565C0; text-align: center; text-decoration: none; padding: 8px; margin: 0 10px 10px 10px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; }
-        .tool-map-btn { display: block; background: #E8F5E9; color: #2E7D32; text-align: center; text-decoration: none; padding: 8px; margin: 0 10px 10px 10px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; }
+        /* Modal */
+        #modal, #modal-tool, #modal-link, #modal-lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
+        .modal-box { background: white; width: 85%; max-width: 400px; padding: 0; border-radius: 20px; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; }
+        .modal-header-bar { padding: 15px; border-bottom: 1px solid #eee; text-align: center; font-size: 1.2rem; font-weight: bold; background: #fafafa; }
+        .modal-body { padding: 20px; }
+        .modal-footer { padding: 15px; border-top: 1px solid #eee; background: #fafafa; display: flex; gap: 10px; flex-direction: column; }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.95rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
 
-        /* Checklist */
-        .checklist-item { background: white; padding: 18px; margin-bottom: 12px; border-radius: 12px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; font-size: 1.1rem; }
-        .checklist-item.checked { opacity: 0.5; background: #f0f0f0; }
-        .checklist-item.checked .cb-text { text-decoration: line-through; }
-        .cb-icon { font-size: 1.4rem; margin-right: 15px; color: #ccc; width: 30px; text-align: center;}
-        .checklist-item.checked .cb-icon { color: var(--accent-spot); content: "✔"; }
-
-        /* Expense & Split (修復版) */
-        .expense-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #FF9800; }
-        .exp-tag { font-size: 0.75rem; padding: 3px 8px; border-radius: 6px; margin-right: 5px; background: #eee; }
-        .exp-tag.public { background: #E0F2F1; color: #00695C; }
-        
-        #split-section { display: none; margin-top: 15px; } /* 預設隱藏 */
-        .split-dashboard { background: #FFF8E1; border: 2px solid #FFE082; border-radius: 16px; padding: 15px; margin-bottom: 25px; }
-        .split-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem; border-bottom: 1px dashed #ccc; padding-bottom: 5px; }
-        .split-owe { color: #e74c3c; font-weight: bold; }
-        .split-get { color: #27ae60; font-weight: bold; }
+        #lightbox-img { max-width: 90%; max-height: 80vh; border-radius: 8px; }
+        .rate-calc-box { background: white; border: 2px solid var(--primary); border-radius: 16px; padding: 15px; margin: 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .rate-input { width: 80px; padding: 8px; border: 1px solid #ddd; border-radius: 8px; font-size: 1.1rem; text-align: center; }
+        .rate-result { font-size: 1.2rem; font-weight: bold; color: #2D3436; }
+        .rate-setting { font-size: 0.8rem; color: #888; text-decoration: underline; cursor: pointer; }
+        .hl-food { background: #fff3cd; color: #856404; padding: 0 4px; border-radius: 4px; }
+        .hl-buy { background: #e2e3f5; color: #383d41; padding: 0 4px; border-radius: 4px; }
+        .hl-res { background: #f8d7da; color: #721c24; padding: 0 4px; border-radius: 4px; }
     </style>
 </head>
 <body>
 
 <div id="app">
     <header>
-        <!-- V41 修正：左上角回到頁首按鈕 -->
-        <button class="icon-btn" onclick="window.scrollToTop()">⬆</button>
+        <div style="width:45px"></div>
         <h1>福岡好好玩 🌸</h1>
         <button class="icon-btn" onclick="window.openTranslate()">🈚️</button>
     </header>
@@ -190,10 +181,8 @@
         </a>
 
         <div id="schedule-content-pad">
-            <div class="fab-group">
-                <button id="add-fab" onclick="window.openEditModal(null)">➕</button>
-                <button id="btn-lock" onclick="window.toggleLock()">🔒</button>
-            </div>
+            <button id="add-fab" onclick="window.openEditModal(null)">+</button>
+            <button id="btn-lock" onclick="window.toggleLock()">🔒</button>
 
             <div class="day-nav">
                 <button class="day-btn active" onclick="window.filterDay('Day 1', this)">Day 1</button>
@@ -220,7 +209,7 @@
 
     <!-- 2. 記帳頁 -->
     <div id="p-money" class="page">
-        <div class="page-content" style="padding:15px;">
+        <div class="page-content">
             <div class="rate-calc-box">
                 <div><input type="number" id="calc-in-money" class="rate-input" placeholder="日幣" oninput="window.updateCalc('money')"> JPY</div>
                 <div style="font-weight:bold;">=</div>
@@ -283,7 +272,7 @@
 
     <!-- 3. 工具頁 -->
     <div id="p-tools" class="page">
-        <div class="page-content" style="padding:15px;">
+        <div class="page-content">
             <h2 style="text-align:center; color:var(--primary);">🧰 旅遊工具箱</h2>
             <div class="rate-calc-box">
                 <div><input type="number" id="calc-in-tool" class="rate-input" placeholder="日幣" oninput="window.updateCalc('tool')"> JPY</div>
@@ -305,7 +294,7 @@
 
     <!-- 4. 資訊頁 -->
     <div id="p-info" class="page">
-        <div class="page-content" style="padding:15px;">
+        <div class="page-content">
             <div class="info-card">
                 <h3>✈️ 航班資訊</h3>
                 <div><b>去程 (IT240)</b>: 1/13 06:45 TPE ➔ 10:00 FUK</div>
@@ -324,7 +313,7 @@
                 <div style="color:#d63031; font-weight:800; font-size:1.6rem;">080-1004-0243</div>
             </div>
             <div style="text-align:center; margin-top:30px;">
-                <button onclick="window.resetData()" style="background:#b2bec3; color:white; border:none; padding:12px 20px; border-radius:25px; font-size:1rem;">⚠️ 重置行程 (修復用)</button>
+                <button onclick="window.resetData()" style="background:#b2bec3; color:white; border:none; padding:12px 20px; border-radius:25px; font-size:1rem;">⚠️ 重置行程</button>
             </div>
         </div>
     </div>
@@ -353,7 +342,6 @@
         <div class="modal-header-bar" id="modal-title">✏️ 編輯/新增行程</div>
         <div class="modal-body">
             <input type="hidden" id="edit-id">
-            
             <div class="form-group">
                 <label class="form-label">選擇日期</label>
                 <select id="edit-day">
@@ -364,49 +352,20 @@
                     <option value="Day 5">Day 5 (1/17)</option>
                 </select>
             </div>
-            
             <div class="form-group" style="display:flex; gap:10px;">
-                <div style="flex:1;">
-                    <label class="form-label">時間</label>
-                    <input type="time" id="edit-time">
-                </div>
-                <div style="flex:1;">
-                    <label class="form-label">分類</label>
-                    <select id="edit-type">
-                        <option value="spot">景點 (綠)</option>
-                        <option value="food">美食 (橘)</option>
-                        <option value="trans">交通 (藍)</option>
-                    </select>
-                </div>
+                <div style="flex:1;"><label class="form-label">時間</label><input type="time" id="edit-time"></div>
+                <div style="flex:1;"><label class="form-label">分類</label><select id="edit-type"><option value="spot">景點 (綠)</option><option value="food">美食 (橘)</option><option value="trans">交通 (藍)</option></select></div>
             </div>
-
-            <div class="form-group">
-                <label class="form-label">行程標題</label>
-                <input type="text" id="edit-title" placeholder="例如：大山牛雜鍋">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">詳細說明 (導遊筆記)</label>
-                <textarea id="edit-desc" rows="5" placeholder="輸入「必吃、必買、預約」會自動亮顯喔！"></textarea>
-            </div>
-            
+            <div class="form-group"><label class="form-label">行程標題</label><input type="text" id="edit-title" placeholder="例如：大山牛雜鍋"></div>
+            <div class="form-group"><label class="form-label">詳細說明</label><textarea id="edit-desc" rows="5" placeholder="導遊筆記..."></textarea></div>
             <div class="form-group">
                 <label class="form-label">圖片 (上傳或連結)</label>
                 <label class="btn-outline" style="margin-bottom:10px;">📷 上傳照片 <input type="file" id="edit-file" accept="image/*" style="display:none;"></label>
                 <input type="text" id="edit-img" placeholder="或貼上圖片連結...">
             </div>
-            
-            <div class="form-group">
-                <label class="form-label">相關連結</label>
-                <input type="text" id="edit-link" placeholder="官網或攻略網址">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Google Map 地點</label>
-                <input type="text" id="edit-loc" placeholder="輸入地點名稱">
-            </div>
+            <div class="form-group"><label class="form-label">相關連結</label><input type="text" id="edit-link" placeholder="官網或攻略網址"></div>
+            <div class="form-group"><label class="form-label">Google Map 地點</label><input type="text" id="edit-loc" placeholder="輸入地點名稱"></div>
         </div>
-        
         <div class="modal-footer">
             <button onclick="window.saveSchedule()" class="btn-primary" style="margin:0;">儲存變更</button>
             <button onclick="window.closeModal()" class="btn-outline" style="margin:0;">取消</button>
@@ -455,6 +414,7 @@ const firebaseConfig = {
   messagingSenderId: "762021519656",
   appId: "1:762021519656:web:15c443c2ca2f13f9bc701d"
 };
+
     // ↑↑↑ Config 結束 ↑↑↑
 
     const app = initializeApp(firebaseConfig);
@@ -465,7 +425,7 @@ const firebaseConfig = {
 
     window.openTranslate = () => { window.location.href = "googletranslate://"; setTimeout(() => { window.open("https://translate.google.com/?sl=ja&tl=zh-TW", "_blank"); }, 500); };
 
-    // --- 0. 倒數計時 & 匯率 (修正年份為 2026) ---
+    // --- 0. 倒數計時 & 匯率 (2026年) ---
     function updateCountdown() {
         const today = new Date();
         const start = new Date(2026, 0, 13);
@@ -530,9 +490,86 @@ const firebaseConfig = {
     };
     window.delBanner = async (id) => { if(confirm("刪除這張封面？")) await deleteDoc(doc(db, "banners", id)); };
 
-    // --- 2. 行程邏輯 ---
-    let scheduleMap = {};
+    // --- 2. 行程邏輯 (V43 即時氣象更新) ---
+    const tripLocs = {
+        "Day 1": { lat: 33.5902, lon: 130.4017, date: "2026-01-13", name: "福岡市" },
+        "Day 2": { lat: 33.2628, lon: 131.3575, date: "2026-01-14", name: "由布院" },
+        "Day 3": { lat: 33.5902, lon: 130.4017, date: "2026-01-15", name: "福岡市" },
+        "Day 4": { lat: 33.8833, lon: 130.8752, date: "2026-01-16", name: "北九州" }, 
+        "Day 5": { lat: 33.5902, lon: 130.4017, date: "2026-01-17", name: "福岡市" }
+    };
 
+    function getWeatherDesc(code) {
+        if (code === 0) return { icon: "☀️", text: "晴朗" };
+        if (code >= 1 && code <= 3) return { icon: "⛅", text: "多雲" };
+        if (code >= 45 && code <= 48) return { icon: "🌫️", text: "有霧" };
+        if (code >= 51 && code <= 67) return { icon: "🌧️", text: "有雨" };
+        if (code >= 71) return { icon: "❄️", text: "降雪" };
+        return { icon: "🌤️", text: "晴時多雲" };
+    }
+
+    let weatherCache = {};
+
+    window.updateWeather = async (day) => {
+        const t = document.getElementById("w-tips"), l = document.getElementById("w-loc"), tm = document.getElementById("w-temp"), ic = document.getElementById("w-icon");
+        
+        // 預設值
+        if(!day) day = "Day 1";
+        const locInfo = tripLocs[day];
+        if(!locInfo) return;
+
+        // 檢查快取
+        if(weatherCache[day]) {
+            const w = weatherCache[day];
+            l.innerText = w.name; tm.innerText = w.temp; ic.innerText = w.icon; t.innerText = w.advice;
+            return;
+        }
+
+        l.innerText = locInfo.name + " (連線中...)";
+        
+        try {
+            // 計算日期差距
+            const tripDate = new Date(locInfo.date);
+            const today = new Date();
+            const diffDays = Math.ceil((tripDate - today) / (1000 * 60 * 60 * 24));
+
+            // 超過 16 天無法預報
+            if (diffDays > 16) {
+                 l.innerText = locInfo.name; tm.innerText = "--°C"; ic.innerText = "📅"; t.innerText = "預報尚未發布 (接近日期顯示)";
+                 return;
+            }
+
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${locInfo.lat}&longitude=${locInfo.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&start_date=${locInfo.date}&end_date=${locInfo.date}`;
+            
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            if(data.daily && data.daily.time.length > 0) {
+                const min = Math.round(data.daily.temperature_2m_min[0]);
+                const max = Math.round(data.daily.temperature_2m_max[0]);
+                const code = data.daily.weathercode[0];
+                const w = getWeatherDesc(code);
+                
+                let advice = `${w.text}。`;
+                if(max < 10) advice += "寒冷保暖。"; else if(max < 15) advice += "微涼洋蔥穿搭。";
+                if(code >= 51) advice += " 記得帶傘！";
+
+                const weatherObj = { name: locInfo.name, temp: `${min}~${max}°C`, icon: w.icon, advice: advice };
+                weatherCache[day] = weatherObj; 
+                
+                l.innerText = weatherObj.name; tm.innerText = weatherObj.temp; ic.innerText = weatherObj.icon; t.innerText = weatherObj.advice;
+            } else {
+                 throw new Error("No data");
+            }
+        } catch(e) {
+            console.error(e); 
+            // 失敗回退到靜態資料
+            if(day.includes("Day 2")) { l.innerText="由布院"; tm.innerText="8°C"; ic.innerText="❄️"; t.innerText="山區冷，穿發熱衣"; } 
+            else { l.innerText="福岡市"; tm.innerText="10°C"; ic.innerText="⛅"; t.innerText="舒適，洋蔥式穿搭"; }
+        }
+    };
+
+    let scheduleMap = {};
     const qSch = query(collection(db, "schedule"), orderBy("day"), orderBy("time"));
     onSnapshot(qSch, (snapshot) => {
         const container = document.getElementById("schedule-container");
@@ -568,15 +605,17 @@ const firebaseConfig = {
 
     let isLocked = true;
     window.toggleLock = () => { isLocked=!isLocked; const b=document.getElementById("btn-lock"); const a=document.getElementById("add-fab"); if(isLocked){b.innerHTML="🔒";b.className="fab-btn";a.style.display="none"; document.querySelectorAll(".card").forEach(c=>c.classList.remove("editable"));}else{b.innerHTML="🔓";b.className="fab-btn unlocked";a.style.display="flex"; document.querySelectorAll(".card").forEach(c=>c.classList.add("editable"));} };
+    window.cardClick = (el) => { if(!isLocked) { const id = el.getAttribute('data-id'); window.openEditModal(id); } };
     
-    window.cardClick = (el) => { 
-        if(!isLocked) {
-            const id = el.getAttribute('data-id');
-            window.openEditModal(id);
-        }
+    // ★ V43 修改：切換天數時觸發天氣更新 ★
+    window.filterDay = (dayStr, btn) => { 
+        document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active')); 
+        if(btn) btn.classList.add('active'); 
+        document.querySelectorAll('.card, .day-divider').forEach(el => { 
+            if(el.dataset.day && el.dataset.day.includes(dayStr)) el.style.display='block'; else el.style.display='none'; 
+        }); 
+        window.updateWeather(dayStr); 
     };
-    
-    window.filterDay = (dayStr, btn) => { document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); document.querySelectorAll('.card, .day-divider').forEach(el => { if(el.dataset.day && el.dataset.day.includes(dayStr)) el.style.display='block'; else el.style.display='none'; }); window.updateWeather(dayStr); };
 
     // --- 3. 記帳邏輯 ---
     let allExpenses = [];
@@ -769,9 +808,7 @@ const firebaseConfig = {
     window.openEditModal = (id) => {
         document.getElementById("modal").style.display="flex";
         if(id) {
-            // 從快取取資料 (避免 HTML 斷行問題)
             const data = scheduleMap[id] || {}; 
-            // 這裡修正: 確保 modal-title ID 存在
             const titleEl = document.getElementById("modal-title");
             if(titleEl) titleEl.innerText="✏️ 編輯行程";
             
@@ -840,7 +877,6 @@ const firebaseConfig = {
     window.previewImage = (input) => { if(input.files[0]){ let r=new FileReader(); r.onload=e=>{document.getElementById("img-preview").src=e.target.result; document.getElementById("img-preview").style.display="block";}; r.readAsDataURL(input.files[0]); } };
     window.scrollToTop = () => window.scrollTo({top:0, behavior:'smooth'});
     window.switchPage = (id, btn) => { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); };
-    window.updateWeather = (day) => { const t = document.getElementById("w-tips"), l = document.getElementById("w-loc"), tm = document.getElementById("w-temp"); if(day.includes("Day 1")) { l.innerText="福岡市"; tm.innerText="10°C"; t.innerText="🧥 微涼，帶薄外套"; } else if(day.includes("Day 2")) { l.innerText="由布院"; tm.innerText="8°C"; t.innerText="❄️ 山區冷，穿發熱衣"; } else { l.innerText="福岡市"; tm.innerText="11°C"; t.innerText="⛅ 舒適，洋蔥式穿搭"; } };
     
     // 初始化
     const initialSchedule = [{ day: "Day 1", time: "11:45", title: "大山牛雜鍋", type: "food", loc: "博多もつ鍋おおやま 福岡空港", desc: "【必吃】博多靈魂美食！牛腸軟嫩、味噌濃郁。", img: "https://ginalitw.github.io/fukuoka-app/images/0101.png" }];
