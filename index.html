@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>福岡好好玩 V46 🌸</title>
+    <title>福岡好好玩 V47 🌸</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -516,7 +516,7 @@ const firebaseConfig = {
     };
     window.delBanner = async (id) => { if(confirm("刪除這張封面？")) await deleteDoc(doc(db, "banners", id)); };
 
-    // --- 2. 行程邏輯 (V43 即時氣象) ---
+    // --- 2. 行程邏輯 (V47 自動對應日期) ---
     const tripLocs = {
         "Day 1": { lat: 33.5902, lon: 130.4017, date: "2026-01-13", name: "福岡市" },
         "Day 2": { lat: 33.2628, lon: 131.3575, date: "2026-01-14", name: "由布院" },
@@ -578,7 +578,6 @@ const firebaseConfig = {
         } catch(e) { console.error(e); l.innerText = locInfo.name; tm.innerText = "--°C"; t.innerText = "無法取得"; }
     };
 
-    // V38 修復：ID 索引
     let scheduleMap = {};
     const qSch = query(collection(db, "schedule"), orderBy("day"), orderBy("time"));
     onSnapshot(qSch, (snapshot) => {
@@ -610,11 +609,24 @@ const firebaseConfig = {
             </div>`;
         });
         container.innerHTML = html;
-        window.filterDay('Day 1', document.querySelector('.day-btn'));
+        
+        // ★ V47 自動日期判斷 ★
+        const now = new Date();
+        const start = new Date(2026, 0, 13);
+        // 計算天數差 (0 = Day 1)
+        const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24)); 
+        let targetDay = "Day 1";
+        
+        if (diff >= 0 && diff <= 4) {
+            targetDay = `Day ${diff + 1}`;
+        }
+        // 找到該天數按鈕並觸發點擊
+        const btn = Array.from(document.querySelectorAll('.day-btn')).find(b => b.innerText.includes(targetDay));
+        window.filterDay(targetDay, btn);
     });
 
     let isLocked = true;
-    window.toggleLock = () => { isLocked=!isLocked; const b=document.getElementById("btn-lock"); const a=document.getElementById("btn-add"); if(isLocked){b.innerHTML="🔒";b.className="header-small-btn";a.style.display="none"; document.querySelectorAll(".card").forEach(c=>c.classList.remove("editable"));}else{b.innerHTML="🔓";b.className="header-small-btn unlocked";a.style.display="flex"; document.querySelectorAll(".card").forEach(c=>c.classList.add("editable"));} };
+    window.toggleLock = () => { isLocked=!isLocked; const b=document.getElementById("btn-lock"); const a=document.getElementById("add-fab"); if(isLocked){b.innerHTML="🔒";b.className="header-small-btn";a.style.display="none"; document.querySelectorAll(".card").forEach(c=>c.classList.remove("editable"));}else{b.innerHTML="🔓";b.className="header-small-btn unlocked";a.style.display="flex"; document.querySelectorAll(".card").forEach(c=>c.classList.add("editable"));} };
     window.cardClick = (el) => { if(!isLocked) { const id = el.getAttribute('data-id'); window.openEditModal(id); } };
     
     window.filterDay = (dayStr, btn) => { 
@@ -817,8 +829,8 @@ const firebaseConfig = {
         document.getElementById("modal").style.display="flex";
         if(id) {
             const data = scheduleMap[id] || {}; 
-            // 確保標題正確
-            document.getElementById("modal-title").innerText="✏️ 編輯行程";
+            const titleEl = document.getElementById("modal-title");
+            if(titleEl) titleEl.innerText="✏️ 編輯行程";
             
             document.getElementById("edit-id").value = id;
             document.getElementById("edit-day").value = data.day;
@@ -831,7 +843,9 @@ const firebaseConfig = {
             document.getElementById("edit-link").value = data.link || "";
             document.getElementById("btn-del-sch").style.display="block";
         } else {
-            document.getElementById("modal-title").innerText="➕ 新增行程";
+            const titleEl = document.getElementById("modal-title");
+            if(titleEl) titleEl.innerText="➕ 新增行程";
+            
             document.getElementById("edit-id").value="";
             document.getElementById("edit-time").value="10:00";
             document.getElementById("edit-title").value="";
