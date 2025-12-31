@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>福岡好好玩 V45 🌸</title>
+    <title>福岡好好玩 V46 🌸</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -21,24 +21,22 @@
         }
         #app { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; background: #fff; }
 
-        /* --- Header 優化 --- */
+        /* --- Header (整合鎖頭與新增按鈕) --- */
         header {
             background: rgba(255, 139, 167, 0.98); backdrop-filter: blur(10px); color: white;
             padding: 12px 15px; text-align: center; position: sticky; top: 0; z-index: 100;
             box-shadow: 0 2px 10px rgba(255, 139, 167, 0.3); display: flex; justify-content: space-between; align-items: center;
         }
-        h1 { margin: 0; font-size: 1.3rem; font-weight: 700; flex-grow: 1; text-align: center; padding-right: 10px; } /* 標題置中修正 */
+        h1 { margin: 0; font-size: 1.3rem; font-weight: 700; flex-grow: 1; text-align: center; padding-right: 10px; }
 
-        /* Header 左側控制區 (鎖頭+新增) */
-        .header-left { display: flex; gap: 8px; align-items: center; }
+        .header-left { display: flex; gap: 8px; align-items: center; min-width: 80px; }
         .header-small-btn {
             background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.6);
             width: 36px; height: 36px; border-radius: 50%; font-size: 1rem; color: white;
             display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;
         }
-        .header-small-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.4); }
+        .header-small-btn.unlocked { background: #fff; color: #E91E63; border-color: #E91E63; }
 
-        /* Header 右側翻譯按鈕 (放大) */
         .icon-btn-large {
             background: rgba(255,255,255,0.3); border: 2px solid rgba(255,255,255,0.8);
             width: 48px; height: 48px; border-radius: 50%; font-size: 1.6rem; color: white;
@@ -46,7 +44,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* --- 右下角回到頁首按鈕 (大) --- */
+        /* 右下角置頂按鈕 */
         #btn-top {
             position: fixed; bottom: 100px; right: 20px;
             background: white; color: var(--primary);
@@ -91,7 +89,7 @@
         .cb-icon { font-size: 1.2rem; margin-right: 15px; color: #ccc; width: 24px; text-align: center;}
         .checklist-item.checked .cb-icon { color: var(--accent-spot); content: "✔"; }
 
-        /* Wishlist */
+        /* Wishlist/Foodlist */
         .wish-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
         .wish-item { position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; padding-bottom: 5px; }
         .wish-img { width: 100%; height: 150px; object-fit: cover; display: block; cursor: zoom-in; }
@@ -518,10 +516,70 @@ const firebaseConfig = {
     };
     window.delBanner = async (id) => { if(confirm("刪除這張封面？")) await deleteDoc(doc(db, "banners", id)); };
 
-    // --- 2. 行程邏輯 ---
-    // ★★★ V37 關鍵變數：暫存資料，解決換行符號問題 ★★★
-    let scheduleMap = {};
+    // --- 2. 行程邏輯 (V43 即時氣象) ---
+    const tripLocs = {
+        "Day 1": { lat: 33.5902, lon: 130.4017, date: "2026-01-13", name: "福岡市" },
+        "Day 2": { lat: 33.2628, lon: 131.3575, date: "2026-01-14", name: "由布院" },
+        "Day 3": { lat: 33.5902, lon: 130.4017, date: "2026-01-15", name: "福岡市" },
+        "Day 4": { lat: 33.8833, lon: 130.8752, date: "2026-01-16", name: "北九州" },
+        "Day 5": { lat: 33.5902, lon: 130.4017, date: "2026-01-17", name: "福岡市" }
+    };
+    
+    function getWeatherDesc(code) {
+        if (code === 0) return { icon: "☀️", text: "晴朗" };
+        if (code >= 1 && code <= 3) return { icon: "⛅", text: "多雲" };
+        if (code >= 45 && code <= 48) return { icon: "🌫️", text: "有霧" };
+        if (code >= 51 && code <= 67) return { icon: "🌧️", text: "有雨" };
+        if (code >= 71) return { icon: "❄️", text: "降雪" };
+        return { icon: "🌤️", text: "晴時多雲" };
+    }
 
+    let weatherCache = {};
+    window.updateWeather = async (day) => {
+        const t = document.getElementById("w-tips"), l = document.getElementById("w-loc"), tm = document.getElementById("w-temp"), ic = document.getElementById("w-icon");
+        
+        if(!day) day = "Day 1";
+        const locInfo = tripLocs[day] || tripLocs["Day 1"];
+        
+        if(weatherCache[day]) {
+            const w = weatherCache[day];
+            l.innerText = w.name; tm.innerText = w.temp; ic.innerText = w.icon; t.innerText = w.advice;
+            return;
+        }
+
+        l.innerText = locInfo.name + " (連線中...)";
+        try {
+            const tripDate = new Date(locInfo.date);
+            const today = new Date();
+            const diffDays = Math.ceil((tripDate - today) / (1000 * 60 * 60 * 24));
+
+            if (diffDays > 16) {
+                 l.innerText = locInfo.name; tm.innerText = "--°C"; ic.innerText = "📅"; t.innerText = "預報尚未發布 (接近日期顯示)";
+                 return;
+            }
+
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${locInfo.lat}&longitude=${locInfo.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&start_date=${locInfo.date}&end_date=${locInfo.date}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            if(data.daily && data.daily.time.length > 0) {
+                const min = Math.round(data.daily.temperature_2m_min[0]);
+                const max = Math.round(data.daily.temperature_2m_max[0]);
+                const code = data.daily.weathercode[0];
+                const w = getWeatherDesc(code);
+                let advice = `${w.text}。`;
+                if(max < 10) advice += "寒冷保暖。"; else if(max < 15) advice += "微涼洋蔥穿搭。";
+                if(code >= 51) advice += " 記得帶傘！";
+
+                const weatherObj = { name: locInfo.name, temp: `${min}~${max}°C`, icon: w.icon, advice: advice };
+                weatherCache[day] = weatherObj; 
+                l.innerText = weatherObj.name; tm.innerText = weatherObj.temp; ic.innerText = weatherObj.icon; t.innerText = weatherObj.advice;
+            } else { throw new Error("No data"); }
+        } catch(e) { console.error(e); l.innerText = locInfo.name; tm.innerText = "--°C"; t.innerText = "無法取得"; }
+    };
+
+    // V38 修復：ID 索引
+    let scheduleMap = {};
     const qSch = query(collection(db, "schedule"), orderBy("day"), orderBy("time"));
     onSnapshot(qSch, (snapshot) => {
         const container = document.getElementById("schedule-container");
@@ -556,15 +614,8 @@ const firebaseConfig = {
     });
 
     let isLocked = true;
-    window.toggleLock = () => { isLocked=!isLocked; const b=document.getElementById("btn-lock"); const a=document.getElementById("add-fab"); if(isLocked){b.innerHTML="🔒";b.className="fab-btn";a.style.display="none"; document.querySelectorAll(".card").forEach(c=>c.classList.remove("editable"));}else{b.innerHTML="🔓";b.className="fab-btn unlocked";a.style.display="flex"; document.querySelectorAll(".card").forEach(c=>c.classList.add("editable"));} };
-    
-    // ★ V38 改良點擊：透過 ID 讀取暫存資料，防止內容空白 ★
-    window.cardClick = (el) => { 
-        if(!isLocked) { 
-            const id = el.getAttribute('data-id'); 
-            window.openEditModal(id); 
-        } 
-    };
+    window.toggleLock = () => { isLocked=!isLocked; const b=document.getElementById("btn-lock"); const a=document.getElementById("btn-add"); if(isLocked){b.innerHTML="🔒";b.className="header-small-btn";a.style.display="none"; document.querySelectorAll(".card").forEach(c=>c.classList.remove("editable"));}else{b.innerHTML="🔓";b.className="header-small-btn unlocked";a.style.display="flex"; document.querySelectorAll(".card").forEach(c=>c.classList.add("editable"));} };
+    window.cardClick = (el) => { if(!isLocked) { const id = el.getAttribute('data-id'); window.openEditModal(id); } };
     
     window.filterDay = (dayStr, btn) => { 
         document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active')); 
@@ -762,12 +813,11 @@ const firebaseConfig = {
     window.delWish = async(id) => { if(confirm("刪除？")) await deleteDoc(doc(db, "wishlist", id)); };
 
     // --- Helpers ---
-    // ★★★ V37 改用 ID 查詢，解決資料空白問題 ★★★
     window.openEditModal = (id) => {
         document.getElementById("modal").style.display="flex";
         if(id) {
             const data = scheduleMap[id] || {}; 
-            // 修正標題
+            // 確保標題正確
             document.getElementById("modal-title").innerText="✏️ 編輯行程";
             
             document.getElementById("edit-id").value = id;
@@ -781,9 +831,7 @@ const firebaseConfig = {
             document.getElementById("edit-link").value = data.link || "";
             document.getElementById("btn-del-sch").style.display="block";
         } else {
-            const titleEl = document.getElementById("modal-title");
-            if(titleEl) titleEl.innerText="➕ 新增行程";
-            
+            document.getElementById("modal-title").innerText="➕ 新增行程";
             document.getElementById("edit-id").value="";
             document.getElementById("edit-time").value="10:00";
             document.getElementById("edit-title").value="";
@@ -800,7 +848,6 @@ const firebaseConfig = {
         const file = document.getElementById("edit-file").files[0];
         let imgUrl = document.getElementById("edit-img").value;
 
-        // ★★★ V37 新增：行程照片上傳 ★★★
         if(file) {
             const btn = document.querySelector("#modal .btn-primary");
             btn.innerText = "上傳中..."; btn.disabled = true;
@@ -835,7 +882,6 @@ const firebaseConfig = {
     window.previewImage = (input) => { if(input.files[0]){ let r=new FileReader(); r.onload=e=>{document.getElementById("img-preview").src=e.target.result; document.getElementById("img-preview").style.display="block";}; r.readAsDataURL(input.files[0]); } };
     window.scrollToTop = () => window.scrollTo({top:0, behavior:'smooth'});
     window.switchPage = (id, btn) => { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); };
-    window.updateWeather = (day) => { const t = document.getElementById("w-tips"), l = document.getElementById("w-loc"), tm = document.getElementById("w-temp"); if(day.includes("Day 1")) { l.innerText="福岡市"; tm.innerText="10°C"; t.innerText="🧥 微涼，帶薄外套"; } else if(day.includes("Day 2")) { l.innerText="由布院"; tm.innerText="8°C"; t.innerText="❄️ 山區冷，穿發熱衣"; } else { l.innerText="福岡市"; tm.innerText="11°C"; t.innerText="⛅ 舒適，洋蔥式穿搭"; } };
     
     // 初始化
     const initialSchedule = [{ day: "Day 1", time: "11:45", title: "大山牛雜鍋", type: "food", loc: "博多もつ鍋おおやま 福岡空港", desc: "【必吃】博多靈魂美食！牛腸軟嫩、味噌濃郁。", img: "https://ginalitw.github.io/fukuoka-app/images/0101.png" }];
