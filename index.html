@@ -21,7 +21,7 @@
         }
         #app { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; background: #fff; }
 
-        /* --- Header (整合鎖頭與新增按鈕) --- */
+        /* --- Header (修正版：按鈕不見修復) --- */
         header {
             background: rgba(255, 139, 167, 0.98); backdrop-filter: blur(10px); color: white;
             padding: 12px 15px; text-align: center; position: sticky; top: 0; z-index: 100;
@@ -30,12 +30,17 @@
         h1 { margin: 0; font-size: 1.3rem; font-weight: 700; flex-grow: 1; text-align: center; padding-right: 10px; }
 
         .header-left { display: flex; gap: 8px; align-items: center; min-width: 80px; }
+        
         .header-small-btn {
             background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.6);
             width: 36px; height: 36px; border-radius: 50%; font-size: 1rem; color: white;
             display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;
         }
+        /* 解鎖狀態樣式 */
         .header-small-btn.unlocked { background: #fff; color: #E91E63; border-color: #E91E63; }
+        
+        /* 新增按鈕 (預設隱藏) */
+        #btn-add { background: var(--white); color: var(--primary); font-weight: bold; border: 2px solid var(--white); display: none; }
 
         .icon-btn-large {
             background: rgba(255,255,255,0.3); border: 2px solid rgba(255,255,255,0.8);
@@ -186,7 +191,8 @@
     <header>
         <div class="header-left">
             <button id="btn-lock" class="header-small-btn" onclick="window.toggleLock()">🔒</button>
-            <button id="btn-add" class="header-small-btn" onclick="window.openEditModal(null)" style="display:none;">➕</button>
+            <!-- 修正：確保這個按鈕 ID 是 btn-add，JS 才能抓到 -->
+            <button id="btn-add" class="header-small-btn" onclick="window.openEditModal(null)">➕</button>
         </div>
         <h1>福岡好好玩 🌸</h1>
         <button class="icon-btn-large" onclick="window.openTranslate()">📖</button>
@@ -366,7 +372,6 @@
 <!-- Modal: 編輯行程 -->
 <div id="modal">
     <div class="modal-box">
-        <!-- V39 修復的 ID -->
         <div class="modal-header-bar" id="modal-title">✏️ 編輯/新增行程</div>
         <div class="modal-body">
             <input type="hidden" id="edit-id">
@@ -517,18 +522,7 @@ const firebaseConfig = {
     };
     window.delBanner = async (id) => { if(confirm("刪除這張封面？")) await deleteDoc(doc(db, "banners", id)); };
 
-    // --- 2. 行程邏輯 (V47 自動對應 + V37 穩定ID + V43 天氣) ---
-    // ★ V47 自動日期 ★
-    const now = new Date();
-    const start = new Date(2026, 0, 13);
-    const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24)); 
-    let currentSelectedDay = "Day 1";
-    if (diff >= 0 && diff <= 4) { currentSelectedDay = `Day ${diff + 1}`; }
-
-    // ★ V37 穩定ID快取 ★
-    let scheduleMap = {};
-
-    // ★ V43 天氣資料 ★
+    // --- 2. 行程邏輯 (V43 即時氣象更新) ---
     const tripLocs = {
         "Day 1": { lat: 33.5902, lon: 130.4017, date: "2026-01-13", name: "福岡市" },
         "Day 2": { lat: 33.2628, lon: 131.3575, date: "2026-01-14", name: "由布院" },
@@ -590,6 +584,8 @@ const firebaseConfig = {
         } catch(e) { console.error(e); l.innerText = locInfo.name; tm.innerText = "--°C"; t.innerText = "無法取得"; }
     };
 
+    // V38 修復：ID 索引
+    let scheduleMap = {};
     const qSch = query(collection(db, "schedule"), orderBy("day"), orderBy("time"));
     onSnapshot(qSch, (snapshot) => {
         const container = document.getElementById("schedule-container");
@@ -629,9 +625,16 @@ const firebaseConfig = {
     });
 
     let isLocked = true;
-    window.toggleLock = () => { isLocked=!isLocked; const b=document.getElementById("btn-lock"); const a=document.getElementById("add-fab"); if(isLocked){b.innerHTML="🔒";b.className="fab-btn";a.style.display="none"; document.querySelectorAll(".card").forEach(c=>c.classList.remove("editable"));}else{b.innerHTML="🔓";b.className="fab-btn unlocked";a.style.display="flex"; document.querySelectorAll(".card").forEach(c=>c.classList.add("editable"));} };
+    window.toggleLock = () => { isLocked=!isLocked; const b=document.getElementById("btn-lock"); const a=document.getElementById("btn-add"); if(isLocked){b.innerHTML="🔒";b.className="header-small-btn";a.style.display="none"; document.querySelectorAll(".card").forEach(c=>c.classList.remove("editable"));}else{b.innerHTML="🔓";b.className="header-small-btn unlocked";a.style.display="flex"; document.querySelectorAll(".card").forEach(c=>c.classList.add("editable"));} };
     window.cardClick = (el) => { if(!isLocked) { const id = el.getAttribute('data-id'); window.openEditModal(id); } };
     
+    // ★ V47 自動日期判斷 ★
+    const now = new Date();
+    const start = new Date(2026, 0, 13);
+    const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24)); 
+    let currentSelectedDay = "Day 1";
+    if (diff >= 0 && diff <= 4) { currentSelectedDay = `Day ${diff + 1}`; }
+
     window.filterDay = (dayStr, btn) => { 
         currentSelectedDay = dayStr;
         document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active')); 
@@ -829,13 +832,13 @@ const firebaseConfig = {
     window.delWish = async(id) => { if(confirm("刪除？")) await deleteDoc(doc(db, "wishlist", id)); };
 
     // --- Helpers ---
+    // ★★★ V37 修正：透過 ID 取快取資料，防止空白 ★★★
     window.openEditModal = (id) => {
         document.getElementById("modal").style.display="flex";
         if(id) {
             const data = scheduleMap[id] || {}; 
-            // 確保標題存在
-            const titleEl = document.getElementById("modal-title");
-            if(titleEl) titleEl.innerText="✏️ 編輯行程";
+            // 修正標題
+            document.getElementById("modal-title").innerText="✏️ 編輯行程";
             
             document.getElementById("edit-id").value = id;
             document.getElementById("edit-day").value = data.day;
@@ -867,6 +870,7 @@ const firebaseConfig = {
         const file = document.getElementById("edit-file").files[0];
         let imgUrl = document.getElementById("edit-img").value;
 
+        // ★★★ V37 新增：行程照片上傳 ★★★
         if(file) {
             const btn = document.querySelector("#modal .btn-primary");
             btn.innerText = "上傳中..."; btn.disabled = true;
@@ -901,7 +905,6 @@ const firebaseConfig = {
     window.previewImage = (input) => { if(input.files[0]){ let r=new FileReader(); r.onload=e=>{document.getElementById("img-preview").src=e.target.result; document.getElementById("img-preview").style.display="block";}; r.readAsDataURL(input.files[0]); } };
     window.scrollToTop = () => window.scrollTo({top:0, behavior:'smooth'});
     window.switchPage = (id, btn) => { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); };
-    window.updateWeather = (day) => { const t = document.getElementById("w-tips"), l = document.getElementById("w-loc"), tm = document.getElementById("w-temp"); if(day.includes("Day 1")) { l.innerText="福岡市"; tm.innerText="10°C"; t.innerText="🧥 微涼，帶薄外套"; } else if(day.includes("Day 2")) { l.innerText="由布院"; tm.innerText="8°C"; t.innerText="❄️ 山區冷，穿發熱衣"; } else { l.innerText="福岡市"; tm.innerText="11°C"; t.innerText="⛅ 舒適，洋蔥式穿搭"; } };
     
     // 初始化
     const initialSchedule = [{ day: "Day 1", time: "11:45", title: "大山牛雜鍋", type: "food", loc: "博多もつ鍋おおやま 福岡空港", desc: "【必吃】博多靈魂美食！牛腸軟嫩、味噌濃郁。", img: "https://ginalitw.github.io/fukuoka-app/images/0101.png" }];
